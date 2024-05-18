@@ -5,6 +5,7 @@
         public int UserClientId { get; set; }
         public string UserInDbId { get; set; }
         public ICollection<Order> Orders { get; set; }
+        public ICollection<Wallet> Wallets { get; set; }
 
     }
 }

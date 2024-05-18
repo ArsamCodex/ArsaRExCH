@@ -1,34 +1,32 @@
 ﻿using ArsaRExCH.Data;
-using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace ArsaRExCH
+namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PairController : ControllerBase
+    public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public PairController(ApplicationDbContext context)
+        public WalletController(ApplicationDbContext context)
         {
             _context = context;
         }
-
-        [HttpPost]
-        public async Task<IActionResult> AddPairs(Pair pair)
+        [HttpGet]
+        public async Task<IActionResult> GetWallets()
         {
             try
             {
-                await _context.Pair.AddAsync(pair);
-                await _context.SaveChangesAsync();
-                return Ok(pair);
+                var walet = await _context.Users.Include(c=>c.Wallets).SingleOrDefaultAsync();
+                return Ok(walet);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
 
-        } 
+        }
     }
 }
