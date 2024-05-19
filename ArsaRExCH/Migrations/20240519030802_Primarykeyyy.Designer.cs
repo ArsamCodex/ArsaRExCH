@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240518082842_inittial")]
-    partial class inittial
+    [Migration("20240519030802_Primarykeyyy")]
+    partial class Primarykeyyy
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,9 +101,8 @@ namespace ArsaRExCH.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrderType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
 
                     b.Property<string>("PairName")
                         .IsRequired()
@@ -112,12 +111,12 @@ namespace ArsaRExCH.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("UserClientId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserClientId");
 
                     b.ToTable("Orders");
                 });
@@ -147,11 +146,9 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Model.UserClient", b =>
                 {
-                    b.Property<int>("UserClientId")
+                    b.Property<Guid>("UserClientId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserClientId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserInDbId")
                         .IsRequired()
@@ -160,6 +157,56 @@ namespace ArsaRExCH.Migrations
                     b.HasKey("UserClientId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.UserTradeActivity", b =>
+                {
+                    b.Property<int>("UserTradeActivityID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserTradeActivityID"));
+
+                    b.Property<double>("CurrentBalance")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PairName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserTradeActivityID");
+
+                    b.ToTable("UserTradeActivities");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Wallet", b =>
+                {
+                    b.Property<int>("WalletID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WalletID"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CurrentPrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PairName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("WalletID");
+
+                    b.ToTable("Wallet");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -297,13 +344,9 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Model.Order", b =>
                 {
-                    b.HasOne("ArsaRExCH.Model.UserClient", "User")
+                    b.HasOne("ArsaRExCH.Model.UserClient", null)
                         .WithMany("Orders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                        .HasForeignKey("UserClientId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

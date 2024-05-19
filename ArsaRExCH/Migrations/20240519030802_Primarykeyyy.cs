@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class inittial : Migration
+    public partial class Primarykeyyy : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,13 +69,43 @@ namespace ArsaRExCH.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserClientId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserInDbId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserClientId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTradeActivities",
+                columns: table => new
+                {
+                    UserTradeActivityID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentBalance = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTradeActivities", x => x.UserTradeActivityID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Wallet",
+                columns: table => new
+                {
+                    WalletID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentPrice = table.Column<double>(type: "float", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wallet", x => x.WalletID);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,20 +221,19 @@ namespace ArsaRExCH.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrderType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderType = table.Column<int>(type: "int", nullable: false),
                     PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.OrderId);
                     table.ForeignKey(
-                        name: "FK_Orders_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Orders_Users_UserClientId",
+                        column: x => x.UserClientId,
                         principalTable: "Users",
-                        principalColumn: "UserClientId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserClientId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -247,9 +276,9 @@ namespace ArsaRExCH.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_UserId",
+                name: "IX_Orders_UserClientId",
                 table: "Orders",
-                column: "UserId");
+                column: "UserClientId");
         }
 
         /// <inheritdoc />
@@ -275,6 +304,12 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "Pair");
+
+            migrationBuilder.DropTable(
+                name: "UserTradeActivities");
+
+            migrationBuilder.DropTable(
+                name: "Wallet");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

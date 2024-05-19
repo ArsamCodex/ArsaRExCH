@@ -13,6 +13,11 @@ namespace ArsaRExCH.Data
         public DbSet<UserTradeActivity> UserTradeActivities { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
 
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+           
+            // Additional configurations if necessary
+        }
     }
 }

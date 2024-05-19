@@ -98,9 +98,8 @@ namespace ArsaRExCH.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrderType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
 
                     b.Property<string>("PairName")
                         .IsRequired()
@@ -109,12 +108,12 @@ namespace ArsaRExCH.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("UserClientId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserClientId");
 
                     b.ToTable("Orders");
                 });
@@ -144,11 +143,9 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Model.UserClient", b =>
                 {
-                    b.Property<int>("UserClientId")
+                    b.Property<Guid>("UserClientId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserClientId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserInDbId")
                         .IsRequired()
@@ -190,6 +187,9 @@ namespace ArsaRExCH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WalletID"));
 
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
                     b.Property<double>("CurrentPrice")
                         .HasColumnType("float");
 
@@ -197,16 +197,11 @@ namespace ArsaRExCH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserClientId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("WalletID");
-
-                    b.HasIndex("UserClientId");
 
                     b.ToTable("Wallet");
                 });
@@ -346,19 +341,8 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Model.Order", b =>
                 {
-                    b.HasOne("ArsaRExCH.Model.UserClient", "User")
-                        .WithMany("Orders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ArsaRExCH.Model.Wallet", b =>
-                {
                     b.HasOne("ArsaRExCH.Model.UserClient", null)
-                        .WithMany("Wallets")
+                        .WithMany("Orders")
                         .HasForeignKey("UserClientId");
                 });
 
@@ -416,8 +400,6 @@ namespace ArsaRExCH.Migrations
             modelBuilder.Entity("ArsaRExCH.Model.UserClient", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Wallets");
                 });
 #pragma warning restore 612, 618
         }
