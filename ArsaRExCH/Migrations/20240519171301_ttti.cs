@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class Primarykeyyy : Migration
+    public partial class ttti : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -99,9 +99,11 @@ namespace ArsaRExCH.Migrations
                     WalletID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CurrentPrice = table.Column<double>(type: "float", nullable: false),
-                    Amount = table.Column<double>(type: "float", nullable: false)
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    SeedPhrase = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,4 +1,5 @@
-﻿
+﻿@page "/LoadWallet"
+
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
@@ -6,7 +7,13 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
 
-@code{
+
+
+<p>Sample Wallet</p>
+
+@user2
+
+@code {
     public string user2 { get; set; }
     protected override async Task OnInitializedAsync()
     {
@@ -15,8 +22,10 @@
         var user = authState.User;
         if (user.Identity?.IsAuthenticated ?? false)
         {
-            user2 = user.FindFirst(c => c.Type == "sub")?.Value;
-     
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+         //   await _face.CreateETHWallet(user2);
+
         }
     }
+
 }

@@ -1,5 +1,9 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
-
-
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@inject ArsaRExCH.Interface.WalletInterface _face

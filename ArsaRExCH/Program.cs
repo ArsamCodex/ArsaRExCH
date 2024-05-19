@@ -2,6 +2,8 @@ using ArsaRExCH.Client.Pages;
 using ArsaRExCH.Components;
 using ArsaRExCH.Components.Account;
 using ArsaRExCH.Data;
+using ArsaRExCH.Interface;
+using ArsaRExCH.InterfaceIMPL;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +20,10 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 builder.Services.AddSwaggerGen();
-
-
+builder.Services.AddScoped<WalletInterface, WalletInterfaceIMPL>();
+builder.Services.AddScoped(http => new HttpClient
+{
+});
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;

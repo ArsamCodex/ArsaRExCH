@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240519030802_Primarykeyyy")]
-    partial class Primarykeyyy
+    [Migration("20240519171301_ttti")]
+    partial class ttti
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -190,6 +190,10 @@ namespace ArsaRExCH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WalletID"));
 
+                    b.Property<string>("Adress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
@@ -197,6 +201,10 @@ namespace ArsaRExCH.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("PairName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeedPhrase")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

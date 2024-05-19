@@ -187,6 +187,10 @@ namespace ArsaRExCH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WalletID"));
 
+                    b.Property<string>("Adress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
@@ -194,6 +198,10 @@ namespace ArsaRExCH.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("PairName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeedPhrase")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
