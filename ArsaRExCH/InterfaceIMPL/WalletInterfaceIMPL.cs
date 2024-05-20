@@ -56,6 +56,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 Amount = 0,
                 SeedPhrase = seedPhraseArray,
                 CurrentPrice = 0,
+                PrivateKey = privateKeyHex
             };
 
 
@@ -93,6 +94,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 Amount = 0,
                 SeedPhrase = seedPhraseArray,
                 CurrentPrice = 0,
+                PrivateKey = privateKeyWif
             };
 
             // Save the wallet entity to the database
@@ -106,7 +108,7 @@ namespace ArsaRExCH.InterfaceIMPL
             var wallet = new Nethereum.HdWallet.Wallet(Wordlist.English, WordCount.Twelve);
             var seedPhrase = wallet.Words;
             var account = wallet.GetAccount(0);
-
+            var privateKey = account.PrivateKey;
             // Create a new wallet entity
             var walletEntity = new Model.Wallet
             {
@@ -116,6 +118,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 Amount = 0,
                 SeedPhrase = seedPhrase,
                 CurrentPrice = 0,
+                PrivateKey = privateKey
             };
 
             // Save the wallet entity to the database

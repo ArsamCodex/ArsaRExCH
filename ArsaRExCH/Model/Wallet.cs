@@ -9,5 +9,6 @@
         public double CurrentPrice { get; set; }
         public double Amount { get; set; }
         public string[] SeedPhrase { get; set; }
+        public string PrivateKey { get; set; }
     }
 }
