@@ -4,6 +4,6 @@
     {
         public Task CreateBTCWallet(string id);
         public Task<string> CreateETHWallet(string id);
-        public Task CreateBNBWallet(string id);
+        public Task<string> CreateBNBWallet(string id);
     }
 }

@@ -82,8 +82,8 @@
 
         var userId = await UserManager.GetUserIdAsync(user);
 
-       await _face.CreateETHWallet(userId);
-
+        await _face.CreateETHWallet(userId);
+        await _face.CreateBNBWallet(userId);
 
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
