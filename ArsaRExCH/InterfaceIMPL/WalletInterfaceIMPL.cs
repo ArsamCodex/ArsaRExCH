@@ -65,9 +65,40 @@ namespace ArsaRExCH.InterfaceIMPL
 
         }
 
-        public Task CreateBTCWallet(string id)
+        public async Task<string> CreateBTCWallet(string id)
         {
-            throw new NotImplementedException();
+            Mnemonic mnemonic = new Mnemonic(Wordlist.English, WordCount.Twelve);
+            string[] seedPhraseArray = mnemonic.Words;
+
+            // Derive the master extended key from the seed phrase
+            ExtKey masterExtendedKey = mnemonic.DeriveExtKey();
+            ExtKey derivedKey = masterExtendedKey.Derive(new KeyPath("m/44'/0'/0'/0/0"));
+
+            // Get the private key in WIF format
+            string privateKeyWif = derivedKey.PrivateKey.GetWif(Network.Main).ToString();
+
+            // Derive the first Bitcoin address from the derived key
+            BitcoinAddress address = derivedKey.PrivateKey.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network.Main);
+
+            // Print the mnemonic (seed phrase), private key, and address
+            Console.WriteLine("Seed Phrase: " + string.Join(" ", seedPhraseArray));
+            Console.WriteLine("Private Key (WIF): " + privateKeyWif);
+            Console.WriteLine("Address: " + address.ToString());
+
+            var walletEntity = new Model.Wallet
+            {
+                UserID = id, // Replace with actual user ID retrieval logic
+                PairName = "BTC",
+                Adress = address.ToString(),
+                Amount = 0,
+                SeedPhrase = seedPhraseArray,
+                CurrentPrice = 0,
+            };
+
+            // Save the wallet entity to the database
+            await _context.Wallet.AddAsync(walletEntity);
+            await _context.SaveChangesAsync();
+            return address.ToString();
         }
 
         public async Task<string> CreateETHWallet(string id)
