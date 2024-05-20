@@ -7,7 +7,7 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
 @using System.Text.Json
-
+@attribute [Authorize]
 
 @if (wallets == null)
 {
