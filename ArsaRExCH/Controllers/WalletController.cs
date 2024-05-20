@@ -1,4 +1,6 @@
 ﻿using ArsaRExCH.Data;
+using ArsaRExCH.Interface;
+using ArsaRExCH.InterfaceIMPL;
 using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +13,11 @@ namespace ArsaRExCH.Controllers
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public WalletController(ApplicationDbContext context)
+        private readonly WalletInterface _walletInterface;
+        public WalletController(ApplicationDbContext context, WalletInterface walletInterface)
         {
             _context = context;
+            _walletInterface = walletInterface;
         }
         [HttpGet("Wallets/{id}")]
         public async Task<IActionResult> GetWallets(string id)
@@ -21,7 +25,7 @@ namespace ArsaRExCH.Controllers
             try
             {
                 var user = await _context.Users
-                 //   .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
+                    //   .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
                     .FirstOrDefaultAsync(u => u.UserInDbId == id);
 
                 if (user == null)
@@ -33,7 +37,7 @@ namespace ArsaRExCH.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest( $"Internal server error: {ex.Message}");
+                return BadRequest($"Internal server error: {ex.Message}");
             }
 
         }
@@ -46,13 +50,13 @@ namespace ArsaRExCH.Controllers
                 var user = await _context.Wallet
                     // .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
                     .Where(c => c.UserID == id).ToListAsync();
-                    
+
 
                 if (user == null)
                 {
                     return NotFound($"User with ID {id} not found.");
                 }
-     
+
                 return Ok(user); // Return the wallets of the user
             }
             catch (Exception ex)
@@ -61,15 +65,22 @@ namespace ArsaRExCH.Controllers
             }
 
         }
+        [HttpGet("GetWalletBalanceBTC/{adres}")]
+        public async Task<ActionResult<decimal>> GetBalanceWalletBTC(string adres)
+        {
+            var x = await _walletInterface.GetBalanceFromBlockCypherAsync(adres);
+            return x;
+        }
+
     }
 
     public class WalletDTO
     {
-    
+
         public string PairName { get; set; }
         public string Adress { get; set; }
 
-        public double CurrentBalance{ get; set; }
+        public double CurrentBalance { get; set; }
         public double Amount { get; set; }
 
     }

@@ -6,16 +6,19 @@ using Nethereum.HdWallet;
 using Wallet = ArsaRExCH.Model.Wallet;
 using NBitcoin.DataEncoders;
 using Nethereum.Util;
+using System.Net.Http;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
     public class WalletInterfaceIMPL : WalletInterface
     {
         private readonly ApplicationDbContext _context;
+        public readonly HttpClient httpClient;
 
-        public WalletInterfaceIMPL(ApplicationDbContext context)
+        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient)
         {
             _context = context;
+            this.httpClient = httpClient;
         }
 
         public async Task<string> CreateBNBWallet(string id)
@@ -125,6 +128,37 @@ namespace ArsaRExCH.InterfaceIMPL
             await _context.Wallet.AddAsync(walletEntity);
             await _context.SaveChangesAsync();
             return account.Address;
+        }
+
+
+        /*
+         * Here to me this is NOT what i like, because of third party data . proper way to do run own 
+         * bitcoin node and get data from there . This is aso practical and can be done , personaly
+         * i dont like this approach and i dont have bitcoin node at the time
+         * */
+        public async Task<decimal> GetBalanceFromBlockCypherAsync(string bitcoinAddress)
+        {
+            var url = $"https://api.blockcypher.com/v1/btc/main/addrs/{bitcoinAddress}/balance";
+
+            var response = await httpClient.GetFromJsonAsync<BlockCypherBalanceResponse>(url);
+
+            if (response != null)
+            {
+                // BlockCypher returns balance in satoshis, convert it to BTC
+                return SatoshisToBitcoin(response.balance);
+            }
+
+            return 0;
+        }
+
+        private decimal SatoshisToBitcoin(long satoshis)
+        {
+            return satoshis / 100_000_000m;
+        }
+
+        private class BlockCypherBalanceResponse
+        {
+            public long balance { get; set; }
         }
     }
 }
