@@ -6,14 +6,43 @@
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
+@using System.Text.Json
 
 
-
-<p>Sample Wallet</p>
-
-@user2
-
+@if (wallets == null)
+{
+    <p>Loading...</p>
+}
+else if (!wallets.Any())
+{
+    <p>No wallets found for the current user.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pair Name</th>
+                <th>Address</th>
+                <th>Current Balance</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var wallet in wallets)
+            {
+                <tr>
+                    <td>@wallet.PairName</td>
+                    <td>@wallet.Adress</td>
+                    <td>@wallet.CurrentBalance</td>
+                    <td>@wallet.Amount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 @code {
+    private List<WalletDTO> wallets { get; set; } = new List<WalletDTO>();
     public string user2 { get; set; }
     protected override async Task OnInitializedAsync()
     {
@@ -23,9 +52,17 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-         //   await _face.CreateETHWallet(user2);
+            wallets = await Http.GetFromJsonAsync<List<WalletDTO>>($"https://localhost:7258/api/Wallet/WalletsL/{user2}");
 
         }
     }
 
+    public class WalletDTO
+    {
+        public string PairName { get; set; }
+        public string Adress { get; set; }
+        public double CurrentBalance { get; set; }
+        public double Amount { get; set; }
+
+    }
 }

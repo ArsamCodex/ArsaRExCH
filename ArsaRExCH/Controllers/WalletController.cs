@@ -44,14 +44,15 @@ namespace ArsaRExCH.Controllers
             try
             {
                 var user = await _context.Wallet
-                   // .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
-                    .FirstOrDefaultAsync(u => u.UserID == id);
+                    // .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
+                    .Where(c => c.UserID == id).ToListAsync();
+                    
 
                 if (user == null)
                 {
                     return NotFound($"User with ID {id} not found.");
                 }
-
+     
                 return Ok(user); // Return the wallets of the user
             }
             catch (Exception ex)
@@ -60,5 +61,16 @@ namespace ArsaRExCH.Controllers
             }
 
         }
+    }
+
+    public class WalletDTO
+    {
+    
+        public string PairName { get; set; }
+        public string Adress { get; set; }
+
+        public double CurrentBalance{ get; set; }
+        public double Amount { get; set; }
+
     }
 }
