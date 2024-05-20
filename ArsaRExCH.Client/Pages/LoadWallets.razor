@@ -19,27 +19,29 @@ else if (!wallets.Any())
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Pair Name</th>
-                <th>Address</th>
-                <th>Current Balance</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var wallet in wallets)
-            {
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="thead-dark">
                 <tr>
-                    <td>@wallet.PairName</td>
-                    <td>@wallet.Adress</td>
-                    <td>@wallet.CurrentBalance</td>
-                    <td>@wallet.Amount</td>
+                    <th>Pair Name</th>
+                    <th>Address</th>
+                    <th>Current Balance</th>
+                    <th>Amount</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var wallet in wallets)
+                {
+                    <tr>
+                        <td>@wallet.PairName</td>
+                        <td>@wallet.Adress</td>
+                        <td>@wallet.CurrentBalance</td>
+                        <td>@wallet.Amount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 @code {
     private List<WalletDTO> wallets { get; set; } = new List<WalletDTO>();
