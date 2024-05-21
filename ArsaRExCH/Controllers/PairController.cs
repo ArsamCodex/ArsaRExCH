@@ -1,6 +1,8 @@
 ﻿using ArsaRExCH.Data;
+using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +13,13 @@ namespace ArsaRExCH.Controllers
     public class PairController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public PairController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly WalletInterface _walletInterface;
+        public PairController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, WalletInterface walletInterface)
         {
             _context = context;
+            _userManager = userManager;
+            _walletInterface = walletInterface;
         }
         [HttpPost]
         public async Task<IActionResult> AddPairs(Pair pair)
@@ -22,7 +28,23 @@ namespace ArsaRExCH.Controllers
             {
                 await _context.Pair.AddAsync(pair);
                 await _context.SaveChangesAsync();
+
+                //Get All IDs of users
+                var users = _userManager.Users.Select(u => u.Id).ToList();
+                var tasks = new List<Task>();
+
+                // Create new wallets for all users
+                foreach (var userId in users)
+                {
+                    tasks.Add(_walletInterface.CreateETHWallet(userId));
+                }
+
+                // Wait for all wallet creation tasks to complete
+                await Task.WhenAll(tasks);
+
                 return Ok(pair);
+
+
             }
             catch (Exception ex)
             {
