@@ -131,7 +131,6 @@ namespace ArsaRExCH.InterfaceIMPL
             return account.Address;
         }
 
-
         /*
          * Here to me this is NOT what i like, because of third party data . proper way to do run own 
          * bitcoin node and get data from there . This is aso practical and can be done , personaly
@@ -168,15 +167,15 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 if (pair.NetworkName == "BTC")
                 {
-                   await CreateBTCWallet(userID,"BTC");
+                   await CreateBTCWallet(userID,pair.PaiName);
                 }
                 if (pair.NetworkName == "ETH")
                 {
-                    await CreateETHWallet(userID,"ETH");
+                    await CreateETHWallet(userID,pair.PaiName);
                 }
                 if (pair.NetworkName == "BNB")
                 {
-                    await CreateBNBWallet(userID,"BNB");
+                    await CreateBNBWallet(userID,pair.PaiName);
                 }
             }
         }
