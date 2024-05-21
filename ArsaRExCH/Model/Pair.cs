@@ -1,4 +1,6 @@
-﻿namespace ArsaRExCH.Model
+﻿
+
+namespace ArsaRExCH.Model
 {
     public class Pair
     {
@@ -6,5 +8,6 @@
         public string PaiName { get; set; }
         public double ListPrice { get; set; }
         public DateTime ListedDate { get; set; }
+        public string NetworkName { get; set; }
     }
 }

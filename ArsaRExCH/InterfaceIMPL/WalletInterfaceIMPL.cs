@@ -7,6 +7,7 @@ using Wallet = ArsaRExCH.Model.Wallet;
 using NBitcoin.DataEncoders;
 using Nethereum.Util;
 using System.Net.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -134,7 +135,7 @@ namespace ArsaRExCH.InterfaceIMPL
         /*
          * Here to me this is NOT what i like, because of third party data . proper way to do run own 
          * bitcoin node and get data from there . This is aso practical and can be done , personaly
-         * i dont like this approach and i dont have bitcoin node at the time
+         * i dont like this approach and i dont have bitcoin node at the time localay
          * */
         public async Task<decimal> GetBalanceFromBlockCypherAsync(string bitcoinAddress)
         {
@@ -150,15 +151,41 @@ namespace ArsaRExCH.InterfaceIMPL
 
             return 0;
         }
-
         private decimal SatoshisToBitcoin(long satoshis)
         {
             return satoshis / 100_000_000m;
         }
 
+        public async Task CheckAndCreateWallets(string userID)
+        {
+            var pairs = await _context.Pair
+                  .Select(p => new { p.PaiName, p.NetworkName })
+                  .ToListAsync();
+
+            foreach (var pair in pairs)
+            {
+                if (pair.NetworkName == "BTC")
+                {
+                   await CreateBTCWallet(userID);
+                }
+                if (pair.NetworkName == "ETH")
+                {
+                    await CreateETHWallet(userID);
+                }
+                if (pair.NetworkName == "BNB")
+                {
+                    await CreateBNBWallet(userID);
+                }
+            }
+        }
         private class BlockCypherBalanceResponse
         {
             public long balance { get; set; }
+        }
+        private class CheckAndCreateDTO
+        {
+            public string PaiName { get; set; }
+            public string networkName { get; set; }
         }
     }
 }

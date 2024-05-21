@@ -44,5 +44,24 @@ namespace ArsaRExCH.Controllers
             }
 
         }
+        /*Use this method  for creation of wallets , in very begining in first step 
+         * */
+        [HttpGet("GetPairsToCreateWallets")]
+        public async Task<IActionResult> GetPairsToCreateWallets()
+        {
+            try
+            {
+                var pairs = await _context.Pair
+                    .Select(p => new { p.PaiName, p.NetworkName })
+                    .ToListAsync();
+
+                return Ok(pairs);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
+  
 }
