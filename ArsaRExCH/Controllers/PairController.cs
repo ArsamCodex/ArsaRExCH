@@ -21,12 +21,15 @@ namespace ArsaRExCH.Controllers
             _userManager = userManager;
             _walletInterface = walletInterface;
         }
+        /*
+         * Add new Curr3nfcy to page
+         * */
         [HttpPost]
-        public async Task<IActionResult> AddPairs(Pair pair)
+        public async Task<IActionResult> AddPairs(Pair ethereumPair)
         {
             try
             {
-                await _context.Pair.AddAsync(pair);
+                await _context.Pair.AddAsync(ethereumPair);
                 await _context.SaveChangesAsync();
 
                 //Get All IDs of users
@@ -36,13 +39,13 @@ namespace ArsaRExCH.Controllers
                 // Create new wallets for all users
                 foreach (var userId in users)
                 {
-                    tasks.Add(_walletInterface.CreateETHWallet(userId));
+                    tasks.Add(_walletInterface.CreateETHWallet(userId, ethereumPair.PaiName));
                 }
 
                 // Wait for all wallet creation tasks to complete
                 await Task.WhenAll(tasks);
 
-                return Ok(pair);
+                return Ok(ethereumPair);
 
 
             }

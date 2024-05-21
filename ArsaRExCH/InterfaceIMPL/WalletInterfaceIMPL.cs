@@ -22,7 +22,7 @@ namespace ArsaRExCH.InterfaceIMPL
             this.httpClient = httpClient;
         }
 
-        public async Task<string> CreateBNBWallet(string id)
+        public async Task<string> CreateBNBWallet(string id,string PairName)
         {
             Key privateKey = new Key();
             string privateKeyHex = privateKey.ToHex();
@@ -55,7 +55,7 @@ namespace ArsaRExCH.InterfaceIMPL
             var walletEntity = new Model.Wallet
             {
                 UserID = id, // Replace with actual user ID retrieval logic
-                PairName = "BNB",
+                PairName = PairName,
                 Adress = address,
                 Amount = 0,
                 SeedPhrase = seedPhraseArray,
@@ -70,7 +70,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         }
 
-        public async Task<string> CreateBTCWallet(string id)
+        public async Task<string> CreateBTCWallet(string id,string PairName)
         {
             Mnemonic mnemonic = new Mnemonic(Wordlist.English, WordCount.Twelve);
             string[] seedPhraseArray = mnemonic.Words;
@@ -93,7 +93,7 @@ namespace ArsaRExCH.InterfaceIMPL
             var walletEntity = new Model.Wallet
             {
                 UserID = id, // Replace with actual user ID retrieval logic
-                PairName = "BTC",
+                PairName = PairName,
                 Adress = address.ToString(),
                 Amount = 0,
                 SeedPhrase = seedPhraseArray,
@@ -107,7 +107,7 @@ namespace ArsaRExCH.InterfaceIMPL
             return address.ToString();
         }
 
-        public async Task<string> CreateETHWallet(string id)
+        public async Task<string> CreateETHWallet(string id,string PairName)
         {
             var wallet = new Nethereum.HdWallet.Wallet(Wordlist.English, WordCount.Twelve);
             var seedPhrase = wallet.Words;
@@ -117,7 +117,7 @@ namespace ArsaRExCH.InterfaceIMPL
             var walletEntity = new Model.Wallet
             {
                 UserID = id, // Replace with actual user ID retrieval logic
-                PairName = "ETH",
+                PairName = PairName,
                 Adress = account.Address,
                 Amount = 0,
                 SeedPhrase = seedPhrase,
@@ -155,7 +155,9 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             return satoshis / 100_000_000m;
         }
-
+        /*
+         * use this 3 wallet as default for every user when registered
+         * */
         public async Task CheckAndCreateWallets(string userID)
         {
             var pairs = await _context.Pair
@@ -166,15 +168,15 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 if (pair.NetworkName == "BTC")
                 {
-                   await CreateBTCWallet(userID);
+                   await CreateBTCWallet(userID,"BTC");
                 }
                 if (pair.NetworkName == "ETH")
                 {
-                    await CreateETHWallet(userID);
+                    await CreateETHWallet(userID,"ETH");
                 }
                 if (pair.NetworkName == "BNB")
                 {
-                    await CreateBNBWallet(userID);
+                    await CreateBNBWallet(userID,"BNB");
                 }
             }
         }
@@ -182,10 +184,6 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             public long balance { get; set; }
         }
-        private class CheckAndCreateDTO
-        {
-            public string PaiName { get; set; }
-            public string networkName { get; set; }
-        }
+    
     }
 }

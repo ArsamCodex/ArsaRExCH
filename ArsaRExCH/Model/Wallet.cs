@@ -10,5 +10,6 @@
         public double Amount { get; set; }
         public string[] SeedPhrase { get; set; }
         public string PrivateKey { get; set; }
+        public string Network { get; set; }
     }
 }

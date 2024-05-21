@@ -81,9 +81,9 @@
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
-        await _face.CreateETHWallet(userId);
-        await _face.CreateBNBWallet(userId);
-        await _face.CreateBTCWallet(userId);
+       // await _face.CreateETHWallet(userId,"ETH");
+       // await _face.CreateBNBWallet(userId,"BNB");
+      //  await _face.CreateBTCWallet(userId,"BTC");
 
         /*Here i need check pair endpoint to see available pairs in website and make for each a new 
          * wallet.The endpoint return Array od name and network name whciih we need 
