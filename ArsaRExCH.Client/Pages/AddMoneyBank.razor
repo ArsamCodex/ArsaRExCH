@@ -7,6 +7,48 @@
 @inject HttpClient Http
 @attribute [Authorize]
 
-@code {
 
+<h3>Input Text, Dropdown, and Button</h3>
+
+<div>
+    <label for="textInput">Text Input:</label>
+    <input type="text" id="textInput" @bind="textInput" />
+</div>
+
+<div>
+    <label for="dropdown">Dropdown:</label>
+    <select id="dropdown" @onchange="HandleDropdownChange">
+        @foreach (var option in options)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+</div>
+
+<div>
+    <button @onclick="HandleButtonClick">Submit</button>
+</div>
+
+<div>
+    <p>Text Input: @textInput</p>
+    <p>Selected Option: @selectedOption</p>
+</div>
+
+@code {
+    private string textInput = string.Empty;
+    private string selectedOption = string.Empty;
+    private List<string> options = new List<string> { "Option 1", "Option 2", "Option 3" };
+
+    private void HandleButtonClick()
+    {
+        // Handle button click event here
+        // For example, you can display a message or perform an action
+        Console.WriteLine($"Text Input: {textInput}, Selected Option: {selectedOption}");
+    }
+
+    private void HandleDropdownChange(ChangeEventArgs e)
+    {
+        selectedOption = e.Value.ToString();
+        Console.WriteLine($"Selected Option Changed: {selectedOption}");
+    }
 }
