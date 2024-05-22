@@ -60,7 +60,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 Amount = 0,
                 SeedPhrase = seedPhraseArray,
                 CurrentPrice = 0,
-                PrivateKey = privateKeyHex
+                PrivateKey = privateKeyHex,
+                Network = "BNB"
             };
 
 
@@ -98,7 +99,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 Amount = 0,
                 SeedPhrase = seedPhraseArray,
                 CurrentPrice = 0,
-                PrivateKey = privateKeyWif
+                PrivateKey = privateKeyWif,
+                Network = "BTC"
             };
 
             // Save the wallet entity to the database
@@ -122,7 +124,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 Amount = 0,
                 SeedPhrase = seedPhrase,
                 CurrentPrice = 0,
-                PrivateKey = privateKey
+                PrivateKey = privateKey,
+                Network = "ETH"
             };
 
             // Save the wallet entity to the database
