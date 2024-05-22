@@ -7,18 +7,19 @@
 @inject HttpClient Http
 @attribute [Authorize]
 
+<h3>Here conect to BANK or 3rd party app API </h3>
+<h4>Deposit</h4>
 
-<h3>Input Text, Dropdown, and Button</h3>
-
-<div>
-    <label for="textInput">Text Input:</label>
-    <input type="text" id="textInput" @bind="textInput" />
+<div class="form-floating mb-1">
+    <InputNumber @bind-Value="TextBoxValue" id="email" class="form-control" placeholder="name@example.com" />
+    <label for="email">Amount $</label>
 </div>
 
-<div>
+<div class="col-sm-10">
     <label for="dropdown">Dropdown:</label>
-    <select id="dropdown" @onchange="HandleDropdownChange">
-        @foreach (var option in options)
+    <select id="dropdown" @bind="SelectedOption">
+        <option value="">Choose Provider</option>
+        @foreach (var option in Options)
         {
             <option value="@option">@option</option>
         }
@@ -26,29 +27,24 @@
 </div>
 
 <div>
-    <button @onclick="HandleButtonClick">Submit</button>
+    <button id="login-submit" type="submit" class="w-25 btn btn-lg btn-danger">Deposit</button>
+
 </div>
 
-<div>
-    <p>Text Input: @textInput</p>
-    <p>Selected Option: @selectedOption</p>
-</div>
+
 
 @code {
-    private string textInput = string.Empty;
-    private string selectedOption = string.Empty;
-    private List<string> options = new List<string> { "Option 1", "Option 2", "Option 3" };
+    // Properties to hold the state
+    private int TextBoxValue { get; set; }
+    private string SelectedOption { get; set; } = ""; // Default selected option
 
-    private void HandleButtonClick()
-    {
-        // Handle button click event here
-        // For example, you can display a message or perform an action
-        Console.WriteLine($"Text Input: {textInput}, Selected Option: {selectedOption}");
-    }
+    // Sample dropdown options
+    private List<string> Options { get; set; } = new List<string> { "XBank", "YBank", "ZBank" };
 
-    private void HandleDropdownChange(ChangeEventArgs e)
+    // Event handler for button click
+    private void OnButtonClick()
     {
-        selectedOption = e.Value.ToString();
-        Console.WriteLine($"Selected Option Changed: {selectedOption}");
+        // Implement button click logic here
+        Console.WriteLine($"TextBoxValue: {TextBoxValue}, SelectedOption: {SelectedOption}");
     }
 }
