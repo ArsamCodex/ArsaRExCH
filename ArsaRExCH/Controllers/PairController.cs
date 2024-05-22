@@ -39,6 +39,7 @@ namespace ArsaRExCH.Controllers
                 // Create new wallets for all users
                 foreach (var userId in users)
                 {
+                    //Eth addres is same here to not make but copy maded eth wallet in db
                     tasks.Add(_walletInterface.CreateETHWallet(userId, ethereumPair.PaiName));
                 }
 

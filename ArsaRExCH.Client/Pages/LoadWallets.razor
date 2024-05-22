@@ -25,6 +25,7 @@ else
                 <tr>
                     <th>Currency</th>
                     <th>Address</th>
+                    <th>Network</th>
                     <th>Current Balance</th>
                     <th>Amount</th>
                     <th>Actions</th>
@@ -36,6 +37,7 @@ else
                     <tr>
                         <td>@wallet.PairName</td>
                         <td>@wallet.Adress</td>
+                        <td>@wallet.Network</td>
                         <td>@wallet.CurrentBalance</td>
                         <td>@wallet.Amount</td>
                         <td>
@@ -60,7 +62,7 @@ else
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             wallets = await Http.GetFromJsonAsync<List<WalletDTO>>($"https://localhost:7258/api/Wallet/WalletsL/{user2}");
-            
+
 
         }
     }
@@ -71,6 +73,7 @@ else
         public string Adress { get; set; }
         public double CurrentBalance { get; set; }
         public double Amount { get; set; }
+        public string Network{ get; set; }
 
     }
 }
