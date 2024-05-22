@@ -174,7 +174,32 @@ namespace ArsaRExCH.InterfaceIMPL
                 }
                 if (pair.NetworkName == "ETH")
                 {
-                    await CreateETHWallet(userID,pair.PaiName);
+                    if (pair.PaiName == "ETH")
+                    {
+                        await CreateETHWallet(userID, pair.PaiName);
+                    }
+                    else
+                    {
+                        var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == userID && c.PairName == "ETH");
+                        var ad = x.Adress;
+                        var seed = x.SeedPhrase;
+                        var privateKey = x.PrivateKey;
+                        var walletEntity = new Model.Wallet
+                        {
+                            UserID = userID, // Replace with actual user ID retrieval logic
+                            PairName = pair.PaiName,
+                            Adress = ad,
+                            Amount = 0,
+                            SeedPhrase = seed,
+                            CurrentPrice = 0,
+                            PrivateKey = privateKey,
+                            Network = "ETH"
+                        };
+
+                        // Save the wallet entity to the database
+                        await _context.Wallet.AddAsync(walletEntity);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 if (pair.NetworkName == "BNB")
                 {
@@ -186,6 +211,30 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             public long balance { get; set; }
         }
-    
+
+
+        public async Task<string> CreateETHNetworksWallet(string id, string PairName)
+        {
+           var x =await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == id && c.Network == "ETH");
+            var ad = x.Adress;
+            var seed = x.SeedPhrase;
+            var privateKey = x.PrivateKey;
+            var walletEntity = new Model.Wallet
+            {
+                UserID = id, // Replace with actual user ID retrieval logic
+                PairName = PairName,
+                Adress = ad,
+                Amount = 0,
+                SeedPhrase = seed,
+                CurrentPrice = 0,
+                PrivateKey = privateKey,
+                Network = "ETH"
+            };
+
+            // Save the wallet entity to the database
+            await _context.Wallet.AddAsync(walletEntity);
+            await _context.SaveChangesAsync();
+            return PairName;
+        }
     }
 }

@@ -34,17 +34,35 @@ namespace ArsaRExCH.Controllers
 
                 //Get All IDs of users
                 var users = _userManager.Users.Select(u => u.Id).ToList();
-                var tasks = new List<Task>();
+               // var tasks = new List<Task>();
 
                 // Create new wallets for all users
                 foreach (var userId in users)
                 {
                     //Eth addres is same here to not make but copy maded eth wallet in db
-                    tasks.Add(_walletInterface.CreateETHWallet(userId, ethereumPair.PaiName));
+                    var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == userId && c.PairName == "ETH");
+                    var ad = x.Adress;
+                    var seed = x.SeedPhrase;
+                    var privateKey = x.PrivateKey;
+                    var walletEntity = new Model.Wallet
+                    {
+                        UserID = userId, // Replace with actual user ID retrieval logic
+                        PairName = ethereumPair.PaiName,
+                        Adress = ad,
+                        Amount = 0,
+                        SeedPhrase = seed,
+                        CurrentPrice = 0,
+                        PrivateKey = privateKey,
+                        Network = "ETH"
+                    };
+
+                    // Save the wallet entity to the database
+                    await _context.Wallet.AddAsync(walletEntity);
+                    await _context.SaveChangesAsync();
                 }
 
                 // Wait for all wallet creation tasks to complete
-                await Task.WhenAll(tasks);
+             //   await Task.WhenAll(tasks);
 
                 return Ok(ethereumPair);
 
