@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class ttti : Migration
+    public partial class initt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,7 +58,8 @@ namespace ArsaRExCH.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaiName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ListPrice = table.Column<double>(type: "float", nullable: false),
-                    ListedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ListedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NetworkName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,7 +104,9 @@ namespace ArsaRExCH.Migrations
                     UserID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CurrentPrice = table.Column<double>(type: "float", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
-                    SeedPhrase = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    SeedPhrase = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PrivateKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Network = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -237,6 +240,21 @@ namespace ArsaRExCH.Migrations
                         principalTable: "Users",
                         principalColumn: "UserClientId");
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "8b7406c6-d2bf-44f3-98a4-41c9108bab09", null, "admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "ab70f7fc-f0d4-4748-91d2-ec0117498cad", 0, "2281eecb-23dc-45a3-882a-afc10a6f6b80", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/XA==", null, false, "9e954750-c434-402e-b982-9ab289581588", false, "arminttwat@gmail.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "8b7406c6-d2bf-44f3-98a4-41c9108bab09", "ab70f7fc-f0d4-4748-91d2-ec0117498cad" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

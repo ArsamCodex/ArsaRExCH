@@ -1,4 +1,5 @@
 using ArsaRExCH.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +17,37 @@ namespace ArsaRExCH.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-           
-            // Additional configurations if necessary
+
+            SeedInitialData(modelBuilder);
+        }
+
+        private void SeedInitialData(ModelBuilder modelBuilder)
+        {
+            // Seed default role
+            const string defaultRoleName = "admin";
+            var role = new IdentityRole { Id = Guid.NewGuid().ToString(), Name = defaultRoleName, NormalizedName = defaultRoleName.ToUpper() };
+            modelBuilder.Entity<IdentityRole>().HasData(role);
+
+            // Seed new user
+            var newUser = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "arminttwat@gmail.com",
+                NormalizedUserName = "arminttwat@gmail.com",
+                Email = "arminttwat@gmail.com",
+                NormalizedEmail = "NEWUSER@EXAMPLE.COM",
+                EmailConfirmed = true,
+                PasswordHash = "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==", // Replace this with the hashed password
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            modelBuilder.Entity<ApplicationUser>().HasData(newUser);
+
+            // Assign default role to the new user
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+            {
+                RoleId = role.Id,
+                UserId = newUser.Id
+            });
         }
     }
 }
