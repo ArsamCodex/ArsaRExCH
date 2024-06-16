@@ -8,6 +8,10 @@ using NBitcoin.DataEncoders;
 using Nethereum.Util;
 using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
+using ArsaRExCH.DTOs;
+using System.Net.Mail;
+using System.Net;
+
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -15,14 +19,16 @@ namespace ArsaRExCH.InterfaceIMPL
     {
         private readonly ApplicationDbContext _context;
         public readonly HttpClient httpClient;
+        private readonly IConfiguration _configuration;
 
-        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient)
+        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient, IConfiguration configuration)
         {
             _context = context;
             this.httpClient = httpClient;
+            _configuration = configuration;
         }
 
-        public async Task<string> CreateBNBWallet(string id,string PairName)
+        public async Task<string> CreateBNBWallet(string id, string PairName)
         {
             Key privateKey = new Key();
             string privateKeyHex = privateKey.ToHex();
@@ -71,7 +77,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         }
 
-        public async Task<string> CreateBTCWallet(string id,string PairName)
+        public async Task<string> CreateBTCWallet(string id, string PairName)
         {
             Mnemonic mnemonic = new Mnemonic(Wordlist.English, WordCount.Twelve);
             string[] seedPhraseArray = mnemonic.Words;
@@ -109,7 +115,7 @@ namespace ArsaRExCH.InterfaceIMPL
             return address.ToString();
         }
 
-        public async Task<string> CreateETHWallet(string id,string PairName)
+        public async Task<string> CreateETHWallet(string id, string PairName)
         {
             var wallet = new Nethereum.HdWallet.Wallet(Wordlist.English, WordCount.Twelve);
             var seedPhrase = wallet.Words;
@@ -208,7 +214,8 @@ namespace ArsaRExCH.InterfaceIMPL
                         await CreateBNBWallet(userID, pair.PaiName);
                     }
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
@@ -221,7 +228,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<string> CreateETHNetworksWallet(string id, string PairName)
         {
-           var x =await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == id && c.Network == "ETH");
+            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == id && c.Network == "ETH");
             var ad = x.Adress;
             var seed = x.SeedPhrase;
             var privateKey = x.PrivateKey;
@@ -242,5 +249,29 @@ namespace ArsaRExCH.InterfaceIMPL
             await _context.SaveChangesAsync();
             return PairName;
         }
+
+
+        public Task SendEmailAsync(EmailRequest request)
+        {
+            var emailSettings = _configuration.GetSection("EmailSettings");
+            var mail = emailSettings["EmailAddress"];
+            var pass = emailSettings["Password"];
+            var client = new SmtpClient("smtp-mail.outlook.com", 587)
+            {
+                EnableSsl = true,
+                Credentials = new NetworkCredential(mail, pass)
+            };
+            return client.SendMailAsync(
+
+                new MailMessage(from: mail,
+                to: request.Email,
+                request.Subject,
+                request.HtmlMessage
+
+
+
+               ));
+        }
+
     }
 }
