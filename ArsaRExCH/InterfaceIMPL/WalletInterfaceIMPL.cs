@@ -162,49 +162,55 @@ namespace ArsaRExCH.InterfaceIMPL
          * */
         public async Task CheckAndCreateWallets(string userID)
         {
-            var pairs = await _context.Pair
-                  .Select(p => new { p.PaiName, p.NetworkName })
-                  .ToListAsync();
-
-            foreach (var pair in pairs)
+            try
             {
-                if (pair.NetworkName == "BTC")
-                {
-                   await CreateBTCWallet(userID,pair.PaiName);
-                }
-                if (pair.NetworkName == "ETH")
-                {
-                    if (pair.PaiName == "ETH")
-                    {
-                        await CreateETHWallet(userID, pair.PaiName);
-                    }
-                    else
-                    {
-                        var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == userID && c.PairName == "ETH");
-                        var ad = x.Adress;
-                        var seed = x.SeedPhrase;
-                        var privateKey = x.PrivateKey;
-                        var walletEntity = new Model.Wallet
-                        {
-                            UserID = userID, // Replace with actual user ID retrieval logic
-                            PairName = pair.PaiName,
-                            Adress = ad,
-                            Amount = 0,
-                            SeedPhrase = seed,
-                            CurrentPrice = 0,
-                            PrivateKey = privateKey,
-                            Network = "ETH"
-                        };
+                var pairs = await _context.Pair
+                      .Select(p => new { p.PaiName, p.NetworkName })
+                      .ToListAsync();
 
-                        // Save the wallet entity to the database
-                        await _context.Wallet.AddAsync(walletEntity);
-                        await _context.SaveChangesAsync();
+                foreach (var pair in pairs)
+                {
+                    if (pair.NetworkName == "BTC")
+                    {
+                        await CreateBTCWallet(userID, pair.PaiName);
+                    }
+                    if (pair.NetworkName == "ETH")
+                    {
+                        if (pair.PaiName == "ETH")
+                        {
+                            await CreateETHWallet(userID, pair.PaiName);
+                        }
+                        else
+                        {
+                            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == userID && c.PairName == "ETH");
+                            var ad = x.Adress;
+                            var seed = x.SeedPhrase;
+                            var privateKey = x.PrivateKey;
+                            var walletEntity = new Model.Wallet
+                            {
+                                UserID = userID, // Replace with actual user ID retrieval logic
+                                PairName = pair.PaiName,
+                                Adress = ad,
+                                Amount = 0,
+                                SeedPhrase = seed,
+                                CurrentPrice = 0,
+                                PrivateKey = privateKey,
+                                Network = "ETH"
+                            };
+
+                            // Save the wallet entity to the database
+                            await _context.Wallet.AddAsync(walletEntity);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    if (pair.NetworkName == "BNB")
+                    {
+                        await CreateBNBWallet(userID, pair.PaiName);
                     }
                 }
-                if (pair.NetworkName == "BNB")
-                {
-                    await CreateBNBWallet(userID,pair.PaiName);
-                }
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
         private class BlockCypherBalanceResponse

@@ -19,6 +19,32 @@ namespace ArsaRExCH.Data
             base.OnModelCreating(modelBuilder);
 
             SeedInitialData(modelBuilder);
+            modelBuilder.Entity<Pair>().HasData(
+            new Pair
+            {
+                PairID = 1,
+                PaiName = "BTC",
+                ListPrice = 100.0,
+                ListedDate = DateTime.Now,
+                NetworkName = "Network 1"
+            },
+            new Pair
+            {
+                PairID = 2,
+                PaiName = "BNB",
+                ListPrice = 200.0,
+                ListedDate = DateTime.Now,
+                NetworkName = "Network 2"
+            },
+            new Pair
+            {
+                PairID = 3,
+                PaiName = "ETH",
+                ListPrice = 300.0,
+                ListedDate = DateTime.Now,
+                NetworkName = "Network 3"
+            }
+        );
         }
 
         private void SeedInitialData(ModelBuilder modelBuilder)
