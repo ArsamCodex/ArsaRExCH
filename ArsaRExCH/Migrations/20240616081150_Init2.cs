@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class Init1 : Migration
+    public partial class Init2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -246,27 +246,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "0e4f39b1-096b-4f82-936d-4b0ebf227afd", null, "admin", "ADMIN" });
+                values: new object[] { "4e89b6e6-7a96-4c12-9d59-a7f56f937f73", null, "admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "f247df54-aa2a-47f1-a5ff-8b4b0cd33fe7", 0, "b994059e-36f7-4114-8aa3-b44b0cbe8201", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==", null, false, "23e234b2-5443-4e09-a30a-ac23e1add59e", false, "arminttwat@gmail.com" });
+                values: new object[] { "57114060-a240-416e-889f-2cf5a9ea7146", 0, "808e2479-5dac-4669-8593-dbc1cb5ce63b", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==", null, false, "e9f8ee23-045c-4fca-9156-daa4f070c27f", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 6, 16, 9, 3, 47, 202, DateTimeKind.Local).AddTicks(880), "Network 1", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 6, 16, 9, 3, 47, 202, DateTimeKind.Local).AddTicks(940), "Network 2", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 6, 16, 9, 3, 47, 202, DateTimeKind.Local).AddTicks(947), "Network 3", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1895), "Network 1", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1949), "Network 2", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1952), "Network 3", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "0e4f39b1-096b-4f82-936d-4b0ebf227afd", "f247df54-aa2a-47f1-a5ff-8b4b0cd33fe7" });
+                values: new object[] { "4e89b6e6-7a96-4c12-9d59-a7f56f937f73", "57114060-a240-416e-889f-2cf5a9ea7146" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

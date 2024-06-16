@@ -89,9 +89,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f247df54-aa2a-47f1-a5ff-8b4b0cd33fe7",
+                            Id = "57114060-a240-416e-889f-2cf5a9ea7146",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b994059e-36f7-4114-8aa3-b44b0cbe8201",
+                            ConcurrencyStamp = "808e2479-5dac-4669-8593-dbc1cb5ce63b",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -99,7 +99,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "23e234b2-5443-4e09-a30a-ac23e1add59e",
+                            SecurityStamp = "e9f8ee23-045c-4fca-9156-daa4f070c27f",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -167,7 +167,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 6, 16, 9, 3, 47, 202, DateTimeKind.Local).AddTicks(880),
+                            ListedDate = new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1895),
                             NetworkName = "Network 1",
                             PaiName = "BTC"
                         },
@@ -175,7 +175,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 6, 16, 9, 3, 47, 202, DateTimeKind.Local).AddTicks(940),
+                            ListedDate = new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1949),
                             NetworkName = "Network 2",
                             PaiName = "BNB"
                         },
@@ -183,7 +183,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 6, 16, 9, 3, 47, 202, DateTimeKind.Local).AddTicks(947),
+                            ListedDate = new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1952),
                             NetworkName = "Network 3",
                             PaiName = "ETH"
                         });
@@ -299,7 +299,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0e4f39b1-096b-4f82-936d-4b0ebf227afd",
+                            Id = "4e89b6e6-7a96-4c12-9d59-a7f56f937f73",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -394,8 +394,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "f247df54-aa2a-47f1-a5ff-8b4b0cd33fe7",
-                            RoleId = "0e4f39b1-096b-4f82-936d-4b0ebf227afd"
+                            UserId = "57114060-a240-416e-889f-2cf5a9ea7146",
+                            RoleId = "4e89b6e6-7a96-4c12-9d59-a7f56f937f73"
                         });
                 });
 
