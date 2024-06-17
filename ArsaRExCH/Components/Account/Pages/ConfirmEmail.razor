@@ -38,8 +38,17 @@
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
             statusMessage = $"Error loading user with ID {userId}";
         }
+        var x = user.EmailConfirmed;
+        if (x)
+        {
+            statusMessage = "Error email alaready confiremd";
+        }
         else
         {
+            /*
+            * check if user is confirmed expire ui
+            */
+         
             var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
             var result = await UserManager.ConfirmEmailAsync(user, code);
             statusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
