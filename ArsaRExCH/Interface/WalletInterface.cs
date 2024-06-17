@@ -1,4 +1,5 @@
-﻿using ArsaRExCH.DTOs;
+﻿using ArsaRExCH.Data;
+using ArsaRExCH.DTOs;
 namespace ArsaRExCH.Interface
 {
     public interface WalletInterface

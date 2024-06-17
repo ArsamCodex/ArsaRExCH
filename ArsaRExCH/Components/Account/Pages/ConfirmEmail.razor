@@ -20,23 +20,23 @@
     private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromQuery]
-    private string? UserId { get; set; }
+    private string? userId { get; set; }
 
     [SupplyParameterFromQuery]
     private string? Code { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (UserId is null || Code is null)
+        if (userId is null || Code is null)
         {
             RedirectManager.RedirectTo("");
         }
 
-        var user = await UserManager.FindByIdAsync(UserId);
+        var user = await UserManager.FindByIdAsync(userId);
         if (user is null)
         {
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            statusMessage = $"Error loading user with ID {UserId}";
+            statusMessage = $"Error loading user with ID {userId}";
         }
         else
         {
