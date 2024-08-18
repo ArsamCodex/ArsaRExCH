@@ -12,6 +12,6 @@ namespace ArsaRExCH.Interface
         Task<string> CreateETHNetworksWallet(string id, string PairName);
 
         public Task SendEmailAsync(EmailRequest emailreqquest);
-
+        Task<double> GetBTCBalanceOfWallet(string walletId);
     }
 }

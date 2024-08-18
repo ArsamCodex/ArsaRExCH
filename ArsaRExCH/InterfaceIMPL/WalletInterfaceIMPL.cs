@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using ArsaRExCH.DTOs;
 using System.Net.Mail;
 using System.Net;
+using Newtonsoft.Json.Linq;
 
 
 namespace ArsaRExCH.InterfaceIMPL
@@ -27,7 +28,7 @@ namespace ArsaRExCH.InterfaceIMPL
             this.httpClient = httpClient;
             _configuration = configuration;
         }
-
+       
         public async Task<string> CreateBNBWallet(string id, string PairName)
         {
             Key privateKey = new Key();
@@ -272,6 +273,31 @@ namespace ArsaRExCH.InterfaceIMPL
 
                ));
         }
+        /*
+         * This approach is not likable 3rd part providers
+         * , please run bitcoin node to extract btc price*/
+        public async Task<double> GetBTCBalanceOfWallet(string walletId)
+        {
+            if (string.IsNullOrEmpty(walletId))
+                throw new ArgumentNullException(nameof(walletId));
 
+            string url = $"https://blockchain.info/balance?active={walletId}";
+
+            HttpResponseMessage response = await httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException($"Failed to retrieve balance for wallet {walletId}. Status code: {response.StatusCode}");
+
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            JObject balanceData = JObject.Parse(jsonResponse);
+
+            // Extract the balance in satoshis
+            long satoshiBalance = balanceData[walletId]["final_balance"].Value<long>();
+
+            // Convert satoshis to BTC
+            double btcBalance = satoshiBalance / 1e8;
+
+            return btcBalance;
+        }
     }
 }
