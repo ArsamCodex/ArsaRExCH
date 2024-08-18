@@ -1,5 +1,6 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.DTOs;
+using Nethereum.Contracts.Standards.ENS.ETHRegistrarController.ContractDefinition;
 namespace ArsaRExCH.Interface
 {
     public interface WalletInterface
@@ -13,5 +14,7 @@ namespace ArsaRExCH.Interface
 
         public Task SendEmailAsync(EmailRequest emailreqquest);
         Task<double> GetBTCBalanceOfWallet(string walletId);
+        //TODO
+          //make 2 methode to check balance of bnb and ether
     }
 }
