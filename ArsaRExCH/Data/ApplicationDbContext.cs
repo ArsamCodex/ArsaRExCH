@@ -52,6 +52,7 @@ namespace ArsaRExCH.Data
                 UserId = newUser.Id
             });
         }
+ 
         private void SeedInitialWalletData(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Pair>().HasData(

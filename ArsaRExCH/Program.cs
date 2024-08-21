@@ -29,14 +29,13 @@ builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Demo API",
-        Version = "v1",
-        Description = "API documentation for the Demo application.",
+        Title = "ArsaRECH Private API",
+        Version = "v0.1",
+        Description = "Private API - ArsarExCH ",
         Contact = new OpenApiContact
         {
-            Name = "API Support",
-            Email = "support@example.com",
-            Url = new Uri("https://example.com/support")
+            Name = " Support",
+            Email = "Arminttwat@gmail.com",
         },
         License = new OpenApiLicense
         {
@@ -129,7 +128,7 @@ app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ArsClobal Public API");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ARsarExCH Public API");
 }); app.UseStaticFiles();
 app.UseAntiforgery();
 
