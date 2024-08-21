@@ -71,7 +71,7 @@ namespace ArsaRExCH.Controllers
             var x = await _walletInterface.GetBalanceFromBlockCypherAsync(adres);
             return x;
         }
-
+   
     }
 
     public class WalletDTO

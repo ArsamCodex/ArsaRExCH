@@ -7,6 +7,10 @@ using ArsaRExCH.InterfaceIMPL;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,17 +23,77 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Demo API",
+        Version = "v1",
+        Description = "API documentation for the Demo application.",
+        Contact = new OpenApiContact
+        {
+            Name = "API Support",
+            Email = "support@example.com",
+            Url = new Uri("https://example.com/support")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "MIT",
+            Url = new Uri("https://opensource.org/licenses/MIT")
+        }
+    });
+
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter JWT with Bearer into field",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { } // Empty array, if you don't use scopes
+        }
+    });
+});
+
+
 builder.Services.AddScoped<WalletInterface, WalletInterfaceIMPL>();
 builder.Services.AddScoped(http => new HttpClient
 {
 });
 builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["JwtIssuer"],
+                ValidAudience = builder.Configuration["JwtAudience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSecurityKey"]))
+            };
+        }).AddCookie(IdentityConstants.ApplicationScheme);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -43,6 +107,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddControllers();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,8 +127,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseSwagger();
-app.UseSwaggerUI();
-app.UseStaticFiles();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ArsClobal Public API");
+}); app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -72,4 +141,8 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 app.MapControllers();
+app.UseRouting();
+
+app.UseAuthentication();  // Ensure this is called before UseAuthorization
+app.UseAuthorization();
 app.Run();
