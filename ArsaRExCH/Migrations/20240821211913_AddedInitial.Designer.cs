@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240616081150_Init2")]
-    partial class Init2
+    [Migration("20240821211913_AddedInitial")]
+    partial class AddedInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "57114060-a240-416e-889f-2cf5a9ea7146",
+                            Id = "913ec069-28c5-4ee7-8677-09fc50d0aec9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "808e2479-5dac-4669-8593-dbc1cb5ce63b",
+                            ConcurrencyStamp = "10ab913f-d1e0-4138-bb13-35cd0c14f68d",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,10 +102,51 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e9f8ee23-045c-4fca-9156-daa4f070c27f",
+                            SecurityStamp = "28eb6bd0-57cb-4ef2-b0d3-5bf229220bfc",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Bet", b =>
+                {
+                    b.Property<int>("BetId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BetId"));
+
+                    b.Property<double>("BetAmount")
+                        .HasColumnType("float");
+
+                    b.Property<double>("BtcPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("EthPrice")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("HitDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("HitDateII")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("ISDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsBetActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("WiningAmount")
+                        .HasColumnType("float");
+
+                    b.HasKey("BetId");
+
+                    b.ToTable("Bet");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Order", b =>
@@ -170,24 +211,24 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1895),
-                            NetworkName = "Network 1",
+                            ListedDate = new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8534),
+                            NetworkName = "BTC",
                             PaiName = "BTC"
                         },
                         new
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1949),
-                            NetworkName = "Network 2",
+                            ListedDate = new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8579),
+                            NetworkName = "BTC",
                             PaiName = "BNB"
                         },
                         new
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 6, 16, 9, 11, 49, 807, DateTimeKind.Local).AddTicks(1952),
-                            NetworkName = "Network 3",
+                            ListedDate = new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8582),
+                            NetworkName = "ETH",
                             PaiName = "ETH"
                         });
                 });
@@ -302,7 +343,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4e89b6e6-7a96-4c12-9d59-a7f56f937f73",
+                            Id = "4b71bcd8-4407-4461-8121-178d5ead2f54",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -397,8 +438,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "57114060-a240-416e-889f-2cf5a9ea7146",
-                            RoleId = "4e89b6e6-7a96-4c12-9d59-a7f56f937f73"
+                            UserId = "913ec069-28c5-4ee7-8677-09fc50d0aec9",
+                            RoleId = "4b71bcd8-4407-4461-8121-178d5ead2f54"
                         });
                 });
 

@@ -13,7 +13,7 @@ namespace ArsaRExCH.Data
         public DbSet<Pair> Pair { get; set; }
         public DbSet<UserTradeActivity> UserTradeActivities { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
-
+        public DbSet<Bet> Bet { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,7 +23,9 @@ namespace ArsaRExCH.Data
 
 
         }
-
+        /*
+         Admin Account has been made whitout wallet adresess . administration has no 
+        right to trade in own web page */
         private void SeedInitialData(ModelBuilder modelBuilder)
         {
             // Seed default role
