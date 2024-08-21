@@ -1,6 +1,7 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize("Admin")]
     public class PairController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
