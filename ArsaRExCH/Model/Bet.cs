@@ -9,9 +9,9 @@ namespace ArsaRExCH.Model
         public int BetId { get; set; }
         public string UserId { get; set; }
         public double BtcPrice { get; set; }
-        public DateTime HitDate { get; set; }
+        public DateTime HitDateBTC { get; set; }
         public double EthPrice { get; set; }
-        public DateTime HitDateII { get; set; }
+        public DateTime HitDateETH { get; set; }
         public double BetAmount { get; set; }
         public double? WiningAmount { get; set; }
         public bool IsBetActive { get; set; }
@@ -19,6 +19,7 @@ namespace ArsaRExCH.Model
          * in the case of delete operation this bool changed to True otherwise 
          * its False*/
         public bool ISDeleted { get; set; }
-
+        /*when the bet expires*/
+        public DateTime CompletedTime { get; set; }
     }
 }
