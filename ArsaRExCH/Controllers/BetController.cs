@@ -28,6 +28,7 @@ namespace ArsaRExCH.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> GetTheBet(Bet bet)
         {
+            /*If you dont like to use efcore  use static class StaticMethods to work whit ado .net methods */
             try
             {
                 // Attempt to add the bet to the database
