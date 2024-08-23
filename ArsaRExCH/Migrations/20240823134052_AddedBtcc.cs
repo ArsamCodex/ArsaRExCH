@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedInitial : Migration
+    public partial class AddedBtcc : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,13 +60,14 @@ namespace ArsaRExCH.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BtcPrice = table.Column<double>(type: "float", nullable: false),
-                    HitDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HitDateBTC = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EthPrice = table.Column<double>(type: "float", nullable: false),
-                    HitDateII = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HitDateETH = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BetAmount = table.Column<double>(type: "float", nullable: false),
                     WiningAmount = table.Column<double>(type: "float", nullable: true),
                     IsBetActive = table.Column<bool>(type: "bit", nullable: false),
-                    ISDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    ISDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CompletedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -267,27 +268,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "4b71bcd8-4407-4461-8121-178d5ead2f54", null, "admin", "ADMIN" });
+                values: new object[] { "de864355-498b-48ff-b2d7-54a3fad75445", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "913ec069-28c5-4ee7-8677-09fc50d0aec9", 0, "10ab913f-d1e0-4138-bb13-35cd0c14f68d", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==", null, false, "28eb6bd0-57cb-4ef2-b0d3-5bf229220bfc", false, "arminttwat@gmail.com" });
+                values: new object[] { "5641d1cf-27b5-42e7-884f-64acb453470a", 0, "91f38790-9a26-4829-8279-6ddedb55e2b7", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==", null, false, "667b386a-4238-4577-85e3-c29f07c9a803", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8534), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8579), "BTC", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8582), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(939), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(983), "BTC", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(987), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "4b71bcd8-4407-4461-8121-178d5ead2f54", "913ec069-28c5-4ee7-8677-09fc50d0aec9" });
+                values: new object[] { "de864355-498b-48ff-b2d7-54a3fad75445", "5641d1cf-27b5-42e7-884f-64acb453470a" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

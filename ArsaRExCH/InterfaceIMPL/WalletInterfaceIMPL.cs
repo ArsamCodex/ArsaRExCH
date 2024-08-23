@@ -12,6 +12,7 @@ using ArsaRExCH.DTOs;
 using System.Net.Mail;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using System.Net.Sockets;
 
 
 namespace ArsaRExCH.InterfaceIMPL
@@ -225,8 +226,6 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             public long balance { get; set; }
         }
-
-
         public async Task<string> CreateETHNetworksWallet(string id, string PairName)
         {
             var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == id && c.Network == "ETH");
@@ -250,8 +249,6 @@ namespace ArsaRExCH.InterfaceIMPL
             await _context.SaveChangesAsync();
             return PairName;
         }
-
-
         public Task SendEmailAsync(EmailRequest request)
         {
             var emailSettings = _configuration.GetSection("EmailSettings");
@@ -273,10 +270,8 @@ namespace ArsaRExCH.InterfaceIMPL
 
                ));
         }
-        /*
-         * This approach is not likable 3rd part providers
-         * , please run bitcoin node to extract btc price*/
-        public async Task<double> GetBTCBalanceOfWallet(string walletId)
+
+        public async Task<double> GetBTCBalanceOfWalletAsync(string walletId)
         {
             if (string.IsNullOrEmpty(walletId))
                 throw new ArgumentNullException(nameof(walletId));
@@ -299,5 +294,14 @@ namespace ArsaRExCH.InterfaceIMPL
 
             return btcBalance;
         }
+
+        public Task<double> GetBTCBalanceOfWallet(string walletId)
+        {
+            throw new NotImplementedException();
+        }
+        /*
+* This approach is not likable 3rd part providers
+* , please run bitcoin node to extract btc price*/
+
     }
 }

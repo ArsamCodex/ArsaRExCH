@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240821211913_AddedInitial")]
-    partial class AddedInitial
+    [Migration("20240823134052_AddedBtcc")]
+    partial class AddedBtcc
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "913ec069-28c5-4ee7-8677-09fc50d0aec9",
+                            Id = "5641d1cf-27b5-42e7-884f-64acb453470a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "10ab913f-d1e0-4138-bb13-35cd0c14f68d",
+                            ConcurrencyStamp = "91f38790-9a26-4829-8279-6ddedb55e2b7",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +102,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "28eb6bd0-57cb-4ef2-b0d3-5bf229220bfc",
+                            SecurityStamp = "667b386a-4238-4577-85e3-c29f07c9a803",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -122,13 +122,16 @@ namespace ArsaRExCH.Migrations
                     b.Property<double>("BtcPrice")
                         .HasColumnType("float");
 
+                    b.Property<DateTime>("CompletedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<double>("EthPrice")
                         .HasColumnType("float");
 
-                    b.Property<DateTime>("HitDate")
+                    b.Property<DateTime>("HitDateBTC")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("HitDateII")
+                    b.Property<DateTime>("HitDateETH")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("ISDeleted")
@@ -211,7 +214,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8534),
+                            ListedDate = new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(939),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -219,7 +222,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8579),
+                            ListedDate = new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(983),
                             NetworkName = "BTC",
                             PaiName = "BNB"
                         },
@@ -227,7 +230,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 8, 21, 22, 19, 12, 819, DateTimeKind.Local).AddTicks(8582),
+                            ListedDate = new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(987),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -343,8 +346,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4b71bcd8-4407-4461-8121-178d5ead2f54",
-                            Name = "admin",
+                            Id = "de864355-498b-48ff-b2d7-54a3fad75445",
+                            Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
                 });
@@ -438,8 +441,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "913ec069-28c5-4ee7-8677-09fc50d0aec9",
-                            RoleId = "4b71bcd8-4407-4461-8121-178d5ead2f54"
+                            UserId = "5641d1cf-27b5-42e7-884f-64acb453470a",
+                            RoleId = "de864355-498b-48ff-b2d7-54a3fad75445"
                         });
                 });
 

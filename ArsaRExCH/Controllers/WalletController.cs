@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ArsaRExCH.DTOs;
 
 namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -73,17 +74,8 @@ namespace ArsaRExCH.Controllers
             var x = await _walletInterface.GetBalanceFromBlockCypherAsync(adres);
             return x;
         }
-   
-    }
-
-    public class WalletDTO
-    {
-
-        public string PairName { get; set; }
-        public string Adress { get; set; }
-
-        public double CurrentBalance { get; set; }
-        public double Amount { get; set; }
 
     }
+
+  
 }

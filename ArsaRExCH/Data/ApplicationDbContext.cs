@@ -29,7 +29,7 @@ namespace ArsaRExCH.Data
         private void SeedInitialData(ModelBuilder modelBuilder)
         {
             // Seed default role
-            const string defaultRoleName = "admin";
+            const string defaultRoleName = "Admin";
             var role = new IdentityRole { Id = Guid.NewGuid().ToString(), Name = defaultRoleName, NormalizedName = defaultRoleName.ToUpper() };
             modelBuilder.Entity<IdentityRole>().HasData(role);
 

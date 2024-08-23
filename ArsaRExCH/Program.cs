@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,10 +76,24 @@ builder.Services.AddScoped<WalletInterface, WalletInterfaceIMPL>();
 builder.Services.AddScoped(http => new HttpClient
 {
 });
+
+
+
+
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+    .AddIdentityCookies();
+
+/*
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+   // options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
         .AddJwtBearer(options =>
         {
@@ -92,7 +107,12 @@ builder.Services.AddAuthentication(options =>
                 ValidAudience = builder.Configuration["JwtAudience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSecurityKey"]))
             };
-        }).AddCookie(IdentityConstants.ApplicationScheme);
+        }).AddIdentityCookies();
+*/
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("admin"));
+});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -144,4 +164,5 @@ app.UseRouting();
 
 app.UseAuthentication();  // Ensure this is called before UseAuthorization
 app.UseAuthorization();
+app.UseAntiforgery();
 app.Run();

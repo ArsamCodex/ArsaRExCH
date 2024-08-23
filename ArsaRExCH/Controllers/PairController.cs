@@ -11,7 +11,7 @@ namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("Admin")]
+    
     public class PairController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -77,6 +77,7 @@ namespace ArsaRExCH.Controllers
 
         }
         [HttpGet]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetPairs()
         {
             try
