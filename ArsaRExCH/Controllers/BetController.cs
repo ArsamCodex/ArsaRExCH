@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [Controller]
     public class BetController : ControllerBase
     {
         private readonly IConfiguration _configuration;
