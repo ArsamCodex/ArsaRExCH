@@ -27,9 +27,10 @@ namespace ArsaRExCH.Controllers
         {
             try
             {
-                var user = await _context.Users
-                    //   .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
-                    .FirstOrDefaultAsync(u => u.UserInDbId == id);
+                var user = await _context.Wallet
+                                 // .Include(u => u.Wallets)
+                                 .Where(w => w.User.Id == id)
+                                    .ToListAsync();
 
                 if (user == null)
                 {
@@ -51,8 +52,11 @@ namespace ArsaRExCH.Controllers
             try
             {
                 var user = await _context.Wallet
-                    // .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
-                    .Where(c => c.UserIDSec == id).ToListAsync();
+                                 // .Include(u => u.Wallets)
+                                 .Where(w => w.User.Id == id)
+                                    .ToListAsync();
+
+
 
 
                 if (user == null)

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,6 +53,22 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    OrderId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderType = table.Column<int>(type: "int", nullable: false),
+                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.OrderId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Pair",
                 columns: table => new
                 {
@@ -66,18 +82,6 @@ namespace ArsaRExCH.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pair", x => x.PairID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    UserClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserInDbId = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.UserClientId);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,11 +212,14 @@ namespace ArsaRExCH.Migrations
                     BetId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserIdSec = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BtcPrice = table.Column<double>(type: "float", nullable: false),
+                    BtcPriceNow = table.Column<double>(type: "float", nullable: false),
+                    BtcPriceExpireBet = table.Column<double>(type: "float", nullable: false),
                     HitDateBTC = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EthPrice = table.Column<double>(type: "float", nullable: false),
+                    BetAmountBtc = table.Column<double>(type: "float", nullable: false),
+                    EthPriceNow = table.Column<double>(type: "float", nullable: false),
                     HitDateETH = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BetAmount = table.Column<double>(type: "float", nullable: false),
+                    EthPriceExpireBet = table.Column<double>(type: "float", nullable: false),
+                    BetAmountETH = table.Column<double>(type: "float", nullable: false),
                     WiningAmount = table.Column<double>(type: "float", nullable: true),
                     IsBetActive = table.Column<bool>(type: "bit", nullable: false),
                     ISDeleted = table.Column<bool>(type: "bit", nullable: false),
@@ -256,52 +263,30 @@ namespace ArsaRExCH.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    OrderId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrderType = table.Column<int>(type: "int", nullable: false),
-                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    UserClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.OrderId);
-                    table.ForeignKey(
-                        name: "FK_Orders_Users_UserClientId",
-                        column: x => x.UserClientId,
-                        principalTable: "Users",
-                        principalColumn: "UserClientId");
-                });
-
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "5258d317-56d3-4100-8292-d259b6f04b26", null, "Admin", "ADMIN" });
+                values: new object[] { "458ccba7-a682-430f-baaa-937e8fef97e4", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "fcabdbee-a58e-4505-b5e1-02b3687530ab", 0, "9ff77cb6-8733-4bb9-9524-2ef0c881902a", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "adb073ba-7e2f-4187-a7bd-d6694ef9080e", false, "arminttwat@gmail.com" });
+                values: new object[] { "79b0c652-09cc-43bd-88b6-c0ee2aa74dd6", 0, "e3052e98-118c-47f2-8fc7-297023dc7553", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "c1ce14f2-3e9e-4cea-980f-2cc54042cb5d", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 8, 24, 1, 14, 19, 616, DateTimeKind.Local).AddTicks(5831), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 8, 24, 1, 14, 19, 616, DateTimeKind.Local).AddTicks(5889), "BTC", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 8, 24, 1, 14, 19, 616, DateTimeKind.Local).AddTicks(5893), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3412), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3467), "BTC", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3472), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "5258d317-56d3-4100-8292-d259b6f04b26", "fcabdbee-a58e-4505-b5e1-02b3687530ab" });
+                values: new object[] { "458ccba7-a682-430f-baaa-937e8fef97e4", "79b0c652-09cc-43bd-88b6-c0ee2aa74dd6" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -348,11 +333,6 @@ namespace ArsaRExCH.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_UserClientId",
-                table: "Orders",
-                column: "UserClientId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Wallet_UserId",
                 table: "Wallet",
                 column: "UserId");
@@ -393,9 +373,6 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
