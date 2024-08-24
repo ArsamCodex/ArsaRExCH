@@ -53,3 +53,28 @@ h1:focus {
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: #fff9e6; /* Light yellow color */
 }
+.form-container {
+    width: 100%;
+    max-width: 100%; /* Ensures it stays within page width */
+    padding: 10px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+label {
+    font-size: 0.9rem; /* Smaller font size */
+}
+
+.form-control-sm,
+.form-check-input-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+

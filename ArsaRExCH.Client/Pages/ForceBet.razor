@@ -7,8 +7,60 @@
 @inject HttpClient Http
 @attribute [Authorize]
 @rendermode InteractiveAuto
+
+<EditForm Model="BetModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+        <div class="form-group" style="width: 10%;">
+            <label for="btcPriceNow">BTC Price Now</label>
+            <InputNumber @bind-Value="BetModel.BtcPriceNow" id="btcPriceNow" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="btcPriceExpireBet">BTC Price Expire Bet</label>
+            <InputNumber @bind-Value="BetModel.BtcPriceExpireBet" id="btcPriceExpireBet" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="hitDateBTC">Hit Date BTC</label>
+            <InputDate @bind-Value="BetModel.HitDateBTC" id="hitDateBTC" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="betAmountBtc">Bet Amount BTC</label>
+            <InputNumber @bind-Value="BetModel.BetAmountBtc" id="betAmountBtc" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="ethPriceNow">ETH Price Now</label>
+            <InputNumber @bind-Value="BetModel.EthPriceNow" id="ethPriceNow" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="hitDateETH">Hit Date ETH</label>
+            <InputDate @bind-Value="BetModel.HitDateETH" id="hitDateETH" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="ethPriceExpireBet">ETH Price Expire Bet</label>
+            <InputNumber @bind-Value="BetModel.EthPriceExpireBet" id="ethPriceExpireBet" class="form-control form-control-sm" />
+        </div>
+
+        <div class="form-group" style="width: 10%;">
+            <label for="betAmountETH">Bet Amount ETH</label>
+            <InputNumber @bind-Value="BetModel.BetAmountETH" id="betAmountETH" class="form-control form-control-sm" />
+        </div>
+    </div>
+
+    <center><button type="submit" class="btn btn-primary btn-sm">Place Bet</button></center>
+
+
+</EditForm>
 @user2
 @code {
+    private Bet BetModel = new Bet();
     private string user2{ get; set; }
     protected override async Task OnInitializedAsync()
     {
@@ -18,10 +70,40 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-          //  wallets = await Http.GetFromJsonAsync<List<WalletDTO>>($"https://localhost:7258/api/Wallet/WalletsL/{user2}");
+            //  wallets = await Http.GetFromJsonAsync<List<WalletDTO>>($"https://localhost:7258/api/Wallet/WalletsL/{user2}");
 
 
         }
 
     }
+    public async Task HandleValidSubmit()
+    {
+        
+    }
+    class Bet
+    {
+        /*Here about Class ID i chose for INT . its range is -2,147,483,648 to 2,147,483,647
+         in fact we should use GUID but for now its ok */
+        public int BetId { get; set; }
+        /*I use this Id when I work for self less relations just direct
+         But now i made relation just in case */
+        public string UserIdSec { get; set; }
+        public double BtcPriceNow { get; set; }
+        public double BtcPriceExpireBet { get; set; }
+        public DateTime HitDateBTC { get; set; }
+        public double BetAmountBtc { get; set; }
+        public double EthPriceNow { get; set; }
+        public DateTime HitDateETH { get; set; }
+        public double EthPriceExpireBet { get; set; }
+        public double BetAmountETH { get; set; }
+        public double? WiningAmount { get; set; }
+        public bool IsBetActive { get; set; }
+        /*I use IsDeleted for delete in shadow we dont want to remove data but
+         * in the case of delete operation this bool changed to True otherwise
+         * its False*/
+        public bool ISDeleted { get; set; }
+        /*when the bet expires*/
+        public DateTime CompletedTime { get; set; }
+      //  public ApplicationUser User { get; set; }
+}
 }
