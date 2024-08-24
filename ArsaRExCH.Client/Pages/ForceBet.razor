@@ -13,10 +13,7 @@
     <ValidationSummary />
 
     <div class="form-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-        <div class="form-group" style="width: 10%;">
-            <label for="btcPriceNow">BTC Price Now</label>
-            <InputNumber @bind-Value="BetModel.BtcPriceNow" id="btcPriceNow" class="form-control form-control-sm" />
-        </div>
+ 
 
         <div class="form-group" style="width: 10%;">
             <label for="btcPriceExpireBet">BTC Price Expire Bet</label>
@@ -31,11 +28,6 @@
         <div class="form-group" style="width: 10%;">
             <label for="betAmountBtc">Bet Amount BTC</label>
             <InputNumber @bind-Value="BetModel.BetAmountBtc" id="betAmountBtc" class="form-control form-control-sm" />
-        </div>
-
-        <div class="form-group" style="width: 10%;">
-            <label for="ethPriceNow">ETH Price Now</label>
-            <InputNumber @bind-Value="BetModel.EthPriceNow" id="ethPriceNow" class="form-control form-control-sm" />
         </div>
 
         <div class="form-group" style="width: 10%;">
@@ -78,7 +70,7 @@
     }
     public async Task HandleValidSubmit()
     {
-        
+
     }
     class Bet
     {
@@ -90,7 +82,7 @@
         public string UserIdSec { get; set; }
         public double BtcPriceNow { get; set; }
         public double BtcPriceExpireBet { get; set; }
-        public DateTime HitDateBTC { get; set; }
+        public DateTime HitDateBTC { get; set; } = DateTime.Now;
         public double BetAmountBtc { get; set; }
         public double EthPriceNow { get; set; }
         public DateTime HitDateETH { get; set; }

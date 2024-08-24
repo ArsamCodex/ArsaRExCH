@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240824191153_init")]
+    [Migration("20240824232832_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "79b0c652-09cc-43bd-88b6-c0ee2aa74dd6",
+                            Id = "7ad0cbf6-907c-4b16-9de3-cb1089d1e45e",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e3052e98-118c-47f2-8fc7-297023dc7553",
+                            ConcurrencyStamp = "5cf07b1e-c29b-4f4e-9493-e661f44edb1d",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +102,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c1ce14f2-3e9e-4cea-980f-2cc54042cb5d",
+                            SecurityStamp = "b597c94d-c5bd-4eff-bc60-176ddfd51ac6",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -148,6 +148,9 @@ namespace ArsaRExCH.Migrations
 
                     b.Property<bool>("IsBetActive")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("OpendBetAtricle")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -223,7 +226,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3412),
+                            ListedDate = new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4376),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -231,7 +234,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3467),
+                            ListedDate = new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4432),
                             NetworkName = "BTC",
                             PaiName = "BNB"
                         },
@@ -239,7 +242,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3472),
+                            ListedDate = new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4436),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -346,7 +349,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "458ccba7-a682-430f-baaa-937e8fef97e4",
+                            Id = "ee315162-7d1b-476e-845b-7ac2782f24af",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -441,8 +444,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "79b0c652-09cc-43bd-88b6-c0ee2aa74dd6",
-                            RoleId = "458ccba7-a682-430f-baaa-937e8fef97e4"
+                            UserId = "7ad0cbf6-907c-4b16-9de3-cb1089d1e45e",
+                            RoleId = "ee315162-7d1b-476e-845b-7ac2782f24af"
                         });
                 });
 

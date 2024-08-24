@@ -58,5 +58,10 @@ namespace ArsaRExCH.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBtcPrice()
+        {
+            //Call To Binance endpoitn get data 
+        }
     }
 }

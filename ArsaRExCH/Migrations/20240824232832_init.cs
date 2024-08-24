@@ -224,6 +224,7 @@ namespace ArsaRExCH.Migrations
                     IsBetActive = table.Column<bool>(type: "bit", nullable: false),
                     ISDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CompletedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OpendBetAtricle = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -266,27 +267,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "458ccba7-a682-430f-baaa-937e8fef97e4", null, "Admin", "ADMIN" });
+                values: new object[] { "ee315162-7d1b-476e-845b-7ac2782f24af", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "79b0c652-09cc-43bd-88b6-c0ee2aa74dd6", 0, "e3052e98-118c-47f2-8fc7-297023dc7553", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "c1ce14f2-3e9e-4cea-980f-2cc54042cb5d", false, "arminttwat@gmail.com" });
+                values: new object[] { "7ad0cbf6-907c-4b16-9de3-cb1089d1e45e", 0, "5cf07b1e-c29b-4f4e-9493-e661f44edb1d", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "b597c94d-c5bd-4eff-bc60-176ddfd51ac6", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3412), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3467), "BTC", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 8, 24, 20, 11, 52, 398, DateTimeKind.Local).AddTicks(3472), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4376), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4432), "BTC", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4436), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "458ccba7-a682-430f-baaa-937e8fef97e4", "79b0c652-09cc-43bd-88b6-c0ee2aa74dd6" });
+                values: new object[] { "ee315162-7d1b-476e-845b-7ac2782f24af", "7ad0cbf6-907c-4b16-9de3-cb1089d1e45e" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

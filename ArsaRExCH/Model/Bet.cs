@@ -27,6 +27,7 @@ namespace ArsaRExCH.Model
         public bool ISDeleted { get; set; }
         /*when the bet expires*/
         public DateTime CompletedTime { get; set; }
+        public DateTime OpendBetAtricle { get; set; }
         public ApplicationUser User { get; set; }
     }
 }
