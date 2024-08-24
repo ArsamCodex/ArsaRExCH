@@ -89,17 +89,17 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5641d1cf-27b5-42e7-884f-64acb453470a",
+                            Id = "fcabdbee-a58e-4505-b5e1-02b3687530ab",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "91f38790-9a26-4829-8279-6ddedb55e2b7",
+                            ConcurrencyStamp = "9ff77cb6-8733-4bb9-9524-2ef0c881902a",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "NEWUSER@EXAMPLE.COM",
                             NormalizedUserName = "arminttwat@gmail.com",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "667b386a-4238-4577-85e3-c29f07c9a803",
+                            SecurityStamp = "adb073ba-7e2f-4187-a7bd-d6694ef9080e",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -138,6 +138,9 @@ namespace ArsaRExCH.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserIdSec")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -145,6 +148,8 @@ namespace ArsaRExCH.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("BetId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bet");
                 });
@@ -211,7 +216,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(939),
+                            ListedDate = new DateTime(2024, 8, 24, 1, 14, 19, 616, DateTimeKind.Local).AddTicks(5831),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -219,7 +224,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(983),
+                            ListedDate = new DateTime(2024, 8, 24, 1, 14, 19, 616, DateTimeKind.Local).AddTicks(5889),
                             NetworkName = "BTC",
                             PaiName = "BNB"
                         },
@@ -227,7 +232,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 8, 23, 14, 40, 51, 868, DateTimeKind.Local).AddTicks(987),
+                            ListedDate = new DateTime(2024, 8, 24, 1, 14, 19, 616, DateTimeKind.Local).AddTicks(5893),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -305,11 +310,17 @@ namespace ArsaRExCH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserIDSec")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("WalletID");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Wallet");
                 });
@@ -343,7 +354,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "de864355-498b-48ff-b2d7-54a3fad75445",
+                            Id = "5258d317-56d3-4100-8292-d259b6f04b26",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -438,8 +449,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "5641d1cf-27b5-42e7-884f-64acb453470a",
-                            RoleId = "de864355-498b-48ff-b2d7-54a3fad75445"
+                            UserId = "fcabdbee-a58e-4505-b5e1-02b3687530ab",
+                            RoleId = "5258d317-56d3-4100-8292-d259b6f04b26"
                         });
                 });
 
@@ -462,11 +473,31 @@ namespace ArsaRExCH.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ArsaRExCH.Model.Bet", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "User")
+                        .WithMany("Bets")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ArsaRExCH.Model.Order", b =>
                 {
                     b.HasOne("ArsaRExCH.Model.UserClient", null)
                         .WithMany("Orders")
                         .HasForeignKey("UserClientId");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Wallet", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "User")
+                        .WithMany("Wallets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -518,6 +549,13 @@ namespace ArsaRExCH.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Data.ApplicationUser", b =>
+                {
+                    b.Navigation("Bets");
+
+                    b.Navigation("Wallets");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserClient", b =>

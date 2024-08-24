@@ -5,7 +5,10 @@ namespace ArsaRExCH.StaticsHelper
 {
     public static class StaticMethods
     {
-        /*If you dnt want use efcore i made method to insert data by ado.net raw sql commands*/
+        /*If you dnt want use efcore i made method to insert data by ado.net raw sql commands*
+         * Post Command :  to save data into data base in form of Bet Class .
+         * Accepts bet class and conectionstring .
+         */
         public static async Task InsertBetAsync(Bet bet, string connectionString)
         {
             string query = @"
@@ -17,7 +20,7 @@ namespace ArsaRExCH.StaticsHelper
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     // Add parameters to prevent SQL injection
-                    command.Parameters.AddWithValue("@UserId", bet.UserId);
+                    command.Parameters.AddWithValue("@UserId", bet.UserIdSec);
                     command.Parameters.AddWithValue("@BtcPrice", bet.BtcPrice);
                     command.Parameters.AddWithValue("@HitDateBTC", bet.HitDateBTC);
                     command.Parameters.AddWithValue("@EthPrice", bet.EthPrice);

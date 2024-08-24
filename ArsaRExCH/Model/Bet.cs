@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Utilities.IO.Pem;
+﻿using ArsaRExCH.Data;
+using Org.BouncyCastle.Utilities.IO.Pem;
 
 namespace ArsaRExCH.Model
 {
@@ -7,7 +8,7 @@ namespace ArsaRExCH.Model
         /*Here about Class ID i chose for INT . its range is -2,147,483,648 to 2,147,483,647
          in fact we should use GUID but for now its ok */
         public int BetId { get; set; }
-        public string UserId { get; set; }
+        public string UserIdSec { get; set; }
         public double BtcPrice { get; set; }
         public DateTime HitDateBTC { get; set; }
         public double EthPrice { get; set; }
@@ -21,5 +22,6 @@ namespace ArsaRExCH.Model
         public bool ISDeleted { get; set; }
         /*when the bet expires*/
         public DateTime CompletedTime { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }

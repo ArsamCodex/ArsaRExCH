@@ -52,7 +52,7 @@ namespace ArsaRExCH.Controllers
             {
                 var user = await _context.Wallet
                     // .Include(u => u.Wallets) // Ensure that User entity has a Wallets navigation property
-                    .Where(c => c.UserID == id).ToListAsync();
+                    .Where(c => c.UserIDSec == id).ToListAsync();
 
 
                 if (user == null)

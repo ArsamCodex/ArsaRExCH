@@ -17,6 +17,21 @@ namespace ArsaRExCH.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            /*
+            modelBuilder.Entity<ApplicationUser>()
+           .HasMany(a => a.Wallets)
+           .WithOne(w => w.User)
+           .HasForeignKey(w => w.UserID)
+           .OnDelete(DeleteBehavior.Cascade);
+            */
+            /*
+            modelBuilder.Entity<Bet>()
+           .HasOne(b => b.User)
+           .WithMany(u => u.Bets)
+           .HasForeignKey(b => b.UserId)
+           .OnDelete(DeleteBehavior.Cascade);
+            */
+            
 
             SeedInitialData(modelBuilder);
             SeedInitialWalletData(modelBuilder);
@@ -42,7 +57,7 @@ namespace ArsaRExCH.Data
                 Email = "arminttwat@gmail.com",
                 NormalizedEmail = "NEWUSER@EXAMPLE.COM",
                 EmailConfirmed = true,
-                PasswordHash = "AQAAAAIAAYagAAAAEDiy5mMJAzNnerdU6G5JpACSOMq93YVj+PV1BgLNtsE3o0Lihn4AkClNHXNO7KV/X==", // Replace this with the hashed password
+                PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", // Replace this with the hashed password
                 SecurityStamp = Guid.NewGuid().ToString()
             };
             modelBuilder.Entity<ApplicationUser>().HasData(newUser);

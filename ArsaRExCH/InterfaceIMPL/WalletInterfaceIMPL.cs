@@ -62,7 +62,7 @@ namespace ArsaRExCH.InterfaceIMPL
             string derivedAddress = "0x" + Encoders.Hex.EncodeData(derivedAddressBytes);
             var walletEntity = new Model.Wallet
             {
-                UserID = id, // Replace with actual user ID retrieval logic
+                UserIDSec = id, // Replace with actual user ID retrieval logic
                 PairName = PairName,
                 Adress = address,
                 Amount = 0,
@@ -101,7 +101,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
             var walletEntity = new Model.Wallet
             {
-                UserID = id, // Replace with actual user ID retrieval logic
+                UserIDSec = id, // Replace with actual user ID retrieval logic
                 PairName = PairName,
                 Adress = address.ToString(),
                 Amount = 0,
@@ -126,7 +126,7 @@ namespace ArsaRExCH.InterfaceIMPL
             // Create a new wallet entity
             var walletEntity = new Model.Wallet
             {
-                UserID = id, // Replace with actual user ID retrieval logic
+                UserIDSec = id, // Replace with actual user ID retrieval logic
                 PairName = PairName,
                 Adress = account.Address,
                 Amount = 0,
@@ -190,13 +190,13 @@ namespace ArsaRExCH.InterfaceIMPL
                         }
                         else
                         {
-                            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == userID && c.PairName == "ETH");
+                            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserIDSec == userID && c.PairName == "ETH");
                             var ad = x.Adress;
                             var seed = x.SeedPhrase;
                             var privateKey = x.PrivateKey;
                             var walletEntity = new Model.Wallet
                             {
-                                UserID = userID, // Replace with actual user ID retrieval logic
+                                UserIDSec = userID, // Replace with actual user ID retrieval logic
                                 PairName = pair.PaiName,
                                 Adress = ad,
                                 Amount = 0,
@@ -228,13 +228,13 @@ namespace ArsaRExCH.InterfaceIMPL
         }
         public async Task<string> CreateETHNetworksWallet(string id, string PairName)
         {
-            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserID == id && c.Network == "ETH");
+            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserIDSec == id && c.Network == "ETH");
             var ad = x.Adress;
             var seed = x.SeedPhrase;
             var privateKey = x.PrivateKey;
             var walletEntity = new Model.Wallet
             {
-                UserID = id, // Replace with actual user ID retrieval logic
+                UserIDSec = id, // Replace with actual user ID retrieval logic
                 PairName = PairName,
                 Adress = ad,
                 Amount = 0,
