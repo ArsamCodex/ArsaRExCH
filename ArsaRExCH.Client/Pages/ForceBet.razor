@@ -8,11 +8,16 @@
 @attribute [Authorize]
 @rendermode InteractiveAuto
 
+<div style="background-color:yellow;width:100%;height:100px">Bitcoin Price - Ethererum Price components</div>
+<br />
+
+<hr />
+<br />
 <EditForm Model="BetModel" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="form-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+    <div class="form-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;border:dashed 1px red;width:100%">
  
 
         <div class="form-group" style="width: 10%;">
@@ -29,24 +34,24 @@
             <label for="betAmountBtc">Bet Amount BTC</label>
             <InputNumber @bind-Value="BetModel.BetAmountBtc" id="betAmountBtc" class="form-control form-control-sm" />
         </div>
-
-        <div class="form-group" style="width: 10%;">
-            <label for="hitDateETH">Hit Date ETH</label>
-            <InputDate @bind-Value="BetModel.HitDateETH" id="hitDateETH" class="form-control form-control-sm" />
-        </div>
-
+    </div>
+    <div class="form-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;border:dashed 1px green">
         <div class="form-group" style="width: 10%;">
             <label for="ethPriceExpireBet">ETH Price Expire Bet</label>
             <InputNumber @bind-Value="BetModel.EthPriceExpireBet" id="ethPriceExpireBet" class="form-control form-control-sm" />
         </div>
 
         <div class="form-group" style="width: 10%;">
+            <label for="hitDateETH">Hit Date ETH</label>
+            <InputDate @bind-Value="BetModel.HitDateETH" id="hitDateETH" class="form-control form-control-sm" />
+        </div>
+        <div class="form-group" style="width: 10%;">
             <label for="betAmountETH">Bet Amount ETH</label>
             <InputNumber @bind-Value="BetModel.BetAmountETH" id="betAmountETH" class="form-control form-control-sm" />
         </div>
     </div>
 
-    <center><button type="submit" class="btn btn-primary btn-sm">Place Bet</button></center>
+  <button type="submit" class="btn btn-primary btn-sm">Place Bet</button>
 
 
 </EditForm>
@@ -85,7 +90,7 @@
         public DateTime HitDateBTC { get; set; } = DateTime.Now;
         public double BetAmountBtc { get; set; }
         public double EthPriceNow { get; set; }
-        public DateTime HitDateETH { get; set; }
+        public DateTime HitDateETH { get; set; } = DateTime.Now;
         public double EthPriceExpireBet { get; set; }
         public double BetAmountETH { get; set; }
         public double? WiningAmount { get; set; }
