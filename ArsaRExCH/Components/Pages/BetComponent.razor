@@ -72,77 +72,17 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-            //  wallets = await Http.GetFromJsonAsync<List<WalletDTO>>($"https://localhost:7258/api/Wallet/WalletsL/{user2}");
-
-
-
-
-
-
         }
 
     }
     public async Task HandleValidSubmit()
     {
-        Bet BetModel2 = new Bet()
-            {
-                UserIdSec = user2,
-                BtcPriceNow = 10,
-                BtcPriceExpireBet = 100,
-                HitDateBTC = DateTime.Now,
-                BetAmountBtc = 1,
-
-                EthPriceNow = 1,
-                EthPriceExpireBet = 10,
-                HitDateETH = DateTime.Now,
-                BetAmountETH = 5,
-                IsBetActive = true,
-                ISDeleted = false,
-                WiningAmount = null,
-                CompletedTime = DateTime.Now,
-            };
-       Bet BetModel3 = new Bet()
-            {
-                UserIdSec = user2, // Ensure this is not null
-                BtcPriceNow = 10,
-                BtcPriceExpireBet = 100,
-                HitDateBTC = DateTime.Now,
-                BetAmountBtc = 1,
-                EthPriceNow = 1,
-                EthPriceExpireBet = 10,
-                HitDateETH = DateTime.Now,
-                BetAmountETH = 5,
-                IsBetActive = true,
-                ISDeleted = false,
-            };
         //BetModel.CompletedTime = something when bet expires is null for begin
         // await Http.PostAsJsonAsync<Bet>($"/Bet/GetBet", BetModel3);
-        await _interface.SaveBet(BetModel2);
-    }
-    /*class Bet
-    {
-        /*Here about Class ID i chose for INT . its range is -2,147,483,648 to 2,147,483,647
-         in fact we should use GUID but for now its ok */
-        public int BetId { get; set; }
-        /*I use this Id when I work for self less relations just direct
-         But now i made relation just in case */
-        public string UserIdSec { get; set; }
-        public double BtcPriceNow { get; set; }
-        public double BtcPriceExpireBet { get; set; }
-        public DateTime HitDateBTC { get; set; } = DateTime.Now;
-        public double BetAmountBtc { get; set; }
-        public double EthPriceNow { get; set; }
-        public DateTime HitDateETH { get; set; } = DateTime.Now;
-        public double EthPriceExpireBet { get; set; }
-        public double BetAmountETH { get; set; }
-        public double? WiningAmount { get; set; }
-        public bool IsBetActive { get; set; }
-        /*I use IsDeleted for delete in shadow we dont want to remove data but
-         * in the case of delete operation this bool changed to True otherwise
-         * its False*/
-        public bool ISDeleted { get; set; }
-        /*when the bet expires*/
-        public DateTime CompletedTime { get; set; }
-        //  public ApplicationUser User { get; set; }*/
+        BetModel.IsBetActive = true;
+        BetModel.ISDeleted = false;
+        BetModel.UserIdSec = user2;
+        await _interface.SaveBet(BetModel);
     }
 }
+
