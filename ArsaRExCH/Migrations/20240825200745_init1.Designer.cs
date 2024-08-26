@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240824232832_init")]
-    partial class init
+    [Migration("20240825200745_init1")]
+    partial class init1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7ad0cbf6-907c-4b16-9de3-cb1089d1e45e",
+                            Id = "72581d0f-f4dd-4890-8f9d-3755a924ce2d",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5cf07b1e-c29b-4f4e-9493-e661f44edb1d",
+                            ConcurrencyStamp = "69fc0453-7340-468d-b3e4-63536e26ca90",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +102,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b597c94d-c5bd-4eff-bc60-176ddfd51ac6",
+                            SecurityStamp = "9bee9eb5-b2df-4298-94c5-094fc357c8b8",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -149,11 +149,8 @@ namespace ArsaRExCH.Migrations
                     b.Property<bool>("IsBetActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("OpendBetAtricle")
+                    b.Property<DateTime?>("OpendBetAtricle")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserIdSec")
                         .IsRequired()
@@ -163,8 +160,6 @@ namespace ArsaRExCH.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("BetId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Bet");
                 });
@@ -226,7 +221,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4376),
+                            ListedDate = new DateTime(2024, 8, 25, 21, 7, 44, 71, DateTimeKind.Local).AddTicks(4072),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -234,7 +229,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4432),
+                            ListedDate = new DateTime(2024, 8, 25, 21, 7, 44, 71, DateTimeKind.Local).AddTicks(4122),
                             NetworkName = "BTC",
                             PaiName = "BNB"
                         },
@@ -242,7 +237,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 8, 25, 0, 28, 31, 251, DateTimeKind.Local).AddTicks(4436),
+                            ListedDate = new DateTime(2024, 8, 25, 21, 7, 44, 71, DateTimeKind.Local).AddTicks(4126),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -349,7 +344,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ee315162-7d1b-476e-845b-7ac2782f24af",
+                            Id = "1e8bd507-be7d-4162-997f-874cb0b710e7",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -444,8 +439,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "7ad0cbf6-907c-4b16-9de3-cb1089d1e45e",
-                            RoleId = "ee315162-7d1b-476e-845b-7ac2782f24af"
+                            UserId = "72581d0f-f4dd-4890-8f9d-3755a924ce2d",
+                            RoleId = "1e8bd507-be7d-4162-997f-874cb0b710e7"
                         });
                 });
 
@@ -468,19 +463,10 @@ namespace ArsaRExCH.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ArsaRExCH.Model.Bet", b =>
-                {
-                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "User")
-                        .WithMany("Bets")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ArsaRExCH.Model.Wallet", b =>
                 {
                     b.HasOne("ArsaRExCH.Data.ApplicationUser", "User")
-                        .WithMany("Wallets")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -537,13 +523,6 @@ namespace ArsaRExCH.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ArsaRExCH.Data.ApplicationUser", b =>
-                {
-                    b.Navigation("Bets");
-
-                    b.Navigation("Wallets");
                 });
 #pragma warning restore 612, 618
         }

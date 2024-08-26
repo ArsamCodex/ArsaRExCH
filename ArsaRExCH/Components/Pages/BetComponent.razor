@@ -1,4 +1,4 @@
-﻿@page "/ForceBet"
+﻿@page "/Bet1"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
@@ -6,7 +6,10 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
 @attribute [Authorize]
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _interface
+@using ArsaRExCH.Model
+
 
 <div style="background-color:yellow;width:100%;height:100px">Bitcoin Price - Ethererum Price components</div>
 <br />
@@ -60,7 +63,7 @@
 @user2
 @code {
     private Bet BetModel = new Bet();
-    private string user2{ get; set; }
+    private string user2 { get; set; }
     protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
@@ -98,7 +101,7 @@
                 WiningAmount = null,
                 CompletedTime = DateTime.Now,
             };
-        Bet BetModel3 = new Bet()
+       Bet BetModel3 = new Bet()
             {
                 UserIdSec = user2, // Ensure this is not null
                 BtcPriceNow = 10,
@@ -113,9 +116,10 @@
                 ISDeleted = false,
             };
         //BetModel.CompletedTime = something when bet expires is null for begin
-        await Http.PostAsJsonAsync<Bet>($"/Bet/GetBet", BetModel3);
+        // await Http.PostAsJsonAsync<Bet>($"/Bet/GetBet", BetModel3);
+        await _interface.SaveBet(BetModel2);
     }
-    class Bet
+    /*class Bet
     {
         /*Here about Class ID i chose for INT . its range is -2,147,483,648 to 2,147,483,647
          in fact we should use GUID but for now its ok */
@@ -139,6 +143,6 @@
         public bool ISDeleted { get; set; }
         /*when the bet expires*/
         public DateTime CompletedTime { get; set; }
-      //  public ApplicationUser User { get; set; }
-}
+        //  public ApplicationUser User { get; set; }*/
+    }
 }

@@ -10,7 +10,7 @@ namespace ArsaRExCH.Model
         public int BetId { get; set; }
         /*I use this Id when I work for self less relations just direct
          But now i made relation just in case */
-        public string UserIdSec { get; set; }
+        public string? UserIdSec { get; set; }
         public double BtcPriceNow { get; set; }
         public double BtcPriceExpireBet { get; set; }
         public DateTime HitDateBTC { get; set; }
@@ -27,7 +27,7 @@ namespace ArsaRExCH.Model
         public bool ISDeleted { get; set; }
         /*when the bet expires*/
         public DateTime CompletedTime { get; set; }
-        public DateTime OpendBetAtricle { get; set; }
-        public ApplicationUser User { get; set; }
+        public DateTime? OpendBetAtricle { get; set; }
+       // public ApplicationUser User { get; set; }
     }
 }
