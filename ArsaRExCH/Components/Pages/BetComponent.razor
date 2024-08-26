@@ -11,7 +11,7 @@
 @using ArsaRExCH.Model
 
 
-<div style="background-color:yellow;width:100%;height:100px">Bitcoin Price - Ethererum Price components</div>
+<div style="background-color:yellow;width:100%;height:100px"> <BtcPrice></BtcPrice>- Ethererum Price components</div>
 <br />
 
 <hr />
@@ -72,6 +72,8 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            BetModel.HitDateBTC = DateTime.Now;
+            BetModel.HitDateETH = DateTime.Now ;
         }
 
     }
@@ -85,7 +87,7 @@
         BetModel.BtcPriceNow = 11200000;//Call to database 
         BetModel.EthPriceNow = 11200000;//Call to database
         BetModel.OpendBetAtricle = DateTime.Now; //init at placing bet sample
-        BetModel.WiningAmount = null;
+        BetModel.WiningAmount = null;//calculate later
 
         await _interface.SaveBet(BetModel);
     }

@@ -1,0 +1,52 @@
+﻿@using System.Text.Json
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Threading
+@using System.Threading.Tasks
+@using System.Net.Http
+<h3>BtcPriceComponent</h3>
+
+<div>
+    <p>Current BTC Price: @btcPrice USD</p>
+</div>
+
+@code {
+    @code {
+        private decimal btcPrice;
+        private Timer timer;
+        private readonly HttpClient httpClient = new HttpClient();
+
+        protected override void OnInitialized()
+        {
+            // Initialize the timer to fetch data every 10 seconds
+            timer = new Timer(async _ => await FetchBtcPrice(), null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+        }
+
+        private async Task FetchBtcPrice()
+        {
+            try
+            {
+                var response = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+                var priceData = JsonSerializer.Deserialize<BtcPriceResponse>(response);
+                btcPrice = decimal.Parse(priceData.Price);
+                InvokeAsync(StateHasChanged); // Notify the UI to re-render
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching BTC price: {ex.Message}");
+            }
+        }
+
+        public void Dispose()
+        {
+            // Dispose of the timer when the component is disposed
+            timer?.Dispose();
+        }
+
+        private class BtcPriceResponse
+        {
+            [JsonPropertyName("price")]
+            public string Price { get; set; }
+        }
+    }
+}
