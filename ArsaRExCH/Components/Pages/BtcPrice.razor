@@ -3,13 +3,15 @@
 @using System.Threading
 @using System.Threading.Tasks
 @using System.Net.Http
-<h3>BtcPriceComponent</h3>
+
 
 
 <div style="display: flex; gap: 20px;">
-    <p>Current BTC Price: <b>@btcPrice USD</b></p>
-    <p>Current ETH Price: <b>@ethPrice USD</b></p>
-</div>
+   <p>BTC Price: <b>@btcPrice USD</b></p>
+        <p> ETH Price: <b>@ethPrice USD</b></p>
+
+    </div>
+
 
 @code {
     private decimal btcPrice;
