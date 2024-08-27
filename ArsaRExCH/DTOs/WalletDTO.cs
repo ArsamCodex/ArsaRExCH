@@ -7,5 +7,7 @@
 
         public double CurrentBalance { get; set; }
         public double Amount { get; set; }
+        public string    Network { get; set; }
+
     }
 }

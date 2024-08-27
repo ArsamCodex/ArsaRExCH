@@ -29,7 +29,7 @@ namespace ArsaRExCH.Controllers
             {
                 var user = await _context.Wallet
                                  // .Include(u => u.Wallets)
-                                 .Where(w => w.User.Id == id)
+                                 .Where(w => w.UserIDSec == id)
                                     .ToListAsync();
 
                 if (user == null)
@@ -53,7 +53,7 @@ namespace ArsaRExCH.Controllers
             {
                 var user = await _context.Wallet
                                  // .Include(u => u.Wallets)
-                                 .Where(w => w.User.Id == id)
+                                 .Where(w => w.UserIDSec == id)
                                     .ToListAsync();
 
 

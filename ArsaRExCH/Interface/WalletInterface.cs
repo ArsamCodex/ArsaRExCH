@@ -1,5 +1,7 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.DTOs;
+using ArsaRExCH.Model;
+using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts.Standards.ENS.ETHRegistrarController.ContractDefinition;
 namespace ArsaRExCH.Interface
 {
@@ -15,6 +17,7 @@ namespace ArsaRExCH.Interface
         public Task SendEmailAsync(EmailRequest emailreqquest);
         Task<double> GetBTCBalanceOfWallet(string walletId);
         //TODO
-          //make 2 methode to check balance of bnb and ether
+        //make 2 methode to check balance of bnb and ether
+        public Task<List<WalletDTO>> GetWalletsListed(string id);
     }
 }

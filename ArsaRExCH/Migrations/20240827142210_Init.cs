@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class init1 : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,7 +58,7 @@ namespace ArsaRExCH.Migrations
                 {
                     BetId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserIdSec = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserIdSec = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BtcPriceNow = table.Column<double>(type: "float", nullable: false),
                     BtcPriceExpireBet = table.Column<double>(type: "float", nullable: false),
                     HitDateBTC = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -123,6 +123,26 @@ namespace ArsaRExCH.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserTradeActivities", x => x.UserTradeActivityID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Wallet",
+                columns: table => new
+                {
+                    WalletID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserIDSec = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentPrice = table.Column<double>(type: "float", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    SeedPhrase = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PrivateKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Network = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wallet", x => x.WalletID);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,57 +251,30 @@ namespace ArsaRExCH.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Wallet",
-                columns: table => new
-                {
-                    WalletID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserIDSec = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentPrice = table.Column<double>(type: "float", nullable: false),
-                    Amount = table.Column<double>(type: "float", nullable: false),
-                    SeedPhrase = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PrivateKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Network = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Wallet", x => x.WalletID);
-                    table.ForeignKey(
-                        name: "FK_Wallet_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "1e8bd507-be7d-4162-997f-874cb0b710e7", null, "Admin", "ADMIN" });
+                values: new object[] { "5082e4b4-27b6-4d15-b8b5-c683691969b9", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "72581d0f-f4dd-4890-8f9d-3755a924ce2d", 0, "69fc0453-7340-468d-b3e4-63536e26ca90", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "9bee9eb5-b2df-4298-94c5-094fc357c8b8", false, "arminttwat@gmail.com" });
+                values: new object[] { "06afd8bf-e38e-417a-a061-ced072fb0762", 0, "59abdea2-6636-42ac-86b3-9db1b5ef276a", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "0b2e456c-f3a7-4109-97ce-931f059df7dd", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 8, 25, 21, 7, 44, 71, DateTimeKind.Local).AddTicks(4072), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 8, 25, 21, 7, 44, 71, DateTimeKind.Local).AddTicks(4122), "BTC", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 8, 25, 21, 7, 44, 71, DateTimeKind.Local).AddTicks(4126), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 8, 27, 15, 22, 9, 344, DateTimeKind.Local).AddTicks(1677), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 8, 27, 15, 22, 9, 344, DateTimeKind.Local).AddTicks(1746), "BTC", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 8, 27, 15, 22, 9, 344, DateTimeKind.Local).AddTicks(1752), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1e8bd507-be7d-4162-997f-874cb0b710e7", "72581d0f-f4dd-4890-8f9d-3755a924ce2d" });
+                values: new object[] { "5082e4b4-27b6-4d15-b8b5-c683691969b9", "06afd8bf-e38e-417a-a061-ced072fb0762" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -321,11 +314,6 @@ namespace ArsaRExCH.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Wallet_UserId",
-                table: "Wallet",
-                column: "UserId");
         }
 
         /// <inheritdoc />

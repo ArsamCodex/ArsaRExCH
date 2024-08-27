@@ -13,7 +13,7 @@ using System.Net.Mail;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Net.Sockets;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -299,9 +299,44 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             throw new NotImplementedException();
         }
-        /*
+
+        public async Task<List<WalletDTO>> GetWalletsListed(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return new List<WalletDTO>(); // Return an empty list if the ID is null or empty
+            }
+
+            try
+            {
+                var wallets = await _context.Wallet
+                                   .Where(w => w.UserIDSec == id)
+                                   .Select(w => new WalletDTO
+                                   {
+                                       PairName = w.PairName,
+                                       Adress = w.Adress,
+                                       CurrentBalance = w.CurrentPrice,
+                                       Amount = w.Amount,
+                                       Network = w.Network
+                                   })
+                                   .ToListAsync();
+
+                return wallets;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+    }
+    /*
 * This approach is not likable 3rd part providers
 * , please run bitcoin node to extract btc price*/
 
-    }
+
+
 }
+
