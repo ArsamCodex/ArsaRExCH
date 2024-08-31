@@ -13,11 +13,12 @@ namespace ArsaRExCH.Interface
         public Task<decimal> GetBalanceFromBlockCypherAsync(string bitcoinAddress);
         public Task CheckAndCreateWallets(string userID);
         Task<string> CreateETHNetworksWallet(string id, string PairName);
-
         public Task SendEmailAsync(EmailRequest emailreqquest);
         Task<double> GetBTCBalanceOfWallet(string walletId);
         //TODO
         //make 2 methode to check balance of bnb and ether
         public Task<List<WalletDTO>> GetWalletsListed(string id);
+        //I use this method to get everyuser Balance of inter 
+        public Task<double> GetBtcBalanceForEachUser(string userId);
     }
 }

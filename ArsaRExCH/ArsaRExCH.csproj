@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Content Remove="Components\BtcPrice.razor" />
+    <Content Remove="Components\Pages\AdminPanel.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +26,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Components\Pages\AdminPanel.razor" />
     <None Include="Components\Pages\BtcPrice.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Pages\AdminPanel.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Pages\AdminPanel.razor" />
   </ItemGroup>
 
 </Project>

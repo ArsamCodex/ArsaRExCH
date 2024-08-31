@@ -1,0 +1,28 @@
+﻿@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@using System.Text.Json
+@inject ArsaRExCH.Interface.WalletInterface _interface
+@using ArsaRExCH.DTOs
+<p>BTC Balance:@walletBalance</p>
+@code {
+    public string? user2 { get; set; }
+    private double walletBalance { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            walletBalance = await _interface.GetBtcBalanceForEachUser(user2);
+
+        }
+
+    }
+}

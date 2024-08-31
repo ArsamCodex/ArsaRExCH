@@ -329,7 +329,17 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<double> GetBtcBalanceForEachUser(string userId)
+        {
+            // Assuming you want to sum the amounts for the user
+            var totalAmount = await _context.Wallet
+                .Where(c => c.UserIDSec == userId)
+                .Select(c => c.Amount)
+                  .FirstOrDefaultAsync();
+            //.SumAsync(); // Aggregate to get a single value
 
+            return totalAmount; // Returns the total amount as a double
+        }
 
     }
     /*
