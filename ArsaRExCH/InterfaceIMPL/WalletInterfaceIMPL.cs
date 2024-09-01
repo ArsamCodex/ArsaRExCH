@@ -29,7 +29,7 @@ namespace ArsaRExCH.InterfaceIMPL
             this.httpClient = httpClient;
             _configuration = configuration;
         }
-       
+
         public async Task<string> CreateBNBWallet(string id, string PairName)
         {
             Key privateKey = new Key();
@@ -329,24 +329,41 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
-        public async Task<double> GetBtcBalanceForEachUser(string userId)
+        public async Task<(List<double> BtcBalances, List<double> EthBalances, List<double> BnbBalances)> GetWalletBalancesForUser(string userId)
         {
-            // Assuming you want to sum the amounts for the user
-            var totalAmount = await _context.Wallet
+            // Retrieve all wallets for the given user
+            var userWallets = await _context.Wallet
                 .Where(c => c.UserIDSec == userId)
-                .Select(c => c.Amount)
-                  .FirstOrDefaultAsync();
-            //.SumAsync(); // Aggregate to get a single value
+                .ToListAsync();
 
-            return totalAmount; // Returns the total amount as a double
+            // Filter and get BTC wallet amounts
+            var btcBalances = userWallets
+                .Where(c => c.Network == "BTC")
+                .Select(c => c.Amount)
+                .ToList();
+
+            // Filter and get ETH wallet amounts
+            var ethBalances = userWallets
+                .Where(c => c.Network == "ETH")
+                .Select(c => c.Amount)
+                .ToList();
+
+            // Filter and get BNB wallet amounts
+            var bnbBalances = userWallets
+                .Where(c => c.Network == "BNB")
+                .Select(c => c.Amount)
+                .ToList();
+
+            // Return amounts for BTC, ETH, and BNB wallets separately
+            return (btcBalances, ethBalances, bnbBalances);
         }
 
+        /*
+    * This approach is not likable 3rd part providers
+    * , please run bitcoin node to extract btc price*/
+
+
+
     }
-    /*
-* This approach is not likable 3rd part providers
-* , please run bitcoin node to extract btc price*/
-
-
-
 }
 

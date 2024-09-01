@@ -19,6 +19,7 @@ namespace ArsaRExCH.Interface
         //make 2 methode to check balance of bnb and ether
         public Task<List<WalletDTO>> GetWalletsListed(string id);
         //I use this method to get everyuser Balance of inter 
-        public Task<double> GetBtcBalanceForEachUser(string userId);
+        Task<(List<double> BtcBalances, List<double> EthBalances, List<double> BnbBalances)> GetWalletBalancesForUser(string userId);
+
     }
 }

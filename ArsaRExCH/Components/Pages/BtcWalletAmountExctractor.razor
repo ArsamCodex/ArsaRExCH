@@ -8,10 +8,76 @@
 @using System.Text.Json
 @inject ArsaRExCH.Interface.WalletInterface _interface
 @using ArsaRExCH.DTOs
-<p>BTC Balance:@walletBalance</p>
+<div class="wallet-container">
+    <div class="wallet">
+        <h3>BTC Balances:</h3>
+        <ul>
+            @foreach (var balance in btcBalances)
+            {
+                <li>@balance</li>
+            }
+        </ul>
+    </div>
+
+    <div class="wallet">
+        <h3>ETH Balances:</h3>
+        <ul>
+            @foreach (var balance in ethBalances)
+            {
+                <li>@balance</li>
+            }
+        </ul>
+    </div>
+
+    <div class="wallet">
+        <h3>BNB Balances:</h3>
+        <ul>
+            @foreach (var balance in bnbBalances)
+            {
+                <li>@balance</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<style>
+    .wallet-container {
+        display: flex; /* Use flexbox to arrange items horizontally */
+        gap: 20px; /* Space between the divs */
+        justify-content: space-around; /* Distribute space evenly around the divs */
+        margin-top: 20px;
+    }
+
+    .wallet {
+        border: 1px solid #ccc; /* Optional: border around each wallet section */
+        padding: 10px;
+        border-radius: 8px; /* Rounded corners */
+        width: 30%; /* Optional: controls width of each wallet section */
+    }
+
+    .wallet h3 {
+        margin-top: 0; /* Remove default margin from the heading */
+        font-size: 18px;
+        color: #333; /* Optional: set heading color */
+    }
+
+    .wallet ul {
+        list-style-type: none; /* Remove bullet points from the list */
+        padding: 0; /* Remove padding from the list */
+        margin: 0; /* Remove margin from the list */
+    }
+
+    .wallet li {
+        margin: 5px 0; /* Space between list items */
+        font-size: 16px; /* Font size for balance */
+        color: #555; /* Optional: set color for balances */
+    }
+</style>
 @code {
     public string? user2 { get; set; }
-    private double walletBalance { get; set; }
+    private List<double> btcBalances = new List<double>();
+    private List<double> ethBalances = new List<double>();
+    private List<double> bnbBalances = new List<double>();
     protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
@@ -20,7 +86,16 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-            walletBalance = await _interface.GetBtcBalanceForEachUser(user2);
+            if (!string.IsNullOrEmpty(user2))
+            {
+                // Assuming _interface has a method to get all wallet balances
+                var (btc, eth, bnb) = await _interface.GetWalletBalancesForUser(user2);
+
+                // Assign the fetched balances to local variables
+                btcBalances = btc ?? new List<double>();
+                ethBalances = eth ?? new List<double>();
+                bnbBalances = bnb ?? new List<double>();
+            }
 
         }
 
