@@ -15,6 +15,6 @@ namespace ArsaRExCH.Model
         public string[] SeedPhrase { get; set; }
         public string PrivateKey { get; set; }
         public string Network { get; set; }
-      //  public ApplicationUser User { get; set; }
+      //  public ApplicationUser User { get; set; } 
     }
 }
