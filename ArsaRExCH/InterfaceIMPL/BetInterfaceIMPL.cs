@@ -54,6 +54,14 @@ namespace ArsaRExCH.InterfaceIMPL
             });
         }
 
+        public async Task<Bet> GetBetBySha(string sha)
+        {
+            // Assuming Bet has a property named Hash of type string
+            return await _context.Bet
+                .Where(c => c.BetSignutare == sha)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task SaveBet(Bet bet)
         {
             try
