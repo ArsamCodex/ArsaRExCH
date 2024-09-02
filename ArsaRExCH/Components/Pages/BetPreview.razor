@@ -1,10 +1,32 @@
 ﻿@page "/BetPreview/{Hash}"
-
-
-<p>Here Is Bet summary</p>
-
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@inject NavigationManager manager
 @Hash
 @code {
     [Parameter]
     public string Hash { get; set; }
+    private string user2{ get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+       
+        }
+
+    }
 }
