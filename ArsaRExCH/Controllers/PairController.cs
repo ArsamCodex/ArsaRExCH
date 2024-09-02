@@ -16,8 +16,8 @@ namespace ArsaRExCH.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly WalletInterface _walletInterface;
-        public PairController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, WalletInterface walletInterface)
+        private readonly WalletInterface<double> _walletInterface;
+        public PairController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, WalletInterface<double> walletInterface)
         {
             _context = context;
             _userManager = userManager;

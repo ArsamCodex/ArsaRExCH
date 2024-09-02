@@ -8,10 +8,14 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 @inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
 @using ArsaRExCH.Model
 
 <BtcWalletAmountExctractor ></BtcWalletAmountExctractor>
 
+<div style="@divStyle">
+   @divText
+</div>
 
 <br />
 
@@ -65,6 +69,17 @@
 @code {
     private Bet BetModel = new Bet();
     private string user2 { get; set; }
+    private double BtcBetAmout{ get; set; }
+    private string divText = "";
+
+    private string divStyle = "";
+
+    private void ChangeColor()
+    {
+        divStyle = "background-color: green; color: white; padding: 20px; border: 1px solid #ccc;";
+        divText = "Order Created";
+    }
+
     protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
@@ -81,7 +96,7 @@
     public async Task HandleValidSubmit()
     {
         //BetModel.CompletedTime = something when bet expires is null for begin
-        // await Http.PostAsJsonAsync<Bet>($"/Bet/GetBet", BetModel);
+
         BetModel.IsBetActive = true;
         BetModel.ISDeleted = false;
         BetModel.UserIdSec = user2;
@@ -90,7 +105,14 @@
         BetModel.OpendBetAtricle = DateTime.Now; //init at placing bet sample
         BetModel.WiningAmount = null;//calculate later
 
+        BtcBetAmout = BetModel.BetAmountBtc;
+
+        //First save the bet in database 
         await _interface.SaveBet(BetModel);
+
+        //Then edit balance of user
+        await _interface2.EditWalletAmount(user2, BtcBetAmout);
+        ChangeColor();
     }
 }
 

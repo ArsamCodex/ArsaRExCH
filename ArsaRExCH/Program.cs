@@ -72,7 +72,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 
-builder.Services.AddScoped<WalletInterface, WalletInterfaceIMPL>();
+builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
 builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
 builder.Services.AddScoped(http => new HttpClient
 {

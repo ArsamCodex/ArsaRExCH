@@ -378,17 +378,9 @@ namespace ArsaRExCH.InterfaceIMPL
                 throw new InvalidOperationException("Cannot decrease amount as the wallet balance is already zero.");
             }
 
-            // Calculate the new amount
-            double newAmount = wallet.Amount + amount;
-
-            // Ensure the new amount does not go below zero
-            if (newAmount < 0)
-            {
-                throw new InvalidOperationException("Insufficient funds. The wallet amount cannot go below zero.");
-            }
 
             // Update the wallet amount
-            wallet.Amount = newAmount;
+            wallet.Amount = amount;
 
             // Save the updated wallet entry to the database
             _context.Wallet.Update(wallet);

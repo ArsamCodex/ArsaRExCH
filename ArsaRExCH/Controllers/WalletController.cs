@@ -16,8 +16,8 @@ namespace ArsaRExCH.Controllers
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly WalletInterface _walletInterface;
-        public WalletController(ApplicationDbContext context, WalletInterface walletInterface)
+        private readonly WalletInterface<double> _walletInterface;
+        public WalletController(ApplicationDbContext context, WalletInterface<double> walletInterface)
         {
             _context = context;
             _walletInterface = walletInterface;
