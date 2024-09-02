@@ -28,6 +28,9 @@ namespace ArsaRExCH.Model
         /*when the bet expires*/
         public DateTime CompletedTime { get; set; }
         public DateTime? OpendBetAtricle { get; set; }
-       // public ApplicationUser User { get; set; }
+        // public ApplicationUser User { get; set; }
+
+        //Generate unique string for eaach bet
+        public string BetSignutare { get; set; }
     }
 }

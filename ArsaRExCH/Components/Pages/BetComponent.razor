@@ -6,10 +6,13 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
 @attribute [Authorize]
-@rendermode InteractiveServer
+@rendermode InteractiveAuto
 @inject ArsaRExCH.Interface.BetInterface _interface
 @inject ArsaRExCH.Interface.WalletInterface<double> _interface2
 @using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@inject NavigationManager manager
+
 
 <BtcWalletAmountExctractor ></BtcWalletAmountExctractor>
 
@@ -65,19 +68,23 @@
 
 
 </EditForm>
+
 @user2
 @code {
     private Bet BetModel = new Bet();
     private string user2 { get; set; }
     private double BtcBetAmout{ get; set; }
     private string divText = "";
-
     private string divStyle = "";
+    private string BetGeneratedHAsh{ get; set; }
+
+
 
     private void ChangeColor()
     {
         divStyle = "background-color: green; color: white; padding: 20px; border: 1px solid #ccc;";
         divText = "Order Created";
+
     }
 
     protected override async Task OnInitializedAsync()
@@ -108,11 +115,17 @@
         BtcBetAmout = BetModel.BetAmountBtc;
 
         //First save the bet in database 
+        BetModel.BetSignutare = await _interface.Generatesha256();
+        BetGeneratedHAsh = BetModel.BetSignutare;
         await _interface.SaveBet(BetModel);
+   
 
         //Then edit balance of user
         await _interface2.EditWalletAmount(user2, BtcBetAmout);
         ChangeColor();
+        StateHasChanged();
+        manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
+        
     }
 }
 

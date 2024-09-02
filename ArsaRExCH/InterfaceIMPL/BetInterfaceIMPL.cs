@@ -5,6 +5,8 @@ using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -23,6 +25,35 @@ namespace ArsaRExCH.InterfaceIMPL
             _configuration = configuration;
             _signInManager = signInManager;
         }
+
+        public async Task<string> Generatesha256()
+        {
+            return await Task.Run(() =>
+            {
+                using (SHA256 sha256 = SHA256.Create())
+                {
+                    // Generate a random byte array
+                    byte[] randomBytes = new byte[32]; // 256 bits / 8 = 32 bytes
+                    using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+                    {
+                        rng.GetBytes(randomBytes);
+                    }
+
+                    // Compute the SHA-256 hash of the random bytes
+                    byte[] hashBytes = sha256.ComputeHash(randomBytes);
+
+                    // Convert the hash to a hexadecimal string
+                    StringBuilder hashString = new StringBuilder();
+                    foreach (byte b in hashBytes)
+                    {
+                        hashString.Append(b.ToString("x2"));
+                    }
+
+                    return hashString.ToString();
+                }
+            });
+        }
+
         public async Task SaveBet(Bet bet)
         {
             try

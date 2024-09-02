@@ -1,0 +1,10 @@
+﻿@page "/BetPreview/{Hash}"
+
+
+<p>Here Is Bet summary</p>
+
+@Hash
+@code {
+    [Parameter]
+    public string Hash { get; set; }
+}
