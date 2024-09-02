@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts.Standards.ENS.ETHRegistrarController.ContractDefinition;
 namespace ArsaRExCH.Interface
 {
-    public interface WalletInterface
+    public interface WalletInterface<T>
     {
         public Task<string> CreateBTCWallet(string id, string PairName);
         public Task<string> CreateETHWallet(string id,string PairName);
@@ -21,5 +21,7 @@ namespace ArsaRExCH.Interface
         //I use this method to get everyuser Balance of inter 
         Task<(List<double> BtcBalances, List<double> EthBalances, List<double> BnbBalances)> GetWalletBalancesForUser(string userId);
 
+        /* I need Here Edit Wallet one by one . 2 seprate method or 1 generic method for all */
+        Task<T> EditWalletAmount(string userID, double amount);
     }
 }

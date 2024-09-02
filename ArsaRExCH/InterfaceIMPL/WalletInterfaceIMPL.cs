@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class WalletInterfaceIMPL : WalletInterface
+    public class WalletInterfaceIMPL : WalletInterface<double>
     {
         private readonly ApplicationDbContext _context;
         public readonly HttpClient httpClient;
@@ -358,11 +358,45 @@ namespace ArsaRExCH.InterfaceIMPL
             return (btcBalances, ethBalances, bnbBalances);
         }
 
-        /*
-    * This approach is not likable 3rd part providers
-    * , please run bitcoin node to extract btc price*/
+        public async Task<double> EditWalletAmount(string userID, double amount)
+        {
+            // Retrieve the wallet entry for the specified user and currency pair
+            var wallet = await _context.Wallet
+                .Where(c => c.UserIDSec == userID && c.PairName == "BTC")
+                .FirstOrDefaultAsync(); // Execute the query and get the first result
 
+            // Check if the wallet entry exists
+            if (wallet == null)
+            {
+                throw new InvalidOperationException("Wallet not found for the specified user.");
+            }
 
+            // Check if the current balance is zero and the amount is negative
+            if (wallet.Amount == 0 && amount < 0)
+            {
+                // If the current balance is zero, you cannot decrease it further
+                throw new InvalidOperationException("Cannot decrease amount as the wallet balance is already zero.");
+            }
+
+            // Calculate the new amount
+            double newAmount = wallet.Amount + amount;
+
+            // Ensure the new amount does not go below zero
+            if (newAmount < 0)
+            {
+                throw new InvalidOperationException("Insufficient funds. The wallet amount cannot go below zero.");
+            }
+
+            // Update the wallet amount
+            wallet.Amount = newAmount;
+
+            // Save the updated wallet entry to the database
+            _context.Wallet.Update(wallet);
+            await _context.SaveChangesAsync();
+
+            // Return the updated amount
+            return wallet.Amount;
+        }
 
     }
 }
