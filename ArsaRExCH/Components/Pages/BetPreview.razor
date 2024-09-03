@@ -12,7 +12,27 @@
 @using ArsaRExCH.Model
 @using ArsaRExCH.Components.Pages
 @inject NavigationManager manager
-<p>Bet Preview</p>
+<h4>Bet Summary</h4>
+<hr />
+<style>
+    .bet-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .bet-item {
+        border: 1px solid #ccc; /* Optional styling */
+        padding: 10px;
+        background-color: #f9f9f9; /* Optional background color */
+        border-radius: 4px; /* Optional border radius */
+    }
+
+    /* Light red background for zero winning amount */
+    .bg-light-red {
+        background-color: #f8d7da; /* Light red color */
+    }
+</style>
 @if (bet == null)
 {
     <p><em>Loading...</em></p>
@@ -23,16 +43,22 @@ else
         <div class="bet-item"><strong>Bet ID:</strong> @bet.BetId</div>
         <div class="bet-item"><strong>User ID:</strong> @bet.UserIdSec</div>
         <div class="bet-item"><strong>Current BTC Price:</strong> @bet.BtcPriceNow</div>
+
         <div class="bet-item"><strong>BTC Price at Bet Expiry:</strong> @bet.BtcPriceExpireBet</div>
         <div class="bet-item"><strong>BTC Hit Date:</strong> @bet.HitDateBTC.ToString("g")</div>
-
         <div class="bet-item"><strong>Bet Amount in BTC:</strong> @bet.BetAmountBtc</div>
+
         <div class="bet-item"><strong>Current ETH Price:</strong> @bet.EthPriceNow</div>
         <div class="bet-item"><strong>ETH Hit Date:</strong> @bet.HitDateETH.ToString("g")</div>
         <div class="bet-item"><strong>ETH Price at Bet Expiry:</strong> @bet.EthPriceExpireBet</div>
+
         <div class="bet-item"><strong>Bet Amount in ETH:</strong> @bet.BetAmountETH</div>
 
-        <div class="bet-item"><strong>Winning Amount:</strong> @bet.WiningAmount.GetValueOrDefault()</div>
+        <!-- Conditional class based on Winning Amount -->
+        <div class="bet-item @(bet.WiningAmount.GetValueOrDefault() == 0 ? "bg-light-red" : "")">
+            <strong>Winning Amount:</strong> @bet.WiningAmount.GetValueOrDefault()
+        </div>
+
         <div class="bet-item"><strong>Is Bet Active:</strong> @(bet.IsBetActive ? "Yes" : "No")</div>
         <div class="bet-item"><strong>Is Deleted:</strong> @(bet.ISDeleted ? "Yes" : "No")</div>
         <div class="bet-item"><strong>Completed Time:</strong> @bet.CompletedTime.ToString("g")</div>
