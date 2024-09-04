@@ -1,4 +1,5 @@
-﻿@attribute [Authorize]
+﻿@using ArsaRExCH.Model
+@attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
@@ -8,39 +9,6 @@
 @using System.Text.Json
 @inject ArsaRExCH.Interface.WalletInterface<double> _interface
 @using ArsaRExCH.DTOs
-@inject ArsaRExCH.Model.EventService EventService
-
-<div class="wallet-container">
-    <div class="wallet">
-        <h3>BTC Balances:</h3>
-        <ul>
-            @foreach (var balance in btcBalances)
-            {
-                <li>@balance</li>
-            }
-        </ul>
-    </div>
-
-    <div class="wallet">
-        <h3>ETH Balances:</h3>
-        <ul>
-            @foreach (var balance in ethBalances)
-            {
-                <li>@balance</li>
-            }
-        </ul>
-    </div>
-
-    <div class="wallet">
-        <h3>BNB Balances:</h3>
-        <ul>
-            @foreach (var balance in bnbBalances)
-            {
-                <li>@balance</li>
-            }
-        </ul>
-    </div>
-</div>
 
 <style>
     .wallet-container {
@@ -75,33 +43,93 @@
             color: #555; /* Optional: set color for balances */
         }
 </style>
+
+<div class="wallet-container">
+    <div class="wallet" style="background-color:yellow">
+        <h3>BTC Balanceskkkkk:</h3>
+        <ul>
+            @foreach (var balance in btcBalances)
+            {
+                <li>@balance</li>
+            }
+        </ul>
+    </div>
+
+    <div class="wallet" style="background-color:black;">
+        <h3 style="color:white">ETH Balances:</h3>
+        <ul>
+            @foreach (var balance in ethBalances)
+            {
+                <li>@balance</li>
+            }
+        </ul>
+    </div>
+
+    <div class="wallet" style="background-color:red">
+        <h3>BNB Balances:</h3>
+        <ul>
+            @foreach (var balance in bnbBalances)
+            {
+                <li>@balance</li>
+            }
+        </ul>
+    </div>
+</div>
+<button @onclick="OnClickAsync">Place Bet</button>
+
 @code {
     public string? user2 { get; set; }
     private List<double> btcBalances = new List<double>();
     private List<double> ethBalances = new List<double>();
     private List<double> bnbBalances = new List<double>();
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    // This method is triggered when the button is clicked
+    private async Task OnClickAsync()
+    {
+        // Optional: Trigger any event callback if set by parent
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+        }
+
+    }
     protected override async Task OnInitializedAsync()
     {
         await FetchBalancesAsync();
 
 
     }
+    // Method to fetch balances from the API or service
     public async Task FetchBalancesAsync()
     {
+        // Fetch the current authentication state
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+
+        // Check if the user is authenticated
         if (user.Identity?.IsAuthenticated ?? false)
         {
+            // Retrieve the user identifier (e.g., user ID)
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
             if (!string.IsNullOrEmpty(user2))
             {
+                // Fetch wallet balances for the authenticated user
                 var (btc, eth, bnb) = await _interface.GetWalletBalancesForUser(user2);
                 btcBalances = btc ?? new List<double>();
                 ethBalances = eth ?? new List<double>();
                 bnbBalances = bnb ?? new List<double>();
-                StateHasChanged(); // Refresh UI
+
+                // Refresh the UI to reflect updated balances
+                StateHasChanged();
             }
         }
+        else
+        {
+            Console.WriteLine("User is not authenticated.");
+        }
     }
-
 }

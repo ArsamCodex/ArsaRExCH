@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using ArsaRExCH.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,7 +72,7 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-
+builder.Services.AddSingleton<EventService>();
 builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
 builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
 builder.Services.AddScoped(http => new HttpClient
