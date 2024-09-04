@@ -62,6 +62,36 @@ namespace ArsaRExCH.InterfaceIMPL
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<Bet>> GetBetsByUseId(string useId)
+        {
+            if (string.IsNullOrEmpty(useId))
+            {
+                throw new ArgumentException("User ID cannot be null or empty.", nameof(useId));
+            }
+
+            try
+            {
+                var bets = await _context.Bet
+                    .Where(c => c.UserIdSec == useId)
+                    .ToListAsync();
+
+                return bets;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Log the database update exception details here
+                // For example: _logger.LogError(dbEx, "Database update error.");
+                throw new ApplicationException("An error occurred while retrieving bets from the database.", dbEx);
+            }
+            catch (Exception ex)
+            {
+                // Log general exception details here
+                // For example: _logger.LogError(ex, "An unexpected error occurred.");
+                throw new ApplicationException("An unexpected error occurred while retrieving bets.", ex);
+            }
+        }
+
+
         public async Task SaveBet(Bet bet)
         {
             try

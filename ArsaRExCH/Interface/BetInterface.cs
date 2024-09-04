@@ -7,6 +7,7 @@ namespace ArsaRExCH.Interface
         public  Task SaveBet(Bet bet);
         Task<string> Generatesha256();
         Task<Bet> GetBetBySha(string sha);
+        Task<List<Bet>> GetBetsByUseId(string useId);
        
     }
 }

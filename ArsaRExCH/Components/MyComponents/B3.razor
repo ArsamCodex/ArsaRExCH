@@ -1,14 +1,18 @@
-﻿@using ArsaRExCH.Model
-@attribute [Authorize]
-@using Microsoft.AspNetCore.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
-@using System.Text.Json
-@inject ArsaRExCH.Interface.WalletInterface<double> _interface
-@using ArsaRExCH.DTOs
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@inject NavigationManager manager
+
 
 <style>
     .wallet-container {
@@ -75,27 +79,14 @@
         </ul>
     </div>
 </div>
-<button @onclick="OnClickAsync">Place Bet</button>
 
 @code {
+    private DateTime currentDateTime;
     public string? user2 { get; set; }
     private List<double> btcBalances = new List<double>();
     private List<double> ethBalances = new List<double>();
     private List<double> bnbBalances = new List<double>();
 
-    [Parameter]
-    public EventCallback OnClick { get; set; }
-
-    // This method is triggered when the button is clicked
-    private async Task OnClickAsync()
-    {
-        // Optional: Trigger any event callback if set by parent
-        if (OnClick.HasDelegate)
-        {
-            await OnClick.InvokeAsync();
-        }
-
-    }
     protected override async Task OnInitializedAsync()
     {
         await FetchBalancesAsync();
@@ -118,7 +109,7 @@
             if (!string.IsNullOrEmpty(user2))
             {
                 // Fetch wallet balances for the authenticated user
-                var (btc, eth, bnb) = await _interface.GetWalletBalancesForUser(user2);
+                var (btc, eth, bnb) = await _interface2.GetWalletBalancesForUser(user2);
                 btcBalances = btc ?? new List<double>();
                 ethBalances = eth ?? new List<double>();
                 bnbBalances = bnb ?? new List<double>();

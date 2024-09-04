@@ -11,13 +11,14 @@
 @inject ArsaRExCH.Interface.WalletInterface<double> _interface2
 @using ArsaRExCH.Model
 @using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
 @inject NavigationManager manager
 @inject EventService EventService
 
 
-<ButtonOOne OnClick="HandleValidSubmit" ></ButtonOOne>
 
 
+<B3 @ref="br"></B3>
 
 <div style="@divStyle">
     @divText
@@ -67,10 +68,11 @@
         </div>
     </div>
     <br /><br />
-    <button type="submit" class="btn btn-primary btn-sm">Place Bet</button>
 
 
 </EditForm>
+<button class="btn btn-primary" @onclick="HandleValidSubmit">PlaceBet</button>
+
 <style>
     .wallet-container {
         display: flex; /* Use flexbox to arrange items horizontally */
@@ -112,11 +114,10 @@
     private string divText = "";
     private string divStyle = "";
     private string BetGeneratedHAsh { get; set; }
-
     private List<double> btcBalances = new List<double>();
     private List<double> ethBalances = new List<double>();
     private List<double> bnbBalances = new List<double>();
-
+    private ArsaRExCH.Components.MyComponents.B3 br;
     private void ChangeColor()
     {
         divStyle = "background-color: green; color: white; padding: 20px; border: 1px solid #ccc;";
@@ -139,7 +140,7 @@
         }
 
     }
-   
+
     public async Task HandleValidSubmit()
     {
         //BetModel.CompletedTime = something when bet expires is null for begin
@@ -163,9 +164,10 @@
         //Then edit balance of user
         await _interface2.EditWalletAmount(user2, BtcBetAmout);
         ChangeColor();
-       // StateHasChanged();
+        await br.FetchBalancesAsync();
+        // StateHasChanged();
         Thread.Sleep(10);
-        manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
+     //   manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
 
     }
 
