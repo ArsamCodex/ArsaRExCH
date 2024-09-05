@@ -32,7 +32,7 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center; border: dashed 1px black;width:auto">
+    <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center;width:auto">
         <div class="form-group" style="width: auto;">
             <label for="btcPriceExpireBet">BTC Price Expire Bet</label>
             <InputNumber @bind-Value="BetModel.BtcPriceExpireBet" id="btcPriceExpireBet" class="form-control form-control-sm" />
@@ -52,7 +52,7 @@
     <br />
     <br />
 
-    <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center; border: dashed 1px black;width:auto">
+    <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center;width:auto">
         <div class="form-group" style="width:auto;">
             <label for="ethPriceExpireBet">ETH Price Expire Bet</label>
             <InputNumber @bind-Value="BetModel.EthPriceExpireBet" id="ethPriceExpireBet" class="form-control form-control-sm" />
@@ -167,7 +167,7 @@
         await br.FetchBalancesAsync();
         // StateHasChanged();
         Thread.Sleep(10);
-     //   manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
+        manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
 
     }
 

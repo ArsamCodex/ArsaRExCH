@@ -38,14 +38,15 @@ else
             {
                 <tr>
                     <td>@bet.BetId</td>
-              
+
                     <td>@(bet.WiningAmount.HasValue ? bet.WiningAmount.Value.ToString("0.####") : "N/A")</td>
                     <td>@bet.IsBetActive</td>
                     <td>@(bet.OpendBetAtricle.HasValue ? bet.OpendBetAtricle.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
                     <td>@bet.BetSignutare</td>
-<td>
-    <a href="/BetDetails/@bet.BetSignutare">View Details</a>
-</td                </tr>
+                    <td>
+                        <a href="/BetDetails/@bet.BetSignutare">View Details</a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -74,6 +75,6 @@ else
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             BetLists = await _interface.GetBetsByUseId(user2);
 
+        }
     }
-}
 }

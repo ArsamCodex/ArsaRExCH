@@ -292,6 +292,9 @@ namespace ArsaRExCH.InterfaceIMPL
             // Convert satoshis to BTC
             double btcBalance = satoshiBalance / 1e8;
 
+
+
+
             return btcBalance;
         }
 
