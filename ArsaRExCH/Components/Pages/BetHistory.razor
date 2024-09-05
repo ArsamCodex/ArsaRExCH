@@ -1,4 +1,4 @@
-﻿@page "/BetH"
+﻿@page "/BetHistory"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
@@ -26,21 +26,11 @@ else
         <thead>
             <tr>
                 <th>Bet ID</th>
-                <th>User ID</th>
-                <th>BTC Price Now</th>
-                <th>BTC Price Expire Bet</th>
-                <th>Hit Date BTC</th>
-                <th>Bet Amount BTC</th>
-                <th>ETH Price Now</th>
-                <th>Hit Date ETH</th>
-                <th>ETH Price Expire Bet</th>
-                <th>Bet Amount ETH</th>
                 <th>Wining Amount</th>
                 <th>Is Bet Active</th>
-                <th>Is Deleted</th>
-                <th>Completed Time</th>
                 <th>Opened Bet Article</th>
                 <th>Bet Signature</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -48,22 +38,14 @@ else
             {
                 <tr>
                     <td>@bet.BetId</td>
-                    <td>@bet.UserIdSec</td>
-                    <td>@bet.BtcPriceNow</td>
-                    <td>@bet.BtcPriceExpireBet</td>
-                    <td>@bet.HitDateBTC.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    <td>@bet.BetAmountBtc</td>
-                    <td>@bet.EthPriceNow</td>
-                    <td>@bet.HitDateETH.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    <td>@bet.EthPriceExpireBet</td>
-                    <td>@bet.BetAmountETH</td>
+              
                     <td>@(bet.WiningAmount.HasValue ? bet.WiningAmount.Value.ToString("0.####") : "N/A")</td>
                     <td>@bet.IsBetActive</td>
-                    <td>@bet.ISDeleted</td>
-                    <td>@bet.CompletedTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
                     <td>@(bet.OpendBetAtricle.HasValue ? bet.OpendBetAtricle.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
                     <td>@bet.BetSignutare</td>
-                </tr>
+<td>
+    <a href="/BetDetails/@bet.BetSignutare">View Details</a>
+</td                </tr>
             }
         </tbody>
     </table>

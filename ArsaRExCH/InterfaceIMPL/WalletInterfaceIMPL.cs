@@ -358,6 +358,10 @@ namespace ArsaRExCH.InterfaceIMPL
             return (btcBalances, ethBalances, bnbBalances);
         }
 
+        /*
+         * WARNING Edit bet onlly when bet place and NOT when u want increasse 
+         * This method only decrease the amount wallet.Amount -= amount;
+         * in wining possition or increassing we make other method*/
         public async Task<double> EditWalletAmount(string userID, double amount)
         {
             // Retrieve the wallet entry for the specified user and currency pair
@@ -380,7 +384,8 @@ namespace ArsaRExCH.InterfaceIMPL
 
 
             // Update the wallet amount
-            wallet.Amount = amount;
+            //USE THIS METHOD TO EDIT WALLET WHEN BET PLACED
+            wallet.Amount -= amount;
 
             // Save the updated wallet entry to the database
             _context.Wallet.Update(wallet);
