@@ -378,10 +378,6 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 throw new InvalidOperationException("Wallet not found for the specified user.");
             }
-
-        
-
-
             // Update the wallet amount
             //USE THIS METHOD TO EDIT WALLET WHEN BET PLACED
             wallet.Amount -= amount;
@@ -398,6 +394,31 @@ namespace ArsaRExCH.InterfaceIMPL
             return wallet.Amount;
         }
 
+        public async Task<double> EditWalletAmountDecrease(string userID, double amount)
+        {
+            /* Here we have now 2 seperate method for edit wallet in both winning and lost position
+             * . you can make 1 method fot both also  , but i like this way 
+             * */
+
+            var wallet = await _context.Wallet
+                .Where(c => c.UserIDSec == userID && c.PairName == "BTC")
+                .FirstOrDefaultAsync(); // Execute the query and get the first result
+
+            if (wallet == null || amount < 0)
+            {
+                throw new InvalidOperationException("Wallet not found for the specified user.");
+            }
+            // Update the wallet amount
+            //USE THIS METHOD TO EDIT WALLET onlly for decrease amount 
+            wallet.Amount += amount;
+       
+            // Save the updated wallet entry to the database
+            _context.Wallet.Update(wallet);
+            await _context.SaveChangesAsync();
+
+            // Return the updated amount
+            return wallet.Amount;
+        }
     }
 }
 

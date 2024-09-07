@@ -23,5 +23,6 @@ namespace ArsaRExCH.Interface
 
         /* I need Here Edit Wallet one by one . 2 seprate method or 1 generic method for all */
         Task<T> EditWalletAmount(string userID, double amount);
+        Task<T> EditWalletAmountDecrease(string userID, double amount);
     }
 }
