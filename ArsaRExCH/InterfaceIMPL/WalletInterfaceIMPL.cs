@@ -292,7 +292,8 @@ namespace ArsaRExCH.InterfaceIMPL
             // Convert satoshis to BTC
             double btcBalance = satoshiBalance / 1e8;
 
-
+            //Here when we check blockchain for btc wallet balance Then we check amount in database then edit amount
+            ///check last transactions of a wallet for new trwansacstion
 
 
             return btcBalance;
@@ -373,22 +374,21 @@ namespace ArsaRExCH.InterfaceIMPL
                 .FirstOrDefaultAsync(); // Execute the query and get the first result
 
             // Check if the wallet entry exists
-            if (wallet == null)
+            if (wallet == null || amount < 0)
             {
                 throw new InvalidOperationException("Wallet not found for the specified user.");
             }
 
-            // Check if the current balance is zero and the amount is negative
-            if (wallet.Amount == 0 && amount < 0)
-            {
-                // If the current balance is zero, you cannot decrease it further
-                throw new InvalidOperationException("Cannot decrease amount as the wallet balance is already zero.");
-            }
+        
 
 
             // Update the wallet amount
             //USE THIS METHOD TO EDIT WALLET WHEN BET PLACED
             wallet.Amount -= amount;
+            if (wallet.Amount < 0)
+            {
+                throw new InvalidOperationException("Invalid Bet: Wallet balance cannot be negative.");
+            }
 
             // Save the updated wallet entry to the database
             _context.Wallet.Update(wallet);

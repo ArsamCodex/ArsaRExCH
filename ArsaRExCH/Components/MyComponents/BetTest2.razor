@@ -72,7 +72,10 @@
 
 </EditForm>
 <button class="btn btn-primary" @onclick="HandleValidSubmit">PlaceBet</button>
-
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
 <style>
     .wallet-container {
         display: flex; /* Use flexbox to arrange items horizontally */
@@ -108,6 +111,7 @@
 </style>
 @user2
 @code {
+    private string ErrorMessage { get; set; }
     private Bet BetModel = new Bet();
     private string user2 { get; set; }
     private double BtcBetAmout { get; set; }
@@ -143,33 +147,52 @@
 
     public async Task HandleValidSubmit()
     {
-        //BetModel.CompletedTime = something when bet expires is null for begin
-
+        // Initialize the bet model with necessary values
         BetModel.IsBetActive = true;
         BetModel.ISDeleted = false;
-        BetModel.UserIdSec = user2;
-        BetModel.BtcPriceNow = 11200000;//Call to database
-        BetModel.EthPriceNow = 11200000;//Call to database
-        BetModel.OpendBetAtricle = DateTime.Now; //init at placing bet sample
-        BetModel.WiningAmount = null;//calculate later
+        BetModel.UserIdSec = user2; // Example user ID
+        BetModel.BtcPriceNow = 11200000; // Retrieve current BTC price from the database or API call
+        BetModel.EthPriceNow = 11200000; // Retrieve current ETH price from the database or API call
+        BetModel.OpendBetAtricle = DateTime.Now; // Set the current time as the opening time of the bet
+        BetModel.WiningAmount = null; // To be calculated later
 
-        BtcBetAmout = BetModel.BetAmountBtc;
+        BtcBetAmout = BetModel.BetAmountBtc; // Set the bet amount in BTC
 
-        //First save the bet in database
-        BetModel.BetSignutare = await _interface.Generatesha256();
-        BetGeneratedHAsh = BetModel.BetSignutare;
-        await _interface.SaveBet(BetModel);
-        BetModel = new Bet();
+        try
+        {
+            // Generate a signature for the bet and save it to the database
+            BetModel.BetSignutare = await _interface.Generatesha256();
+            BetGeneratedHAsh = BetModel.BetSignutare;
+            await _interface.SaveBet(BetModel);
+            BetModel = new Bet(); // Reset the BetModel
 
-        //Then edit balance of user
-        await _interface2.EditWalletAmount(user2, BtcBetAmout);
-        ChangeColor();
-        await br.FetchBalancesAsync();
-        // StateHasChanged();
-        Thread.Sleep(10);
+            // Try to edit the wallet amount for the user
+            await _interface2.EditWalletAmount(user2, BtcBetAmout);
+
+            // Clear any error messages on successful wallet update
+            ErrorMessage = string.Empty;
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Display an error message if the wallet update fails due to insufficient funds
+            ErrorMessage = ex.Message;
+            return; // Stop further execution if there's an error
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions
+            ErrorMessage = "An unexpected error occurred: " + ex.Message;
+            return; // Stop further execution if there's an error
+        }
+
+        // Additional actions after successfully handling the bet and updating the wallet
+        ChangeColor(); // Some method to change the color (ensure this method does not block the UI)
+        await br.FetchBalancesAsync(); // Fetch updated balances (ensure this does not block the UI)
+
+        // Navigate to the bet preview page if everything is successful
         manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
-
     }
+
 
 }
 
