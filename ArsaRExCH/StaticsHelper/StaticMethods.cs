@@ -63,5 +63,19 @@ namespace ArsaRExCH.StaticsHelper
                 }
             }
         }
+
+        /* We need to make static method or any other type of method to calculate rewarding system*/
+        public static async Task<Bet> CalculateBetResault(Bet bet)
+        {
+            // First of first we calculate each bet resault  on 00:00  every day 
+            //we get the bet and check the Guesses pair price in this case 
+            // BTC if the price matches the current price (+ - 200 $) or any other amount the placed bet wi be x 7
+            // in any other condition its lost position . 
+            //User can not place bet for the same day . We set the available dates for bet .(Phase place bet )
+            //We check in this case Binance publlic API to get price AT 00;00 
+            //This sample method will return Final balance or final amount of user (intern)
+            //about the current rewarding system maybe new thing will be come but not now , to make it more flixable to win
+            return null;
+        }
     }
 }
