@@ -36,6 +36,8 @@ namespace ArsaRExCH.InterfaceIMPL
             //We check in this case Binance publlic API to get price AT 00;00 
             //This sample method will return Final balance or final amount of user (intern)
             //about the current rewarding system maybe new thing will be come but not now , to make it more flixable to win
+
+
             var targetBets = await _context.Bet
                    .Where(c => c.UserIdSec == id && c.HitDateBTC.Date == date.Date) // Ensure both dates match to the day
                    .ToListAsync();
@@ -67,9 +69,12 @@ namespace ArsaRExCH.InterfaceIMPL
                     // Save changes to the database only for winning bets
                     await _context.SaveChangesAsync();
                 }
+                else
+                {
+                    //edit actual bet details like is active and pther details
+                }
             }
 
-            // No specific Bet object to return as only updates are done; change return type to void if not used
        
         }
 
