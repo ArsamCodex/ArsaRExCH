@@ -26,7 +26,7 @@ namespace ArsaRExCH.InterfaceIMPL
             _signInManager = signInManager;
         }
 
-        public async Task<Bet> CalculateBetResault(DateTime date, string id)
+        public async Task CalculateBetResault(DateTime date, string id)
         {
             // First of first we calculate each bet resault  on 00:00  every day 
             //we get the bet and check the Guesses pair price in this case 
@@ -70,7 +70,7 @@ namespace ArsaRExCH.InterfaceIMPL
             }
 
             // No specific Bet object to return as only updates are done; change return type to void if not used
-            return null;
+       
         }
 
 
