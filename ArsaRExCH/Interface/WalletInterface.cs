@@ -22,7 +22,7 @@ namespace ArsaRExCH.Interface
         Task<(List<double> BtcBalances, List<double> EthBalances, List<double> BnbBalances)> GetWalletBalancesForUser(string userId);
 
         /* I need Here Edit Wallet one by one . 2 seprate method or 1 generic method for all */
-        Task<T> EditWalletAmount(string userID, double amount);
         Task<T> EditWalletAmountDecrease(string userID, double amount);
+        Task<T> EditWalletAmountIncrease(string userID, double amount);
     }
 }

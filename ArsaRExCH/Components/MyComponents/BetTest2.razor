@@ -167,7 +167,7 @@
             BetModel = new Bet(); // Reset the BetModel
 
             // Try to edit the wallet amount for the user
-            await _interface2.EditWalletAmount(user2, BtcBetAmout);
+            await _interface2.EditWalletAmountDecrease(user2, BtcBetAmout);
 
             // Clear any error messages on successful wallet update
             ErrorMessage = string.Empty;

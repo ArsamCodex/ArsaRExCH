@@ -26,7 +26,55 @@ namespace ArsaRExCH.InterfaceIMPL
             _signInManager = signInManager;
         }
 
-        public async Task<string> Generatesha256()
+        public async Task<Bet> CalculateBetResault(DateTime date, string id)
+        {
+            // First of first we calculate each bet resault  on 00:00  every day 
+            //we get the bet and check the Guesses pair price in this case 
+            // BTC if the price matches the current price (+ - 200 $) or any other amount the placed bet wi be x 7
+            // in any other condition its lost position . 
+            //User can not place bet for the same day . We set the available dates for bet .(Phase place bet )
+            //We check in this case Binance publlic API to get price AT 00;00 
+            //This sample method will return Final balance or final amount of user (intern)
+            //about the current rewarding system maybe new thing will be come but not now , to make it more flixable to win
+            var targetBets = await _context.Bet
+                   .Where(c => c.UserIdSec == id && c.HitDateBTC.Date == date.Date) // Ensure both dates match to the day
+                   .ToListAsync();
+
+            // Fetch the user's wallet amount
+            var userWallet = await _context.Wallet
+                .FirstOrDefaultAsync(c => c.UserIDSec == id);
+
+            // Replace 0 with the actual call to get the BTC price from Binance API
+            var btcPrice = 0; // This should be replaced with actual price fetching logic
+
+            // Iterate through each bet
+            foreach (var bet in targetBets)
+            {
+                // Check if the bet price matches the current BTC price (+/- 200 USD)
+                if (Math.Abs(bet.BtcPriceExpireBet - btcPrice) <= 200)
+                {
+                    // Bet is a winning one; update the bet and user wallet
+                    bet.WiningAmount = bet.BetAmountBtc * 7;
+                    bet.CompletedTime = DateTime.UtcNow;
+                    bet.IsBetActive = false;
+
+                    // Update user's wallet with the winning amount
+                    if (userWallet != null)
+                    {
+                        userWallet.Amount += bet.BetAmountBtc * 7;
+                    }
+
+                    // Save changes to the database only for winning bets
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            // No specific Bet object to return as only updates are done; change return type to void if not used
+            return null;
+        }
+
+
+            public async Task<string> Generatesha256()
         {
             return await Task.Run(() =>
             {

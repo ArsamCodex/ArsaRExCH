@@ -366,7 +366,7 @@ namespace ArsaRExCH.InterfaceIMPL
          * WARNING Edit bet onlly when bet place and NOT when u want increasse 
          * This method only decrease the amount wallet.Amount -= amount;
          * in wining possition or increassing we make other method*/
-        public async Task<double> EditWalletAmount(string userID, double amount)
+        public async Task<double> EditWalletAmountDecrease(string userID, double amount)
         {
             // Retrieve the wallet entry for the specified user and currency pair
             var wallet = await _context.Wallet
@@ -394,7 +394,7 @@ namespace ArsaRExCH.InterfaceIMPL
             return wallet.Amount;
         }
 
-        public async Task<double> EditWalletAmountDecrease(string userID, double amount)
+        public async Task<double> EditWalletAmountIncrease(string userID, double amount)
         {
             /* Here we have now 2 seperate method for edit wallet in both winning and lost position
              * . you can make 1 method fot both also  , but i like this way 

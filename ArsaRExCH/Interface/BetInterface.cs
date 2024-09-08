@@ -8,6 +8,6 @@ namespace ArsaRExCH.Interface
         Task<string> Generatesha256();
         Task<Bet> GetBetBySha(string sha);
         Task<List<Bet>> GetBetsByUseId(string useId);
-       
+        Task<Bet> CalculateBetResault(DateTime time,string id);
     }
 }
