@@ -16,14 +16,16 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BetController> _logger;
+        private readonly PriceInterface _priceInterface;
 
         public BetInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetController> logger,
-                            SignInManager<ApplicationUser> signInManager)
+                            SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface)
         {
             _logger = logger;
             _context = context;
             _configuration = configuration;
             _signInManager = signInManager;
+            _priceInterface = priceInterface;
         }
 
         public async Task CalculateBetResault(DateTime date, string id)
@@ -47,7 +49,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 .FirstOrDefaultAsync(c => c.UserIDSec == id);
 
             // Replace 0 with the actual call to get the BTC price from Binance API
-            var btcPrice = 0; // This should be replaced with actual price fetching logic
+            var btcPrice = await _priceInterface.GetBtcPriceFromBinance(); // This should be replaced with actual price fetching logic
 
             // Iterate through each bet
             foreach (var bet in targetBets)
@@ -58,6 +60,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     // Bet is a winning one; update the bet and user wallet
                     bet.WiningAmount = bet.BetAmountBtc * 7;
                     bet.CompletedTime = DateTime.UtcNow;
+                    bet.BtcPriceNow = btcPrice;
                     bet.IsBetActive = false;
 
                     // Update user's wallet with the winning amount
@@ -72,6 +75,13 @@ namespace ArsaRExCH.InterfaceIMPL
                 else
                 {
                     //edit actual bet details like is active and pther details
+                    bet.WiningAmount = 0;
+                    bet.CompletedTime = DateTime.UtcNow;
+                    bet.BtcPriceNow = btcPrice;
+                    bet.IsBetActive = false;
+                    await _context.SaveChangesAsync();
+                    
+
                 }
             }
 

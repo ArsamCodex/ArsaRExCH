@@ -75,6 +75,7 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddSingleton<EventService>();
 builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
 builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
+builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
 builder.Services.AddScoped(http => new HttpClient
 {
 });
