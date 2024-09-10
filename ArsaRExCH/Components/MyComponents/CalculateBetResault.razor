@@ -11,7 +11,7 @@
 @using ArsaRExCH.Model
 @using ArsaRExCH.Components.Pages
 @using ArsaRExCH.Components.MyComponents
-@using ArsaRExCH.StaticHelper _helper
+
 
 
 @code {
@@ -19,7 +19,6 @@
      * This component will check every Bet 
     */
     private string user2 { get; set; }
-    private Bet bet = new bet();
     protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
@@ -28,6 +27,13 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            /*
+             * Here we call the interfaace method  for check bet resauts 
+             * every day on 00:00 we pass this dat to our method 
+             * we need background services here for automated db call and calculation
+             * maybe i go straight to deprecate this component and onlly set up backgroud servicess 
+             * lets see
+             */
             
         }
 
