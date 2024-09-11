@@ -9,14 +9,11 @@ namespace ArsaRExCH.InterfaceIMPL
 {
     public class PrriceInterfaceIMPL : PriceInterface
     {
-        private readonly HttpClient httpClient;
-        private PrriceInterfaceIMPL(HttpClient httpClienti)
-        {
-            this.httpClient = httpClienti;
-        }
+       
 
         public async Task<double> GetBtcPriceFromBinance()
         {
+            HttpClient httpClient = new HttpClient();
 
                 try
                 {

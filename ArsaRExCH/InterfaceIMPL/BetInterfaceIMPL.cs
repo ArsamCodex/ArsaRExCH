@@ -15,10 +15,10 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<BetController> _logger;
+        private readonly ILogger<BetInterfaceIMPL> _logger;
         private readonly PriceInterface _priceInterface;
 
-        public BetInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetController> logger,
+        public BetInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetInterfaceIMPL> logger,
                             SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface)
         {
             _logger = logger;
@@ -49,8 +49,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 .FirstOrDefaultAsync(c => c.UserIDSec == id);
 
             // Replace 0 with the actual call to get the BTC price from Binance API
-            var btcPrice = await _priceInterface.GetBtcPriceFromBinance(); // This should be replaced with actual price fetching logic
-
+            // var btcPrice = await _priceInterface.GetBtcPriceFromBinance(); // This should be replaced with actual price fetching logic
+            var btcPrice = 50000;
             // Iterate through each bet
             foreach (var bet in targetBets)
             {

@@ -26,8 +26,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-//Add
-builder.Services.AddHostedService<BackgroundServiceForBetResault>();
+
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo
@@ -73,7 +72,10 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddSingleton<EventService>();
+
+//Add
+builder.Services.AddHostedService<BackgroundServiceForBetResault>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
 builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
 builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
@@ -128,9 +130,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddControllers();
-
 
 
 var app = builder.Build();
