@@ -44,7 +44,9 @@ else
                     <td>@(bet.OpendBetAtricle.HasValue ? bet.OpendBetAtricle.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
                     <td>@bet.BetSignutare</td>
                     <td>
-                        <a href="/BetDetails/@bet.BetSignutare">View Details</a>
+                    
+
+                        <a href="/BetPreview/@bet.BetSignutare">View Details</a>
                     </td>
                 </tr>
             }

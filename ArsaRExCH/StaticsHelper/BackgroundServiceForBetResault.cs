@@ -2,6 +2,8 @@
 using ArsaRExCH.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace ArsaRExCH.StaticsHelper
 {
@@ -12,22 +14,36 @@ namespace ArsaRExCH.StaticsHelper
         private readonly IServiceScopeFactory _ServiceScope;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BackgroundServiceForBetResault(IServiceScopeFactory serviceScope, IHttpContextAccessor httpContextAccessor)
+
+        public  BackgroundServiceForBetResault(IServiceScopeFactory serviceScope, IHttpContextAccessor httpContextAccessor )
         {
             _ServiceScope = serviceScope;
             _httpContextAccessor = httpContextAccessor;
+           
 
 
         }
+       
 
         public async Task RunMyMethod()
         {
-            
-
+            var MyUser = await GetUserId();
             using (var scope = _ServiceScope.CreateScope())
             {
                 /*Check thisi method  GetUserId*/
-                var MyUser = "046d506c-d035-43d0-8976-78d615e4e4bc";
+                try
+                {
+                    
+                    if (MyUser == null)
+                    {
+                        Console.WriteLine("UsrId null");
+                    }
+                    Console.WriteLine(MyUser);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
 
                 var date = DateTime.Now;
 
@@ -110,7 +126,7 @@ namespace ArsaRExCH.StaticsHelper
         private TimeSpan CalculateDelayUntilNextDay00()
         {
             DateTime now = DateTime.Now;
-            DateTime next0000AM = now.Date.AddHours(19).AddMinutes(54);
+            DateTime next0000AM = now.Date.AddHours(21).AddMinutes(04);
 
             if (now > next0000AM)
             {
@@ -124,12 +140,14 @@ namespace ArsaRExCH.StaticsHelper
 
         public async Task<string> GetUserId()
         {
+           
             var user = _httpContextAccessor.HttpContext?.User;
+            /*
             if (user == null || !user.Identity.IsAuthenticated)
             {
                 return null;
-            }
-            var userid = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }*/
+            var userid = user?.FindFirstValue(ClaimTypes.NameIdentifier);
             Console.WriteLine(userid);
 
             return userid;
