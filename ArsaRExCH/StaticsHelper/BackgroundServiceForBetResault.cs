@@ -26,7 +26,7 @@ namespace ArsaRExCH.StaticsHelper
 
             using (var scope = _ServiceScope.CreateScope())
             {
-
+                /*Check thisi method  GetUserId*/
                 var MyUser = "046d506c-d035-43d0-8976-78d615e4e4bc";
 
                 var date = DateTime.Now;
