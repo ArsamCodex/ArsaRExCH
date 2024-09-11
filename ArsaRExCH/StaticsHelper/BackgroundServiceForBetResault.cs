@@ -3,6 +3,8 @@ using ArsaRExCH.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
 
 
 namespace ArsaRExCH.StaticsHelper
@@ -13,12 +15,17 @@ namespace ArsaRExCH.StaticsHelper
 
         private readonly IServiceScopeFactory _ServiceScope;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
 
 
-        public  BackgroundServiceForBetResault(IServiceScopeFactory serviceScope, IHttpContextAccessor httpContextAccessor )
+
+        public BackgroundServiceForBetResault(IServiceScopeFactory serviceScope, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, AuthenticationStateProvider authenticationStateProvider)
         {
             _ServiceScope = serviceScope;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
+            _authenticationStateProvider = authenticationStateProvider;
            
 
 
@@ -49,11 +56,12 @@ namespace ArsaRExCH.StaticsHelper
 
 
                 var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                /*check all the bets */
                 var targetBets = await _context.Bet
-                  .Where(c => c.UserIdSec == MyUser && c.HitDateBTC.Date == date.Date &&c.IsBetActive==true) // Ensure both dates match to the day
+                  .Where(c=> c.HitDateBTC.Date == date.Date &&c.IsBetActive==true) // Ensure both dates match to the day
                   .ToListAsync();
 
-                Console.WriteLine(targetBets.Count);
 
                 // Fetch the user's wallet amount
                 var userWallet = await _context.Wallet
@@ -126,7 +134,7 @@ namespace ArsaRExCH.StaticsHelper
         private TimeSpan CalculateDelayUntilNextDay00()
         {
             DateTime now = DateTime.Now;
-            DateTime next0000AM = now.Date.AddHours(21).AddMinutes(04);
+            DateTime next0000AM = now.Date.AddHours(21).AddMinutes(57);
 
             if (now > next0000AM)
             {
@@ -140,17 +148,29 @@ namespace ArsaRExCH.StaticsHelper
 
         public async Task<string> GetUserId()
         {
-           
+            var authuser = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authuser.User;
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                var myuser = await _userManager.GetUserAsync(user);
+                return myuser.Id;
+
+
+            }
+            return null;
+
+           /*
             var user = _httpContextAccessor.HttpContext?.User;
-            /*
+            
             if (user == null || !user.Identity.IsAuthenticated)
             {
                 return null;
-            }*/
+            }
             var userid = user?.FindFirstValue(ClaimTypes.NameIdentifier);
             Console.WriteLine(userid);
 
             return userid;
+           */
         }
 
     }
