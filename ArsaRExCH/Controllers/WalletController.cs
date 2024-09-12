@@ -12,7 +12,7 @@ namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [Authorize]
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

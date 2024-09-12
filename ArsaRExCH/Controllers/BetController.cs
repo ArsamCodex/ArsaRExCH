@@ -1,28 +1,36 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [Controller]
+    [Authorize]
     public class BetController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BetController> _logger;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public BetController(IConfiguration configuration, ApplicationDbContext context, ILogger<BetController> logger,
-                               SignInManager<ApplicationUser> signInManager)
+                               SignInManager<ApplicationUser> signInManager, AuthenticationStateProvider authenticationStateProvider, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _context = context;
             _configuration = configuration;
             _signInManager = signInManager;
+            _authenticationStateProvider = authenticationStateProvider;
+            _userManager = userManager;
         }
         [HttpPost("GetBet")]
       //  [AutoValidateAntiforgeryToken]
@@ -63,6 +71,19 @@ namespace ArsaRExCH.Controllers
         {
             //Call To Binance endpoitn get data 
             return null;
+        }
+
+        [HttpGet("userid")]
+        public async Task<string> GetUserId()
+        {
+
+            var userd = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userd == null)
+            {
+                return "UserNot Autheticated";
+            }
+            return userd;
+
         }
     }
 }

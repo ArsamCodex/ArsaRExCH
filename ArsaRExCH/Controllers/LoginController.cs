@@ -13,6 +13,7 @@ namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LoginController : ControllerBase
     {
         private readonly IConfiguration _configuration;
