@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager _NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+<button class="btn btn-primary" @onclick="GoToTaretPage">@TextValue</button>
+
+
+@code {
+    [Parameter]
+    public string TargetUrl{ get; set; }
+
+    [Parameter]
+    public string TextValue { get; set; }
+
+
+    public async Task GoToTaretPage()
+    {
+        _NavigationManager.NavigateTo(TargetUrl, true);
+    }
+
+}

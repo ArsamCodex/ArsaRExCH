@@ -32,6 +32,10 @@
     .bg-light-red {
         background-color: #f8d7da; /* Light red color */
     }
+
+    .bg-light-green {
+        background-color: lightgreen; /* Light green color */
+    }
 </style>
 @if (bet == null)
 {
@@ -55,7 +59,7 @@ else
         <div class="bet-item"><strong>Bet Amount in ETH:</strong> @bet.BetAmountETH</div>
 
         <!-- Conditional class based on Winning Amount -->
-        <div class="bet-item @(bet.WiningAmount.GetValueOrDefault() == 0 ? "bg-light-red" : "")">
+        <div class="bet-item @(bet.WiningAmount.GetValueOrDefault() == 0 ? "bg-light-red" : "bg-light-green")">
             <strong>Winning Amount:</strong> @bet.WiningAmount.GetValueOrDefault()
         </div>
 
@@ -67,6 +71,11 @@ else
         <div class="bet-item"><strong>Bet Signature:</strong> @bet.BetSignutare</div>
     </div>
 }
+<br />
+<br />
+
+<ArsaRExCH.Components.MyComponents.DirectionUrlManager TargetUrl="Bet1" TextValue="BackToBet"></ArsaRExCH.Components.MyComponents.DirectionUrlManager>
+
 @code {
     [Parameter]
     public string Hash { get; set; }

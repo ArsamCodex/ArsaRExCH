@@ -11,7 +11,7 @@ namespace ArsaRExCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+    [Authorize]
     public class PairController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

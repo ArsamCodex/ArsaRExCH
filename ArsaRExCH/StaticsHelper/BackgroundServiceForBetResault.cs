@@ -1,38 +1,17 @@
 ﻿using ArsaRExCH.Data;
-using ArsaRExCH.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Components.Authorization;
-using ArsaRExCH.Components;
-using static System.Net.WebRequestMethods;
 
 
 namespace ArsaRExCH.StaticsHelper
 {
     public class BackgroundServiceForBetResault : BackgroundService
     {
-
-
         private readonly IServiceScopeFactory _ServiceScope;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-       // private readonly UserManager<ApplicationUser> _userManager;
-       // private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-
-
-        public BackgroundServiceForBetResault(IServiceScopeFactory serviceScope, IHttpContextAccessor httpContextAccessor)
+        public BackgroundServiceForBetResault(IServiceScopeFactory serviceScope)
         {
             _ServiceScope = serviceScope;
-            _httpContextAccessor = httpContextAccessor;
-           // _authenticationStateProvider = authenticationStateProvider;
-           
-
-
         }
-       
-
         public async Task RunMyMethod()
         {
            
@@ -82,7 +61,7 @@ namespace ArsaRExCH.StaticsHelper
                         bet.BtcPriceNow = btcPrice;
                         bet.IsBetActive = false;
                         await _context.SaveChangesAsync();
-
+                        Console.WriteLine("db IV , Operation completed");
 
                     }
                 }
@@ -90,8 +69,6 @@ namespace ArsaRExCH.StaticsHelper
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Calculate the delay until 00:01 for the current day
@@ -101,15 +78,10 @@ namespace ArsaRExCH.StaticsHelper
                 await Task.Delay(delay, stoppingToken);
 
                 // Perform your scheduled task here
-                //Here we get the date only and pass user Id
-
-                   await RunMyMethod();
-              //  await GetUserId();
+                  await RunMyMethod();
 
             }
         }
-
-
         /*First here wecalcuate every day 00:01 */
         private TimeSpan CalculateDelayUntilNextDay00()
         {
@@ -120,12 +92,7 @@ namespace ArsaRExCH.StaticsHelper
             {
                 next0000AM = next0000AM.AddDays(1);
             }
-
             return next0000AM - now;
         }
-
-
-
     }
-
 }
