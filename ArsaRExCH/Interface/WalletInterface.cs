@@ -1,5 +1,6 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.DTOs;
+using ArsaRExCH.InterfaceIMPL;
 using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts.Standards.ENS.ETHRegistrarController.ContractDefinition;
@@ -24,5 +25,6 @@ namespace ArsaRExCH.Interface
         /* I need Here Edit Wallet one by one . 2 seprate method or 1 generic method for all */
         Task<T> EditWalletAmountDecrease(string userID, double amount);
         Task<T> EditWalletAmountIncrease(string userID, double amount);
+        Task <List<UserBetCount>> GetFIrstXwinners();
     }
 }

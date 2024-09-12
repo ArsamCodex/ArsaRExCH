@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Sockets;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace ArsaRExCH.InterfaceIMPL
 {
     public class WalletInterfaceIMPL : WalletInterface<double>
@@ -411,7 +412,7 @@ namespace ArsaRExCH.InterfaceIMPL
             // Update the wallet amount
             //USE THIS METHOD TO EDIT WALLET onlly for decrease amount 
             wallet.Amount += amount;
-       
+
             // Save the updated wallet entry to the database
             _context.Wallet.Update(wallet);
             await _context.SaveChangesAsync();
@@ -419,6 +420,80 @@ namespace ArsaRExCH.InterfaceIMPL
             // Return the updated amount
             return wallet.Amount;
         }
+        /*
+        public async Task<List<UserBetCount>> GetFIrstXwinners()
+        {
+            try
+            {
+                var result = await _context.Bet
+                    .Where(b => b.WiningAmount!=0) // Filter out deleted or inactive bets
+                    .GroupBy(b => b.UserIdSec)
+                    .Select(g => new UserBetCount
+                    {
+                        UserId = g.Key,
+                        TotalWinningAmount = g.Sum(b => b.WiningAmount ?? 0) // Sum of winning amounts
+                    })
+                    .OrderByDescending(x => x.TotalWinningAmount) // Order by total winning amount
+                    .ToListAsync();
+
+                if (!result.Any())
+                {
+                    Console.WriteLine("No results found.");
+                }
+
+                foreach (var item in result)
+                {
+                    Console.WriteLine($"UserId: {item.UserId}, TotalWinningAmount: {item.TotalWinningAmount}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching total winning amounts: {ex.Message}");
+                return new List<UserBetCount>();
+            }
+        }*/
+
+
+        public async Task<List<UserBetCount>> GetFIrstXwinners()
+        {
+            var topCount = 10;
+            try
+            {
+                // Fetch top X winners
+                var result = await _context.Bet
+                    .Where(b => b.WiningAmount != 0 && b.WiningAmount !=null) // Filter out irrelevant bets
+                    .GroupBy(b => b.UserIdSec)
+                    .Select(g => new UserBetCount
+                    {
+                        UserId = g.Key,
+                        TotalWinningAmount = g.Sum(b => b.WiningAmount ?? 0) // Calculate total winning amount
+                    })
+                    .OrderByDescending(x => x.TotalWinningAmount) // Order by total winnings in descending order
+                    .Take(topCount) // Limit to top X users
+                    .ToListAsync(); // Execute query
+
+                if (!result.Any())
+                {
+                    Console.WriteLine("No results found.");
+                }
+
+                // Log the results for debugging
+                foreach (var item in result)
+                {
+                    Console.WriteLine($"UserId: {item.UserId}, TotalWinningAmount: {item.TotalWinningAmount}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching top winners: {ex.Message}");
+                return new List<UserBetCount>();
+            }
+        }
     }
+
 }
 
