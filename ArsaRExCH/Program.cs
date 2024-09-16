@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using ArsaRExCH.Model;
 using ArsaRExCH.StaticsHelper;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,50 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+builder.Services.AddHostedService<BackgroundServiceForBetResault>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
+builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
+builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
+builder.Services.AddScoped(http => new HttpClient
+{
+});
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+    .AddIdentityCookies();
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddControllers();
+
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
+
+
+
+
+
+
+
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -73,25 +118,93 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 
-//Add
-builder.Services.AddHostedService<BackgroundServiceForBetResault>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
-builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
-builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
-builder.Services.AddScoped(http => new HttpClient
+
+var app = builder.Build();
+using (var scope = app.Services.CreateScope())
 {
-});
+    var services = scope.ServiceProvider;
+ //   await InitializeRolesAndAssignAdmin(services);
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Ensure roles exist
+    var roles = new[] { "Admin", "User", "Moderator" }; // Define your roles here
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseWebAssemblyDebugging();
+        app.UseMigrationsEndPoint();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ARsarExCH Public API");
+    }); app.UseStaticFiles();
+    app.UseAntiforgery();
+
+    app.MapRazorComponents<App>()
+        .AddInteractiveServerRenderMode()
+        .AddInteractiveWebAssemblyRenderMode()
+        .AddAdditionalAssemblies(typeof(ArsaRExCH.Client._Imports).Assembly);
+
+    // Add additional endpoints required by the Identity /Account Razor components.
+    app.MapAdditionalIdentityEndpoints();
+    app.MapControllers();
+    app.UseRouting();
+
+    app.UseAuthentication();  // Ensure this is called before UseAuthorization
+    app.UseAuthorization();
+    app.UseAntiforgery();
+    app.Run();
+
+
+    /*
+    async Task InitializeRolesAndAssignAdmin(IServiceProvider serviceProvider)
+    {
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        // Ensure "Admin" role exists
+        if (!await roleManager.RoleExistsAsync("Admin"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+
+        // Find a user to assign the Admin role to
+        var user = await userManager.FindByEmailAsync("admin@example.com");
+        if (user != null && !(await userManager.IsInRoleAsync(user, "Admin")))
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+    }*/
+
+
+}
 
 
 
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-})
-    .AddIdentityCookies();
+
+
+
+
+
+
 
 /*
 builder.Services.AddAuthentication(options =>
@@ -115,58 +228,3 @@ builder.Services.AddAuthentication(options =>
             };
         }).AddIdentityCookies();
 */
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Admin", policy => policy.RequireRole("admin"));
-});
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddControllers();
-
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ARsarExCH Public API");
-}); app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(ArsaRExCH.Client._Imports).Assembly);
-
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
-app.MapControllers();
-app.UseRouting();
-
-app.UseAuthentication();  // Ensure this is called before UseAuthorization
-app.UseAuthorization();
-app.UseAntiforgery();
-app.Run();

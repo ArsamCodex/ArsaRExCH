@@ -87,7 +87,7 @@ namespace ArsaRExCH.Data
                  PaiName = "BNB",
                  ListPrice = 200.0,
                  ListedDate = DateTime.Now,
-                 NetworkName = "BTC"
+                 NetworkName = "BNB"
              },
              new Pair
              {

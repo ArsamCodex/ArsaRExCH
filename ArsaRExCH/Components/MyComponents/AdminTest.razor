@@ -1,0 +1,68 @@
+﻿@page "/Admintest"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@inject ArsaRExCH.Interface.PriceInterface _priceInterface
+@using ArsaRExCH.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<ApplicationUser> _userManager
+@inject ApplicationDbContext DbContext
+@attribute [Authorize(Roles = "Admin")]
+@inject RoleManager<IdentityRole> RoleManager
+
+
+    <p>Welcome, ! @roleInfo    , This is Administration Page</p>
+
+
+@code {
+    private string roleInfo = "Loading...";
+    private ApplicationUser currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var roleClaims = user.Claims.Where(c => c.Type == ClaimTypes.Role);
+            if (roleClaims.Any())
+            {
+                roleInfo = string.Join(", ", roleClaims.Select(r => r.Value));
+            }
+            else
+            {
+                roleInfo = "No roles found.";
+            }
+        }
+        else
+        {
+            roleInfo = "User not authenticated.";
+        }
+    }
+
+
+
+    private async Task<List<string>> GetRolesForUserAsync(string userId)
+    {
+        // Query the roles for the given user ID
+        var roles = await DbContext.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .Join(DbContext.Roles,
+                ur => ur.RoleId,
+                r => r.Id,
+                (ur, r) => r.Name)
+            .ToListAsync();
+
+        return roles;
+    }
+}
