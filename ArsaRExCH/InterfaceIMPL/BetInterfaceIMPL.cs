@@ -175,9 +175,58 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
-        public Task<UserAnalyticsDTO> UserTradeAnalytics(string id)
+        public async Task<UserAnalyticsDTO> UserTradeAnalytics(string userId)
         {
-            throw new NotImplementedException();
+            // Fetch bets from the database using the context
+            var bets = await _context.Bet
+                                     .Where(bet => bet.UserIdSec == userId )
+                                     .ToListAsync();
+
+            // Calculate the total number of trades
+            int tradeCount = bets.Count;
+
+            // Calculate the number of wins
+            int winCount = bets.Count(bet => bet.WiningAmount.HasValue && bet.WiningAmount > 0);
+
+            // Calculate the number of losses
+            int lossCount = tradeCount - winCount;
+
+            // Calculate the total win amount
+            double totalWin = bets.Where(bet => bet.WiningAmount.HasValue)
+                                  .Sum(bet => bet.WiningAmount.Value);
+
+            // Calculate the total amount placed in bets
+            double totalInzet = bets.Sum(bet => bet.BetAmountBtc + bet.BetAmountETH);
+
+            // Get the winning bets and include the additional details for BTC
+            var winningBets = bets
+                .Where(bet => bet.WiningAmount.HasValue && bet.WiningAmount > 0)
+                .Select(bet => new Bet
+                {
+                    BetId = bet.BetId,
+                    BtcPriceNow = bet.BtcPriceNow,
+                    HitDateBTC = bet.HitDateBTC,
+                    BtcPriceExpireBet = bet.BtcPriceExpireBet,
+                    BetAmountBtc = bet.BetAmountBtc,
+                    WiningAmount = bet.WiningAmount
+                })
+                .ToList();
+
+            // Create the DTO object to return
+            var userAnalyticsDTO = new UserAnalyticsDTO
+            {
+                TradeCount = tradeCount,
+                WinCOunt = winCount,
+                LossCount = lossCount,
+                TottalWIn = totalWin,
+                TottalInzet = totalInzet,
+                PairName = "BTC/ETH", // You can customize this field as needed
+                WiningBets = winningBets
+            };
+
+            return userAnalyticsDTO;
         }
+
+
     }
 }

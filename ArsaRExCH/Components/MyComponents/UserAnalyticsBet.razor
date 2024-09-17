@@ -1,0 +1,60 @@
+﻿@page "/UserAnalytic"
+@using ArsaRExCH.DTOs
+<h3>User Analytics Bet</h3>
+
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject ArsaRExCH.Interface.BetInterface _interface
+
+@if (analyticsData != null)
+{
+    <div>
+        <p>Trade Count: @analyticsData.TradeCount</p>
+        <p>Win Count: @analyticsData.WinCOunt</p>
+        <p>Loss Count: @analyticsData.LossCount</p>
+        <p>Total Win: @analyticsData.TottalWIn</p>
+        <p>Total Inzet: @analyticsData.TottalInzet</p>
+        <p>Pair Name: @analyticsData.PairName</p>
+
+        <h4>Winning Bets:</h4>
+        <ul>
+            @foreach (var bet in analyticsData.WiningBets)
+            {
+                <li>
+                    <strong>Bet ID:</strong> @bet.BetId |
+                    <strong>Bet Amount BTC:</strong> @bet.BetAmountBtc |
+                    <strong>BTC Price Now:</strong> @bet.BtcPriceNow |
+                    <strong>BTC Expire Price:</strong> @bet.BtcPriceExpireBet |
+                    <strong>BTC Hit Date:</strong> @bet.HitDateBTC |
+                    <strong>Winning Amount:</strong> @bet.WiningAmount
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <p>Loading analytics...</p>
+}
+
+@code {
+    private UserAnalyticsDTO analyticsData;
+
+    public string user2 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            if (!string.IsNullOrEmpty(user2))
+            {
+                // Call the service method to get user trade analytics
+                analyticsData = await _interface.UserTradeAnalytics(user2);
+            }
+        }
+    }
+}

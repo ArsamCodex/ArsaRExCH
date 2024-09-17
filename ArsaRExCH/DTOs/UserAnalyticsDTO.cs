@@ -1,4 +1,6 @@
-﻿namespace ArsaRExCH.DTOs
+﻿using ArsaRExCH.Model;
+
+namespace ArsaRExCH.DTOs
 {
     public class UserAnalyticsDTO
     {
@@ -8,5 +10,6 @@
         public double TottalWIn { get; set; }
         public double TottalInzet { get; set; }
         public string PairName { get; set; }
+        public List<Bet> WiningBets { get; set; }
     }
 }
