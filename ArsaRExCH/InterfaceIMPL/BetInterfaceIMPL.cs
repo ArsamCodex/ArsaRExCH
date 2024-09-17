@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Security.Cryptography;
+using ArsaRExCH.DTOs;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -172,6 +173,11 @@ namespace ArsaRExCH.InterfaceIMPL
                 _logger.LogError(ex, "An unexpected error occurred.");
                 throw new Exception("An unexpected error occurred while saving the bet.", ex);
             }
+        }
+
+        public Task<UserAnalyticsDTO> UserTradeAnalytics(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

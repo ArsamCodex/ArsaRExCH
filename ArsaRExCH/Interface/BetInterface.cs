@@ -1,4 +1,5 @@
 ﻿using ArsaRExCH.Model;
+using ArsaRExCH.DTOs;
 
 namespace ArsaRExCH.Interface
 {
@@ -9,5 +10,6 @@ namespace ArsaRExCH.Interface
         Task<Bet> GetBetBySha(string sha);
         Task<List<Bet>> GetBetsByUseId(string useId);
         Task CalculateBetResault(DateTime time,string id);
+        Task<UserAnalyticsDTO> UserTradeAnalytics(string id);
     }
 }
