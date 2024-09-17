@@ -150,8 +150,8 @@
         BetModel.IsBetActive = true;
         BetModel.ISDeleted = false;
         BetModel.UserIdSec = user2; // Example user ID
-      //  BetModel.BtcPriceNow = await _priceInterface.GetBtcPriceFromBinance(); // Retrieve current BTC price from the database or API call
-        BetModel.EthPriceNow = 11200000; // Retrieve current ETH price from the database or API call
+        BetModel.BtcPriceNow = await _priceInterface.GetBtcPriceFromBinance(); // Retrieve current BTC price from the database or API call
+        BetModel.EthPriceNow = await _priceInterface.GetEthPriceFromBinance(); // Retrieve current ETH price from the database or API call
         /*this is shoow ase i just now work on btc*/
         BetModel.OpendBetAtricle = DateTime.UtcNow; // Set the current time as the opening time of the bet
         BetModel.WiningAmount = null; // To be calculated later

@@ -30,5 +30,25 @@ namespace ArsaRExCH.InterfaceIMPL
                 }
             return 0;
         }
+
+        public async Task<double> GetEthPriceFromBinance()
+        {
+            HttpClient httpClient = new HttpClient();
+
+            try
+            {
+                // Fetch BTC price
+                var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+                var btcPriceData = JsonSerializer.Deserialize<double>(ethResponse);
+                return btcPriceData;
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching prices: {ex.Message}");
+            }
+            return 0;
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace ArsaRExCH.Model
         public double EthPriceExpireBet { get; set; }
         public double BetAmountETH { get; set; }
         public double? WiningAmount { get; set; }
+        public double? WiningAmountEth { get; set; }
         public bool IsBetActive { get; set; }
         /*I use IsDeleted for delete in shadow we dont want to remove data but
          * in the case of delete operation this bool changed to True otherwise 

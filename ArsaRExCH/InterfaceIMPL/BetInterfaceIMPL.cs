@@ -46,29 +46,44 @@ namespace ArsaRExCH.InterfaceIMPL
                    .ToListAsync();
 
             // Fetch the user's wallet amount
-            var userWallet = await _context.Wallet
-                .FirstOrDefaultAsync(c => c.UserIDSec == id);
+            var userWallets = await _context.Wallet
+        .Where(c => c.UserIDSec == id)
+        .ToListAsync();
 
             // Replace 0 with the actual call to get the BTC price from Binance API
-            // var btcPrice = await _priceInterface.GetBtcPriceFromBinance(); // This should be replaced with actual price fetching logic
-            var btcPrice = 50000;
+            var btcPrice = await _priceInterface.GetBtcPriceFromBinance();
+            var ethPrice = await _priceInterface.GetEthPriceFromBinance();
+
+            // This should be replaced with actual price fetching logic
             // Iterate through each bet
             foreach (var bet in targetBets)
             {
                 // Check if the bet price matches the current BTC price (+/- 200 USD)
-                if (Math.Abs(bet.BtcPriceExpireBet - btcPrice) <= 200)
+                if (Math.Abs(bet.BtcPriceExpireBet - btcPrice) <= 200 && Math.Abs(bet.EthPriceExpireBet - ethPrice) <= 200)
                 {
                     // Bet is a winning one; update the bet and user wallet
-                    bet.WiningAmount = bet.BetAmountBtc * 7;
+                  //  bet.WiningAmount = bet.BetAmountBtc * 7;
                     bet.CompletedTime = DateTime.UtcNow;
                     bet.BtcPriceNow = btcPrice;
+                    bet.EthPriceNow = ethPrice;
+
                     bet.IsBetActive = false;
 
                     // Update user's wallet with the winning amount
-                    if (userWallet != null)
-                    {
-                        userWallet.Amount += bet.BetAmountBtc * 7;
-                    }
+                
+                        foreach (var wallet in userWallets)
+                        {
+                            if (wallet.PairName == "BTC")
+                            {
+                                wallet.Amount = bet.BetAmountBtc * 7;  // Replace with actual BTC amount
+                            }
+                            else if (wallet.PairName == "ETH")
+                            {
+                                wallet.Amount = bet.BetAmountETH*7; // Replace with actual ETH amount
+                            }
+
+                        }
+                    
 
                     // Save changes to the database only for winning bets
                     await _context.SaveChangesAsync();
@@ -79,6 +94,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     bet.WiningAmount = 0;
                     bet.CompletedTime = DateTime.UtcNow;
                     bet.BtcPriceNow = btcPrice;
+                    bet.EthPriceNow= ethPrice;
                     bet.IsBetActive = false;
                     await _context.SaveChangesAsync();
                     
