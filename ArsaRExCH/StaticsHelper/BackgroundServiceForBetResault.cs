@@ -86,7 +86,7 @@ namespace ArsaRExCH.StaticsHelper
         private TimeSpan CalculateDelayUntilNextDay00()
         {
             DateTime now = DateTime.Now;
-            DateTime next0000AM = now.Date.AddHours(01).AddMinutes(47);
+            DateTime next0000AM = now.Date.AddHours(20).AddMinutes(11);
 
             if (now > next0000AM)
             {

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using ArsaRExCH.Model;
 using ArsaRExCH.StaticsHelper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,6 @@ builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
 builder.Services.AddScoped(http => new HttpClient
 {
 });
-builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -43,6 +43,7 @@ builder.Services.AddAuthentication(options =>
 })
     .AddIdentityCookies();
 
+builder.Services.AddSingleton<ArsaRExCH.Interface.IEmailSender<ApplicationUser>, ArsaRExCH.Interface.EmailSender2>();
 
 builder.Services.AddAuthorization(options =>
 {

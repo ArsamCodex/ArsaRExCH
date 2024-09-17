@@ -13,7 +13,7 @@
 <style>
     .bet-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 10px; /* Adjust the gap between items as needed */
     }
 
@@ -39,14 +39,18 @@ else
     <div class="bet-container" style="width:auto">
         @foreach (var userBet in userTotalWinningAmounts)
         {
-          <div class="bet-grid">
+            <div class="bet-grid">
                 <div class="bet-item"><strong>User</strong> @userBet.UserId</div>
-                <div class="bet-item"><strong>Total Win</strong> @userBet.TotalWinningAmount</div>
+                <div class="bet-item"><strong>Total Win</strong> @userBet.TotalWinningAmount </div>
+                <div class="bet-item">
+                    <a href="/BetPreview/@userBet.UserId">View History</a></div>
+                
+            </div>
+           
 
-                </div>
-          
         }
     </div>
+    
 }
 
 
