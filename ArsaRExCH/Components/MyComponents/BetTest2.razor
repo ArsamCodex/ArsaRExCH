@@ -1,6 +1,5 @@
 ﻿@page "/Bet1"
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
@@ -107,7 +106,7 @@
             color: #555; /* Optional: set color for balances */
         }
 </style>
-@user2
+<p>@user2</p>
 @code {
     private string ErrorMessage { get; set; }
     private Bet BetModel = new Bet();
