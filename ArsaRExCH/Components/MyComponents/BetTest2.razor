@@ -1,7 +1,6 @@
 ﻿@page "/Bet1"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@inject NavigationManager NavigationManager
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
@@ -168,6 +167,7 @@
 
             // Try to edit the wallet amount for the user
             await _interface2.EditWalletAmountDecrease(user2, BtcBetAmout);
+            await _interface2.EditWalletAmountIncreaseETH(user2, BetModel.BetAmountETH);
 
             // Clear any error messages on successful wallet update
             ErrorMessage = string.Empty;

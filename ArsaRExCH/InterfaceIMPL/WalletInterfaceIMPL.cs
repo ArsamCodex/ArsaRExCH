@@ -493,6 +493,34 @@ namespace ArsaRExCH.InterfaceIMPL
                 return new List<UserBetCount>();
             }
         }
+
+        public async Task<double> EditWalletAmountIncreaseETH(string userID, double amount)
+        {
+            // Retrieve the wallet entry for the specified user and currency pair
+            var wallet = await _context.Wallet
+                .Where(c => c.UserIDSec == userID && c.PairName == "ETH")
+                .FirstOrDefaultAsync(); // Execute the query and get the first result
+
+            // Check if the wallet entry exists
+            if (wallet == null || amount < 0)
+            {
+                throw new InvalidOperationException("Wallet not found for the specified user.");
+            }
+            // Update the wallet amount
+            //USE THIS METHOD TO EDIT WALLET WHEN BET PLACED
+            wallet.Amount -= amount;
+            if (wallet.Amount < 0)
+            {
+                throw new InvalidOperationException("Invalid Bet: Wallet balance cannot be negative.");
+            }
+
+            // Save the updated wallet entry to the database
+            _context.Wallet.Update(wallet);
+            await _context.SaveChangesAsync();
+
+            // Return the updated amount
+            return wallet.Amount;
+        }
     }
 
 }

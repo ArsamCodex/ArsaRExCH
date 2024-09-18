@@ -26,5 +26,6 @@ namespace ArsaRExCH.Interface
         Task<T> EditWalletAmountDecrease(string userID, double amount);
         Task<T> EditWalletAmountIncrease(string userID, double amount);
         Task <List<UserBetCount>> GetFIrstXwinners();
+        Task<T> EditWalletAmountIncreaseETH(string userID, double amount);
     }
 }
