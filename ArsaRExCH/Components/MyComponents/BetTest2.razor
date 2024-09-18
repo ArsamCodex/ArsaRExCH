@@ -25,7 +25,19 @@
 
 <hr />
 <br />
-<EditForm Model="BetModel" OnValidSubmit="HandleValidSubmit" FormName="Name">
+<select @bind="pairName">
+    <option>Select Pair</option>
+    @foreach (var pair in availablepairs)
+    {
+        <option value="@pair">@pair</option>
+    }
+</select>
+
+<p>Selected Pair: @pairName</p>
+<div>
+    @if (pairName == "BTC/ETH")
+    {
+        <EditForm Model="BetModel" OnValidSubmit="HandleValidSubmit" FormName="Name">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -68,7 +80,19 @@
 
 
 </EditForm>
-<button class="btn btn-primary" @onclick="HandleValidSubmit">PlaceBet</button>
+        <button class="btn btn-primary" @onclick="HandleValidSubmit">PlaceBet</button>
+    }
+    @if(pairName == "BTC/BNB")
+    {
+        <p>bnb form </p>
+    }
+   else{
+        <p>Please Select Pair</p>
+    }
+</div>
+
+    
+
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <div class="alert alert-danger">@ErrorMessage</div>
@@ -108,6 +132,8 @@
 </style>
 <p>@user2</p>
 @code {
+    private List<string> availablepairs = new List<string> { "BTC/ETH", "BTC/BNB" };
+    public string pairName { get; set; }
     private string ErrorMessage { get; set; }
     private Bet BetModel = new Bet();
     private string user2 { get; set; }
