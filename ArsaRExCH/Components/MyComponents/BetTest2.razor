@@ -37,7 +37,7 @@
 <div>
     @if (pairName == "BTC/ETH")
     {
-        <EditForm Model="BetModel" OnValidSubmit="HandleValidSubmit" FormName="Name">
+        <EditForm Model="BetModel"  FormName="Name">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -86,9 +86,7 @@
     {
         <p>bnb form </p>
     }
-   else{
-        <p>Please Select Pair</p>
-    }
+ 
 </div>
 
     
