@@ -1,4 +1,4 @@
-﻿@page "/UserAnalytic"
+﻿@page "/UserAnalytic/{UserPara}"
 @using ArsaRExCH.DTOs
 <h3>User Analytics Bet</h3>
 
@@ -37,6 +37,9 @@ else
 }
 
 @code {
+    [Parameter]
+    public string UserPara{ get; set; }
+
     private UserAnalyticsDTO analyticsData;
 
     public string user2 { get; set; }
