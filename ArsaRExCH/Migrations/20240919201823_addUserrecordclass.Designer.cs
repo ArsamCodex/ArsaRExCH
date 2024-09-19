@@ -4,6 +4,7 @@ using ArsaRExCH.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240919201823_addUserrecordclass")]
+    partial class addUserrecordclass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8bb9a9e0-a2fa-4ea2-9465-3eaa8ed42699",
+                            Id = "6ed10cbf-525f-4c01-aa41-b2fc3992d96a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1860e87b-992a-4365-82db-12fc64dff8da",
+                            ConcurrencyStamp = "2ecc642e-c0bd-4955-90ed-79307bc18ce0",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +105,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "edbdffab-fa61-40c9-b553-a8a53d379dce",
+                            SecurityStamp = "f4cade14-e503-41d5-b6c2-76fdfa24fa4f",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -227,7 +230,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 9, 19, 21, 22, 31, 715, DateTimeKind.Local).AddTicks(2838),
+                            ListedDate = new DateTime(2024, 9, 19, 21, 18, 22, 337, DateTimeKind.Local).AddTicks(6160),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -235,7 +238,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 9, 19, 21, 22, 31, 715, DateTimeKind.Local).AddTicks(2899),
+                            ListedDate = new DateTime(2024, 9, 19, 21, 18, 22, 337, DateTimeKind.Local).AddTicks(6208),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -243,7 +246,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 9, 19, 21, 22, 31, 715, DateTimeKind.Local).AddTicks(2908),
+                            ListedDate = new DateTime(2024, 9, 19, 21, 18, 22, 337, DateTimeKind.Local).AddTicks(6211),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -268,7 +271,7 @@ namespace ArsaRExCH.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("UserDatesRecords");
+                    b.ToTable("UserDatesRecord");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserTradeActivity", b =>
@@ -366,7 +369,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ad016f4f-3058-4c61-8933-9834d24310eb",
+                            Id = "56d2f9d7-4eef-4fcc-b068-7f195daae945",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -461,8 +464,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "8bb9a9e0-a2fa-4ea2-9465-3eaa8ed42699",
-                            RoleId = "ad016f4f-3058-4c61-8933-9834d24310eb"
+                            UserId = "6ed10cbf-525f-4c01-aa41-b2fc3992d96a",
+                            RoleId = "56d2f9d7-4eef-4fcc-b068-7f195daae945"
                         });
                 });
 

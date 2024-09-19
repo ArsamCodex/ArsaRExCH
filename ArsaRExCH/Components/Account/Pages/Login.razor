@@ -1,6 +1,6 @@
 ﻿@page "/Account/Login"
-
 @using System.ComponentModel.DataAnnotations
+@using ArsaRExCH.Model
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using ArsaRExCH.Data
@@ -9,7 +9,7 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
-
+@inject ApplicationDbContext _context
 <PageTitle>Log in</PageTitle>
 
 <h1>Log in</h1>
@@ -53,13 +53,7 @@
             </EditForm>
         </section>
     </div>
-<!---    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>-->
+
 </div>
 
 @code {
@@ -93,9 +87,17 @@
             var user = await SignInManager.UserManager.FindByEmailAsync(Input.Email);
             if (user != null)
             {
-                // if u want to track all dates ant not onlly last login then new class need
                 user.LastLoginDate = DateTime.UtcNow; // Update last login date
-                await SignInManager.UserManager.UpdateAsync(user); // Save changes to the database
+                await SignInManager.UserManager.UpdateAsync(user);
+                var userDatesRecord = new UserDatesRecord
+                    {
+                        UserLoggedInDates = DateTime.UtcNow,
+                        ApplicationUserId = user.Id
+                    };
+
+                // Save the login record
+                await _context.UserDatesRecords.AddAsync(userDatesRecord);
+                await _context.SaveChangesAsync();
                 Logger.LogInformation("User logged in.");
                 RedirectManager.RedirectTo(ReturnUrl);
             }

@@ -12,6 +12,7 @@ namespace ArsaRExCH.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
         public DbSet<UserTradeActivity> UserTradeActivities { get; set; }
+        public DbSet<UserDatesRecord> UserDatesRecords { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
         public DbSet<Bet> Bet { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
