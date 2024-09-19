@@ -11,10 +11,10 @@
         <p>Trade Count: @analyticsData.TradeCount</p>
         <p>Win Count: @analyticsData.WinCOunt</p>
         <p>Loss Count: @analyticsData.LossCount</p>
-        <p>Total Win: @analyticsData.TottalWIn</p>
+        <p>Total WinBTC: @analyticsData.TottalWIn</p>
+        <p>Total WinETH: @analyticsData.TottalWInEth</p>
         <p>Total Inzet: @analyticsData.TottalInzet</p>
         <p>Pair Name: @analyticsData.PairName</p>
-
         <h4>Winning Bets:</h4>
         <ul>
             @foreach (var bet in analyticsData.WiningBets)
@@ -25,7 +25,8 @@
                     <strong>BTC Price At Bet Time:</strong> @bet.BtcPriceNow |
                     <strong>BTC Expire Price Guess:</strong> @bet.BtcPriceExpireBet |
                     <strong>BTC Hit Date:</strong> @bet.HitDateBTC |
-                    <strong>Winning Amount:</strong> @bet.WiningAmount
+                    <strong>Winning Amount BTC:</strong> @bet.WiningAmount
+                 
                 </li>
             }
         </ul>

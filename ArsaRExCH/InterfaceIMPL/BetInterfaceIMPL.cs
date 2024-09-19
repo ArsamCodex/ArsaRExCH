@@ -211,10 +211,19 @@ namespace ArsaRExCH.InterfaceIMPL
             double totalWin = bets.Where(bet => bet.WiningAmount.HasValue)
                                   .Sum(bet => bet.WiningAmount.Value);
 
+            double totalWinETH = bets.Where(bet => bet.WiningAmountEth.HasValue)
+                                 .Sum(bet => bet.WiningAmountEth.Value);
+
             // Calculate the total amount placed in bets
             double totalInzet = bets.Sum(bet => bet.BetAmountBtc + bet.BetAmountETH);
 
+            var winningBetsETH = bets
+              .Where(bet => bet.WiningAmountEth.HasValue && bet.WiningAmountEth > 0)
+              .Sum(bet => bet.WiningAmountEth.Value);
+
+
             // Get the winning bets and include the additional details for BTC
+
             var winningBets = bets
                 .Where(bet => bet.WiningAmount.HasValue && bet.WiningAmount > 0)
                 .Select(bet => new Bet
@@ -224,7 +233,9 @@ namespace ArsaRExCH.InterfaceIMPL
                     HitDateBTC = bet.HitDateBTC,
                     BtcPriceExpireBet = bet.BtcPriceExpireBet,
                     BetAmountBtc = bet.BetAmountBtc,
-                    WiningAmount = bet.WiningAmount
+                    WiningAmount = bet.WiningAmount,
+                    WiningAmountEth = winningBetsETH,
+                    
                 })
                 .ToList();
 
@@ -235,6 +246,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 WinCOunt = winCount,
                 LossCount = lossCount,
                 TottalWIn = totalWin,
+                TottalWInEth = winningBetsETH,
                 TottalInzet = totalInzet,
                 PairName = "BTC/ETH", // You can customize this field as needed
                 WiningBets = winningBets

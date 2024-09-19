@@ -494,7 +494,7 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
-        public async Task<double> EditWalletAmountIncreaseETH(string userID, double amount)
+        public async Task<double> EditWalletAmountDecresETH(string userID, double amount)
         {
             // Retrieve the wallet entry for the specified user and currency pair
             var wallet = await _context.Wallet

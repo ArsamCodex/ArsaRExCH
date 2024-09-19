@@ -22,16 +22,18 @@
 </div>
 
 <br />
-
 <hr />
 <br />
-<select @bind="pairName">
-    <option>Select Pair</option>
-    @foreach (var pair in availablepairs)
-    {
-        <option value="@pair">@pair</option>
-    }
-</select>
+<div style="background-color: #f0f0f0; border: 2px solid #ccc; padding: 10px; border-radius: 5px;">
+    <select @bind="pairName" style="width: 100%; padding: 5px; border-radius: 3px; border: 1px solid #ccc;">
+        <option value="disabled">Select Pair</option>
+        @foreach (var pair in availablepairs)
+        {
+            <option value="@pair">@pair</option>
+        }
+    </select>
+</div>
+
 
 <p>Selected Pair: @pairName</p>
 <div>
@@ -136,6 +138,7 @@
     private Bet BetModel = new Bet();
     private string user2 { get; set; }
     private double BtcBetAmout { get; set; }
+    private double EthBetAmout { get; set; }
     private string divText = "";
     private string divStyle = "";
     private string BetGeneratedHAsh { get; set; }
@@ -179,7 +182,7 @@
         BetModel.WiningAmount = null; // To be calculated later
 
         BtcBetAmout = BetModel.BetAmountBtc; // Set the bet amount in BTC
-
+        EthBetAmout = BetModel.BetAmountETH;
         try
         {
             // Generate a signature for the bet and save it to the database
@@ -190,7 +193,7 @@
 
             // Try to edit the wallet amount for the user
             await _interface2.EditWalletAmountDecrease(user2, BtcBetAmout);
-            await _interface2.EditWalletAmountIncreaseETH(user2, BetModel.BetAmountETH);
+            await _interface2.EditWalletAmountDecresETH(user2, EthBetAmout);
 
             // Clear any error messages on successful wallet update
             ErrorMessage = string.Empty;
