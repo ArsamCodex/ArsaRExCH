@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class logindateatrack : Migration
+    public partial class initii : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,59 +14,58 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetUserRoles",
                 keyColumns: new[] { "RoleId", "UserId" },
-                keyValues: new object[] { "29eb7a40-9280-4069-a600-b86e64e4f149", "cf8c84c2-9653-4d9e-82cb-0430c5f45e14" });
+                keyValues: new object[] { "56791f32-8bde-43d4-aa4f-bdbeeef9e77f", "b4aa59ab-fc89-48da-979c-c9657a65c3a7" });
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "29eb7a40-9280-4069-a600-b86e64e4f149");
+                keyValue: "56791f32-8bde-43d4-aa4f-bdbeeef9e77f");
 
             migrationBuilder.DeleteData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
-                keyValue: "cf8c84c2-9653-4d9e-82cb-0430c5f45e14");
+                keyValue: "b4aa59ab-fc89-48da-979c-c9657a65c3a7");
 
-            migrationBuilder.AddColumn<DateTime>(
-                name: "LastLoginDate",
-                table: "AspNetUsers",
-                type: "datetime2",
-                nullable: true);
+            migrationBuilder.RenameColumn(
+                name: "UserIpAdress",
+                table: "UserDatesRecords",
+                newName: "UserIpAdressX");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "969e7e03-c382-4de4-9d92-30c99c412d2b", null, "Admin", "ADMIN" });
+                values: new object[] { "0c8c72e9-66b6-47f5-96c9-59de63f31810", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "9799908f-955d-437e-b524-ca4d2caa6847", 0, "abdf4cee-3f94-4454-a858-e0f3e9c8f32d", "arminttwat@gmail.com", true, null, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "dc6a38c4-dd36-4396-aa72-53ef49528c80", false, "arminttwat@gmail.com" });
+                values: new object[] { "8a2fe7b8-f25d-4bf1-b56d-c9def41d343b", 0, "830b7b79-fb56-4eee-a7da-0f9a365b4cc4", "arminttwat@gmail.com", true, null, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "fdba7acd-7919-4b30-8f94-e95d8ebf637a", false, "arminttwat@gmail.com" });
 
             migrationBuilder.UpdateData(
                 table: "Pair",
                 keyColumn: "PairID",
                 keyValue: 1,
                 column: "ListedDate",
-                value: new DateTime(2024, 9, 19, 20, 1, 28, 723, DateTimeKind.Local).AddTicks(1702));
+                value: new DateTime(2024, 9, 19, 22, 57, 59, 675, DateTimeKind.Local).AddTicks(6394));
 
             migrationBuilder.UpdateData(
                 table: "Pair",
                 keyColumn: "PairID",
                 keyValue: 2,
                 column: "ListedDate",
-                value: new DateTime(2024, 9, 19, 20, 1, 28, 723, DateTimeKind.Local).AddTicks(1748));
+                value: new DateTime(2024, 9, 19, 22, 57, 59, 675, DateTimeKind.Local).AddTicks(6452));
 
             migrationBuilder.UpdateData(
                 table: "Pair",
                 keyColumn: "PairID",
                 keyValue: 3,
                 column: "ListedDate",
-                value: new DateTime(2024, 9, 19, 20, 1, 28, 723, DateTimeKind.Local).AddTicks(1751));
+                value: new DateTime(2024, 9, 19, 22, 57, 59, 675, DateTimeKind.Local).AddTicks(6455));
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "969e7e03-c382-4de4-9d92-30c99c412d2b", "9799908f-955d-437e-b524-ca4d2caa6847" });
+                values: new object[] { "0c8c72e9-66b6-47f5-96c9-59de63f31810", "8a2fe7b8-f25d-4bf1-b56d-c9def41d343b" });
         }
 
         /// <inheritdoc />
@@ -75,57 +74,58 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetUserRoles",
                 keyColumns: new[] { "RoleId", "UserId" },
-                keyValues: new object[] { "969e7e03-c382-4de4-9d92-30c99c412d2b", "9799908f-955d-437e-b524-ca4d2caa6847" });
+                keyValues: new object[] { "0c8c72e9-66b6-47f5-96c9-59de63f31810", "8a2fe7b8-f25d-4bf1-b56d-c9def41d343b" });
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "969e7e03-c382-4de4-9d92-30c99c412d2b");
+                keyValue: "0c8c72e9-66b6-47f5-96c9-59de63f31810");
 
             migrationBuilder.DeleteData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
-                keyValue: "9799908f-955d-437e-b524-ca4d2caa6847");
+                keyValue: "8a2fe7b8-f25d-4bf1-b56d-c9def41d343b");
 
-            migrationBuilder.DropColumn(
-                name: "LastLoginDate",
-                table: "AspNetUsers");
+            migrationBuilder.RenameColumn(
+                name: "UserIpAdressX",
+                table: "UserDatesRecords",
+                newName: "UserIpAdress");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "29eb7a40-9280-4069-a600-b86e64e4f149", null, "Admin", "ADMIN" });
+                values: new object[] { "56791f32-8bde-43d4-aa4f-bdbeeef9e77f", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "cf8c84c2-9653-4d9e-82cb-0430c5f45e14", 0, "19e977b4-061b-4f68-b799-85ce459f88ef", "arminttwat@gmail.com", true, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "cf500a6a-3d60-4b07-945b-87cb62aabc38", false, "arminttwat@gmail.com" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "b4aa59ab-fc89-48da-979c-c9657a65c3a7", 0, "a133f505-4d0a-43b1-9f2f-5c138836948f", "arminttwat@gmail.com", true, null, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "31c9d6ea-49bb-462a-bc56-f82d02e9b466", false, "arminttwat@gmail.com" });
 
             migrationBuilder.UpdateData(
                 table: "Pair",
                 keyColumn: "PairID",
                 keyValue: 1,
                 column: "ListedDate",
-                value: new DateTime(2024, 9, 18, 0, 50, 56, 317, DateTimeKind.Local).AddTicks(1843));
+                value: new DateTime(2024, 9, 19, 22, 55, 37, 992, DateTimeKind.Local).AddTicks(7198));
 
             migrationBuilder.UpdateData(
                 table: "Pair",
                 keyColumn: "PairID",
                 keyValue: 2,
                 column: "ListedDate",
-                value: new DateTime(2024, 9, 18, 0, 50, 56, 317, DateTimeKind.Local).AddTicks(1902));
+                value: new DateTime(2024, 9, 19, 22, 55, 37, 992, DateTimeKind.Local).AddTicks(7247));
 
             migrationBuilder.UpdateData(
                 table: "Pair",
                 keyColumn: "PairID",
                 keyValue: 3,
                 column: "ListedDate",
-                value: new DateTime(2024, 9, 18, 0, 50, 56, 317, DateTimeKind.Local).AddTicks(1907));
+                value: new DateTime(2024, 9, 19, 22, 55, 37, 992, DateTimeKind.Local).AddTicks(7252));
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "29eb7a40-9280-4069-a600-b86e64e4f149", "cf8c84c2-9653-4d9e-82cb-0430c5f45e14" });
+                values: new object[] { "56791f32-8bde-43d4-aa4f-bdbeeef9e77f", "b4aa59ab-fc89-48da-979c-c9657a65c3a7" });
         }
     }
 }

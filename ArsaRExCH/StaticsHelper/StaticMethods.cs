@@ -63,7 +63,22 @@ namespace ArsaRExCH.StaticsHelper
                 }
             }
         }
+        public static async Task<string> GetClientIpAddress(HttpContext httpContext)
+        {
+            var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
 
-   
+            if (httpContext.Request.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                ipAddress = httpContext.Request.Headers["X-Forwarded-For"].ToString().Split(',')[0].Trim();
+            }
+            else if (ipAddress != null && ipAddress.Contains(":"))
+            {
+                // Convert IPv6 address to IPv4 if necessary
+                ipAddress = httpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            }
+
+            return ipAddress ?? "Unknown"; // Return "Unknown" if IP address cannot be determined
+        }
+
     }
 }

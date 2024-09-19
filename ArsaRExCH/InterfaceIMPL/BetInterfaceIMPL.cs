@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Security.Cryptography;
 using ArsaRExCH.DTOs;
+using System.Net;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -171,6 +172,30 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<string> GetClientIpAddress()
+        {
+            try
+            {
+                string hostName = Dns.GetHostName(); // Retrieve the name of the host
+                                                     // Get the IP address list associated with the host name
+                IPAddress[] addresses = Dns.GetHostEntry(hostName).AddressList;
+
+                // Return the first valid IPv4 address
+                foreach (var address in addresses)
+                {
+                    if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) // Check for IPv4
+                    {
+                        return address.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
+
+            return "Unknown"; // Return "Unknown" if no valid address is found
+        }
 
         public async Task SaveBet(Bet bet)
         {

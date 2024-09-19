@@ -33,6 +33,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
 builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
 builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped(http => new HttpClient
 {
 });

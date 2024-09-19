@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8bb9a9e0-a2fa-4ea2-9465-3eaa8ed42699",
+                            Id = "8a2fe7b8-f25d-4bf1-b56d-c9def41d343b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1860e87b-992a-4365-82db-12fc64dff8da",
+                            ConcurrencyStamp = "830b7b79-fb56-4eee-a7da-0f9a365b4cc4",
                             Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +102,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "arminttwat@gmail.com",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "edbdffab-fa61-40c9-b553-a8a53d379dce",
+                            SecurityStamp = "fdba7acd-7919-4b30-8f94-e95d8ebf637a",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -227,7 +227,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 9, 19, 21, 22, 31, 715, DateTimeKind.Local).AddTicks(2838),
+                            ListedDate = new DateTime(2024, 9, 19, 22, 57, 59, 675, DateTimeKind.Local).AddTicks(6394),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -235,7 +235,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 9, 19, 21, 22, 31, 715, DateTimeKind.Local).AddTicks(2899),
+                            ListedDate = new DateTime(2024, 9, 19, 22, 57, 59, 675, DateTimeKind.Local).AddTicks(6452),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -243,7 +243,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 9, 19, 21, 22, 31, 715, DateTimeKind.Local).AddTicks(2908),
+                            ListedDate = new DateTime(2024, 9, 19, 22, 57, 59, 675, DateTimeKind.Local).AddTicks(6455),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -260,6 +260,9 @@ namespace ArsaRExCH.Migrations
                     b.Property<string>("ApplicationUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserIpAdressX")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UserLoggedInDates")
                         .HasColumnType("datetime2");
@@ -366,7 +369,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ad016f4f-3058-4c61-8933-9834d24310eb",
+                            Id = "0c8c72e9-66b6-47f5-96c9-59de63f31810",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -461,8 +464,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "8bb9a9e0-a2fa-4ea2-9465-3eaa8ed42699",
-                            RoleId = "ad016f4f-3058-4c61-8933-9834d24310eb"
+                            UserId = "8a2fe7b8-f25d-4bf1-b56d-c9def41d343b",
+                            RoleId = "0c8c72e9-66b6-47f5-96c9-59de63f31810"
                         });
                 });
 
