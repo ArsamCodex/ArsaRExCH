@@ -5,7 +5,9 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @using System.Net
 @using System.Net.Sockets
+@using System.Diagnostics
 @inject ArsaRExCH.Interface.BetInterface _face
+@inject ArsaRExCH.Interface.UserIpInterface _faceUser
 <style>
     .win-container {
         border: 2px solid #000;
@@ -18,16 +20,20 @@
 <div class="win-container">
    <ArsaRExCH.Components.MyComponents.Win></ArsaRExCH.Components.MyComponents.Win>
     <p>Your IP Address: @ipadress</p>
+    <p>Your IP Address: @ipadressII</p>
+
 </div>
 
 @code {
     public string ipadress { get; set; }        
+    public string ipadressII { get; set; }
 
     protected override async void OnInitialized()
     {
         // Fetch the client's IP address
         ipadress = await _face.GetClientIpAddress();
+        ipadressII = await _faceUser.GetPublicIpAddress();
     }
-
+ 
    
 }
