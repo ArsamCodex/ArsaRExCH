@@ -63,6 +63,7 @@ namespace ArsaRExCH.StaticsHelper
                 }
             }
         }
+        /*
         public static async Task<string> GetClientIpAddress(HttpContext httpContext)
         {
             var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
@@ -79,6 +80,6 @@ namespace ArsaRExCH.StaticsHelper
 
             return ipAddress ?? "Unknown"; // Return "Unknown" if IP address cannot be determined
         }
-
+        */
     }
 }
