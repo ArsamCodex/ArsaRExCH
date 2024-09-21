@@ -8,7 +8,7 @@ namespace ArsaRExCH.Model
         public DateTime UserLoggedInDates { get; set; }
         //return local ipadress
         public string? UserIpAdressX { get; set; }
-        //        public string? UserIpAdressPublic { get; set; }
+       public string? UserIpAdressPublic { get; set; }
 
         // Foreign key property for ApplicationUser
         public string ApplicationUserId { get; set; }

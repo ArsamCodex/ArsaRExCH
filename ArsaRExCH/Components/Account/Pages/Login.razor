@@ -87,6 +87,7 @@
         var userPublicIp = await _userFace.GetPublicIpAddress();
         //You are banned from accessing this service.
         string cheCkIt = await _userFace.CheckIfIpIsBanned(userPublicIp);
+        
         if (cheCkIt == "You are banned from accessing this service.")
         {
             errorMessage = "Banned Country IP , Change IP ,Use VPN";
@@ -105,6 +106,7 @@
                 await SignInManager.UserManager.UpdateAsync(user);
 
                 var ipAddress = await _face.GetClientIpAddress();
+                var publicUserIp = await _userFace.GetPublicIpAddress();
 
 
                 // Create a new UserDatesRecord
@@ -112,7 +114,8 @@
                     {
                         UserLoggedInDates = DateTime.UtcNow,
                         ApplicationUserId = user.Id,
-                        UserIpAdressX = ipAddress // Save the IP address
+                        UserIpAdressX = ipAddress,
+                        UserIpAdressPublic = publicUserIp
                     };
 
                 // Save the login record

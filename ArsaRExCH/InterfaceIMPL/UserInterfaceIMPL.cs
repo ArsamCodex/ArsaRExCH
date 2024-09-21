@@ -52,7 +52,6 @@ namespace ArsaRExCH.InterfaceIMPL
             }
                 // Return empty if not banned
         }
-
         public string ExtractFirstPart(string ipAddress)
         {
             try
@@ -73,8 +72,6 @@ namespace ArsaRExCH.InterfaceIMPL
                 return ex.Message;
             }
         }
-
-
         public async Task<string> GetPublicIpAddress()
         {
             try
