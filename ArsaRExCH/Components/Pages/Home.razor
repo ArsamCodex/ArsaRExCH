@@ -29,7 +29,7 @@
 </div>
 <p>Your IP Address: @ipadress</p>
 <p>Your IP Address: @ipadressII</p>
-<p>@bannedc</p>
+
 @if (!string.IsNullOrEmpty(BanMessage))
 {
     <div class="alert alert-danger">@BanMessage</div>
@@ -38,7 +38,6 @@
 @code {
     public string ipadress { get; set; }        
     public string ipadressII { get; set; }
-    public string bannedc { get; set; }
     public string Hitid { get; set; }
     public string BanMessage { get; set; }
 
@@ -53,9 +52,4 @@
       //  BanMessage = await _faceUser.CheckIfIpIsBanned(ipadressII); // Capture return value
         Console.WriteLine($"Ban Message: {BanMessage}"); // Debug output
     }
-
-
-
-
-
 }

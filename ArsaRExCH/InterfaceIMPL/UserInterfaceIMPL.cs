@@ -30,11 +30,11 @@ namespace ArsaRExCH.InterfaceIMPL
                 }
 
                 string userIpFirstTwoDigits = ExtractFirstTwoDigits(userIpAddress);
-                Console.WriteLine($"User IP First Two Digits: {userIpFirstTwoDigits}");
+               // Console.WriteLine($"User IP First Two Digits: {userIpFirstTwoDigits}");
 
                 foreach (var bannedIp in bannedIpAddresses)
                 {
-                    Console.WriteLine($"Comparing with banned IP: {bannedIp}");
+                   // Console.WriteLine($"Comparing with banned IP: {bannedIp}");
                     if (userIpFirstTwoDigits == bannedIp)
                     {
 
@@ -88,7 +88,7 @@ namespace ArsaRExCH.InterfaceIMPL
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred: " + ex.Message);
-                return "Unknown"; // Return "Unknown" if there's an error
+                return ex.Message; // Return "Unknown" if there's an error
             }
         }
     }

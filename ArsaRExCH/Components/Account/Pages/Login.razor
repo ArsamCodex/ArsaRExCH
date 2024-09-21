@@ -85,10 +85,6 @@
         /*First check or user ip adress range is in banned countries table which set by Admin*/
         // call interface to gather user public ip address then check database for match range 
         var userPublicIp = await _userFace.GetPublicIpAddress();
-
-        //call database 
-        // Check if the IP address is banned
-
         //You are banned from accessing this service.
         string cheCkIt = await _userFace.CheckIfIpIsBanned(userPublicIp);
         if (cheCkIt == "You are banned from accessing this service.")
