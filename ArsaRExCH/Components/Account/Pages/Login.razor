@@ -5,12 +5,15 @@
 @using Microsoft.AspNetCore.Identity
 @using ArsaRExCH.Data
 @using Microsoft.AspNetCore.Mvc
+@using Microsoft.EntityFrameworkCore
+@using System.Text.RegularExpressions
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject ApplicationDbContext _context
 @inject ArsaRExCH.Interface.BetInterface _face
+@inject ArsaRExCH.Interface.UserIpInterface _userFace
 <PageTitle>Log in</PageTitle>
 
 <h1>Log in</h1>
@@ -79,6 +82,13 @@
 
     public async Task LoginUser()
     {
+        /*First check or user ip adress range is in banned countries table which set by Admin*/
+        // call interface to gather user public ip address then check database for match range 
+        var userPublicIp = await _userFace.GetPublicIpAddress();
+
+        //call database 
+        // Check if the IP address is banned
+   
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
@@ -139,4 +149,7 @@
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
+   
+
+
 }
