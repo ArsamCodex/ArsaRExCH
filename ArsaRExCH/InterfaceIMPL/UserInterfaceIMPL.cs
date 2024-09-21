@@ -29,7 +29,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     Console.WriteLine(ip);
                 }
 
-                string userIpFirstTwoDigits = ExtractFirstTwoDigits(userIpAddress);
+                string userIpFirstTwoDigits = ExtractFirstPart(userIpAddress);
                // Console.WriteLine($"User IP First Two Digits: {userIpFirstTwoDigits}");
 
                 foreach (var bannedIp in bannedIpAddresses)
@@ -53,27 +53,27 @@ namespace ArsaRExCH.InterfaceIMPL
                 // Return empty if not banned
         }
 
-        public string ExtractFirstTwoDigits(string ipAddress)
+        public string ExtractFirstPart(string ipAddress)
         {
             try
             {
-                // Regex to capture only the first one or two digits before the first dot
-                var match = Regex.Match(ipAddress, @"^(\d{1,2})");
+                // Regex to capture all digits before the first dot
+                var match = Regex.Match(ipAddress, @"^(\d+)");
 
                 if (match.Success)
                 {
-                    // Return the first one or two digits before the dot
+                    // Return all digits before the first dot
                     return match.Groups[1].Value;
                 }
 
                 return "Invalid IP Format";
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return ex.Message;
             }
-            
-
         }
+
 
         public async Task<string> GetPublicIpAddress()
         {
