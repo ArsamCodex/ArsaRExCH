@@ -50,58 +50,11 @@
         Console.WriteLine($"Client IP Address: {ipadress}");
         Console.WriteLine($"Public IP Address: {ipadressII}");
 
-        BanMessage = await CheckIfIpIsBanned(ipadressII); // Capture return value
+      //  BanMessage = await _faceUser.CheckIfIpIsBanned(ipadressII); // Capture return value
         Console.WriteLine($"Ban Message: {BanMessage}"); // Debug output
     }
 
-    public async Task<string> CheckIfIpIsBanned(string userIpAddress)
-    {
-        // Retrieve the list of banned IP addresses (which are already two digits) from the database
-        var bannedIpAddresses = await _context.BanedCountris
-            .Where(b => !string.IsNullOrEmpty(b.IpAdressToBann))
-            .Select(b => b.IpAdressToBann)
-            .ToListAsync();
 
-        Console.WriteLine("Banned IP Addresses:");
-        foreach (var ip in bannedIpAddresses)
-        {
-            Console.WriteLine(ip);
-        }
-
-        string userIpFirstTwoDigits = ExtractFirstTwoDigits(userIpAddress);
-        Console.WriteLine($"User IP First Two Digits: {userIpFirstTwoDigits}");
-
-        foreach (var bannedIp in bannedIpAddresses)
-        {
-            Console.WriteLine($"Comparing with banned IP: {bannedIp}");
-            if (userIpFirstTwoDigits == bannedIp)
-            {
-
-                Console.WriteLine("IP match found. User is banned.");
-                return "You are banned from accessing this service.";
-            }
-        }
-
-        Console.WriteLine("No match found. User is not banned.");
-        return string.Empty; // Return empty if not banned
-    }
-
-
-
-    // Helper method to extract the first two digits from the IP address
-    private string ExtractFirstTwoDigits(string ipAddress)
-    {
-        // Regex to capture only the first one or two digits before the first dot
-        var match = Regex.Match(ipAddress, @"^(\d{1,2})");
-
-        if (match.Success)
-        {
-            // Return the first one or two digits before the dot
-            return match.Groups[1].Value;
-        }
-
-        return "Invalid IP"; // Return an error indicator if not a valid IP format
-    }
 
 
 
