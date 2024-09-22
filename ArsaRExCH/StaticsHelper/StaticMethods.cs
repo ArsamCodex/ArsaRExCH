@@ -81,5 +81,67 @@ namespace ArsaRExCH.StaticsHelper
             return ipAddress ?? "Unknown"; // Return "Unknown" if IP address cannot be determined
         }
         */
+
+        /*
+         * Generic Insert method which you call use for all type classes
+         * This method considerd as Insert Or Save data to database 
+         * // Example: Insert a new Bet object into the "Bets" table
+                Bet newBet = new Bet
+                {
+                    // Assign values to the properties of the bet
+                    BetId = 1,
+                    UserIdSec = "User123",
+                    BtcPriceNow = 45000,
+                    BtcPriceExpireBet = 46000,
+                    HitDateBTC = DateTime.Now,
+                    BetAmountBtc = 0.1m,
+                    EthPriceNow = 3500,
+                    HitDateETH = DateTime.Now.AddMinutes(5),
+                    EthPriceExpireBet = 3600,
+                    BetAmountETH = 0.5m,
+                    WiningAmount = null, // Nullable fields can be set to null
+                    IsBetActive = true,
+                    ISDeleted = false,
+                    CompletedTime = null // Nullable fields can be set to null
+                };
+
+                await InsertEntityAsync(newBet, "Bets", connectionString);
+                         */
+        public static async Task InsertEntityAsync<T>(T entity, string tableName, string connectionString) where T : class
+        {
+            var properties = typeof(T).GetProperties();
+
+            // Get column names and parameter placeholders
+            var columnNames = properties.Select(p => p.Name).ToList();
+            var parameterNames = properties.Select(p => $"@{p.Name}").ToList();
+
+            // Build the insert query
+            string query = $"INSERT INTO {tableName} ({string.Join(", ", columnNames)}) VALUES ({string.Join(", ", parameterNames)})";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Add parameters dynamically
+                    foreach (var property in properties)
+                    {
+                        var value = property.GetValue(entity) ?? DBNull.Value;
+                        command.Parameters.AddWithValue($"@{property.Name}", value);
+                    }
+
+                    // Open the connection to the database
+                    await connection.OpenAsync();
+
+                    // Execute the insert command
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    if (rowsAffected == 0)
+                    {
+                        throw new Exception($"Insert failed for entity of type {typeof(T).Name}");
+                    }
+                }
+            }
+        }
+
     }
 }
