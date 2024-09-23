@@ -30,7 +30,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 // Collect all unique dates from HitDateBTC and HitDateETH
                 var uniqueDates = allBets
                     .Select(b => b.HitDateBTC.Date)
-                    .Union(allBets.Select(b => b.HitDateETH.Date))
+                  //  .Union(allBets.Select(b => b.HitDateETH.Date))
                     .Distinct()  // Ensure dates are unique
                     .ToList();
 
