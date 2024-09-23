@@ -27,27 +27,25 @@ namespace ArsaRExCH.InterfaceIMPL
                     .Where(b => !b.ISDeleted && b.IsBetActive)
                     .ToListAsync();
 
-                // Group bets by HitDateBTC and HitDateETH
-                var groupedBets = allBets
-                    .GroupBy(b => b.HitDateBTC.Date)
-                    .Union(allBets.GroupBy(b => b.HitDateETH.Date))
-                    .Select(g => new
-                    {
-                        Date = g.Key,
-                        BtcBets = g.Where(b => b.HitDateBTC.Date == g.Key).ToList(),
-                        EthBets = g.Where(b => b.HitDateETH.Date == g.Key).ToList()
-                    })
+                // Collect all unique dates from HitDateBTC and HitDateETH
+                var uniqueDates = allBets
+                    .Select(b => b.HitDateBTC.Date)
+                    .Union(allBets.Select(b => b.HitDateETH.Date))
+                    .Distinct()  // Ensure dates are unique
                     .ToList();
 
-                foreach (var group in groupedBets)
+                foreach (var date in uniqueDates)
                 {
+                    var btcBets = allBets.Where(b => b.HitDateBTC.Date == date).ToList();
+                    var ethBets = allBets.Where(b => b.HitDateETH.Date == date).ToList();
+
                     var result = new MaxInzetResultDTO
                     {
-                        MyDateTime = group.Date,
-                        HitBtcPrice = group.BtcBets.Any() ? group.BtcBets.First().BtcPriceExpireBet : 0,
-                        MaxBtcTotalInBTC = group.BtcBets.Sum(b => b.BetAmountBtc),
-                        HitEthPrice = group.EthBets.Any() ? group.EthBets.First().EthPriceExpireBet : 0, // Ensure EthPriceExpireBet exists in your Bet class
-                        MaxEthTotal = group.EthBets.Sum(b => b.BetAmountETH) // Make sure this property exists
+                        MyDateTime = date,
+                        HitBtcPrice = btcBets.Any() ? btcBets.First().BtcPriceExpireBet : 0,
+                        MaxBtcTotalInBTC = btcBets.Sum(b => b.BetAmountBtc),
+                        HitEthPrice = ethBets.Any() ? ethBets.First().EthPriceExpireBet : 0,
+                        MaxEthTotal = ethBets.Sum(b => b.BetAmountETH)
                     };
 
                     results.Add(result);
@@ -64,6 +62,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
             return results;
         }
+
 
 
 

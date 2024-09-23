@@ -1,5 +1,4 @@
-﻿@page "/max-inzet"
-@inject ArsaRExCH.Interface.UserIpInterface _user
+﻿@inject ArsaRExCH.Interface.UserIpInterface _user
 @using ArsaRExCH.Model
 @using ArsaRExCH.DTOs
 @using ArsaRExCH.Components.Pages
@@ -18,9 +17,9 @@ else
         <thead>
             <tr>
                 <th>Date</th>
-                <th>BTC Price</th>
+                <th>BTC Target Price</th>
                 <th>Total BTC Inzet</th>
-                <th>ETH Price</th>
+                <th>ETH Target Price</th>
                 <th>Total ETH Inzet</th>
                 <th>Error Message</th>
             </tr>
@@ -50,33 +49,18 @@ else
     </table>
 }
 
-<button @onclick="FetchMaxInzet">Fetch Max Inzet</button>
-
 @code {
-    private List<MaxInzetResultDTO> results = new List<MaxInzetResultDTO>(); // Change to List
+    private List<MaxInzetResultDTO> results = new List<MaxInzetResultDTO>();
     private bool isLoading = false;
 
-    private async Task FetchMaxInzet()
+    protected override async Task OnInitializedAsync()
     {
-        isLoading = true;
+       
+        Console.WriteLine("OnInitializedAsync called"); //  debugging
 
-        try
-        {
             results = await _user.CalculateMaxInzetAsync(); // Fetch all results
 
-            // If no results, you might want to set an error message or handle as needed
-            if (results.Count == 0)
-            {
-                results.Add(new MaxInzetResultDTO { ErrorMessage = "No bets found." }); // Optional message for no results
-            }
-        }
-        catch (Exception ex)
-        {
-            results = new List<MaxInzetResultDTO> { new MaxInzetResultDTO { ErrorMessage = ex.Message } }; // Handle exceptions
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        // Ensure there are no duplicate entries
+       // results = results.DistinctBy(r => r.MyDateTime).ToList();
     }
 }
