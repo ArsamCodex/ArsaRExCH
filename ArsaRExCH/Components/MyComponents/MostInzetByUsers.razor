@@ -1,5 +1,4 @@
-﻿@page "/max-inzet"
-@inject ArsaRExCH.Interface.UserIpInterface _user
+﻿@inject ArsaRExCH.Interface.UserIpInterface _user
 @using ArsaRExCH.Model
 @using ArsaRExCH.DTOs
 @using ArsaRExCH.Components.Pages
@@ -61,7 +60,5 @@ else
 
             results = await _user.CalculateMaxInzetAsync(); // Fetch all results
 
-        // Ensure there are no duplicate entries
-       // results = results.DistinctBy(r => r.MyDateTime).ToList();
     }
 }
