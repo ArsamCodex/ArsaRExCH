@@ -5,6 +5,7 @@
       
             public string UserId { get; set; }
             public double TotalWinningAmount { get; set; }
+
         
     }
 }

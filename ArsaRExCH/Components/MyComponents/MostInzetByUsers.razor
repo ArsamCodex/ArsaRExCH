@@ -1,0 +1,82 @@
+﻿@page "/max-inzet"
+@inject ArsaRExCH.Interface.UserIpInterface _user
+@using ArsaRExCH.Model
+@using ArsaRExCH.DTOs
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@rendermode InteractiveServer
+
+<h3>Max Inzet Results</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>BTC Price</th>
+                <th>Total BTC Inzet</th>
+                <th>ETH Price</th>
+                <th>Total ETH Inzet</th>
+                <th>Error Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (results != null && results.Any())
+            {
+                foreach (var result in results)
+                {
+                    <tr>
+                        <td>@result.MyDateTime.ToString("dd/MM/yyyy")</td>
+                        <td>@(result.HitBtcPrice != 0 ? result.HitBtcPrice.ToString() : "N/A")</td>
+                        <td>@(result.MaxBtcTotalInBTC != 0 ? result.MaxBtcTotalInBTC.ToString() : "N/A")</td>
+                        <td>@(result.HitEthPrice != 0 ? result.HitEthPrice.ToString() : "N/A")</td>
+                        <td>@(result.MaxEthTotal != 0 ? result.MaxEthTotal.ToString() : "N/A")</td>
+                        <td>@(!string.IsNullOrEmpty(result.ErrorMessage) ? result.ErrorMessage : "None")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">No results available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button @onclick="FetchMaxInzet">Fetch Max Inzet</button>
+
+@code {
+    private List<MaxInzetResultDTO> results = new List<MaxInzetResultDTO>(); // Change to List
+    private bool isLoading = false;
+
+    private async Task FetchMaxInzet()
+    {
+        isLoading = true;
+
+        try
+        {
+            results = await _user.CalculateMaxInzetAsync(); // Fetch all results
+
+            // If no results, you might want to set an error message or handle as needed
+            if (results.Count == 0)
+            {
+                results.Add(new MaxInzetResultDTO { ErrorMessage = "No bets found." }); // Optional message for no results
+            }
+        }
+        catch (Exception ex)
+        {
+            results = new List<MaxInzetResultDTO> { new MaxInzetResultDTO { ErrorMessage = ex.Message } }; // Handle exceptions
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
