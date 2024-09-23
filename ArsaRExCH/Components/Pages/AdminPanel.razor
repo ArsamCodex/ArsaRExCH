@@ -9,21 +9,11 @@
 @using System.Text.Json
 @attribute [Authorize]
 
-
-@code {
-    private string[] divNames = new string[]
-    {
-        "Div One", "Div Two", "Div Three", "Div Four", "Div Five",
-        "Div Six", "Div Seven", "Div Eight", "Div Nine", "Div Ten",
-        "Div Eleven", "Div Twelve", "Div Thirteen", "Div Fourteen", "Div Fifteen"
-    };
-}
-
 <div class="grid-container">
     @for (int i = 0; i < divNames.Length; i++)
     {
         <div class="grid-item">
-            @divNames[i] <!-- Display the specific name for each div -->
+            <li>@divNames[i]: <a href="@links[i]">@links[i]</a></li>
         </div>
     }
 </div>
@@ -44,3 +34,34 @@
         height: 100px; /* Fixed height for each div */
     }
 </style>
+
+
+@code {
+    private string[] divNames = new string[]
+    {
+        "Div One", "Div Two", "Div Three", "Div Four", "Div Five",
+        "Div Six", "Div Seven", "Div Eight", "Div Nine", "Div Ten",
+        "Div Eleven", "Div Twelve", "Div Thirteen", "Div Fourteen", "Div Fifteen"
+    };
+
+    private string[] links = new string[]
+    {
+        "/BannedCountry", "/UserInfo", "/Add Pair", "/page4", "/page5",
+        "/page6", "/page7", "/page8", "/page9", "/page10",
+        "/page11", "/page12", "/page13", "/page14", "/page15"
+    };
+
+    protected override void OnInitialized()
+    {
+        // Log the lengths of the arrays
+        Console.WriteLine($"DivNames Length: {divNames.Length}");
+        Console.WriteLine($"Links Length: {links.Length}");
+
+        // Log the content of each array
+        for (int i = 0; i < divNames.Length; i++)
+        {
+            Console.WriteLine($"Div {i}: Name = {divNames[i]}, Link = {links[i]}");
+        }
+    }
+}
+
