@@ -9,9 +9,38 @@
 @using System.Text.Json
 @attribute [Authorize]
 
-<a href="PairComponent">Pair</a>
-
 
 @code {
-
+    private string[] divNames = new string[]
+    {
+        "Div One", "Div Two", "Div Three", "Div Four", "Div Five",
+        "Div Six", "Div Seven", "Div Eight", "Div Nine", "Div Ten",
+        "Div Eleven", "Div Twelve", "Div Thirteen", "Div Fourteen", "Div Fifteen"
+    };
 }
+
+<div class="grid-container">
+    @for (int i = 0; i < divNames.Length; i++)
+    {
+        <div class="grid-item">
+            @divNames[i] <!-- Display the specific name for each div -->
+        </div>
+    }
+</div>
+
+<style>
+    .grid-container {
+        display: grid; /* Use CSS Grid layout */
+        grid-template-columns: repeat(5, 1fr); /* 5 columns of equal width */
+        gap: 20px; /* Space between grid items */
+        margin-bottom: 20px; /* Space between rows */
+    }
+
+    .grid-item {
+        background-color: lightblue; /* Background color for each div */
+        padding: 20px; /* Padding inside each div */
+        text-align: center; /* Center text */
+        border-radius: 5px; /* Rounded corners */
+        height: 100px; /* Fixed height for each div */
+    }
+</style>
