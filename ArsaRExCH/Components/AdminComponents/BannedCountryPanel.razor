@@ -1,13 +1,96 @@
 ﻿@page "/BannedCountry"
+@using ArsaRExCH.Model
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
-@using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
 @using System.Text.Json
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@rendermode InteractiveServer
 @attribute [Authorize]
 
-@code {
+<div class="container">
+    <h3 class="text-center mt-4">Manage Banned Countries</h3>
 
+    <button class="btn btn-primary mb-3" @onclick="ToggleForm">
+        @if (isFormVisible)
+        {
+            <text>Hide</text>
+        }
+        else
+        {
+            <text>Add Countrie To Bann</text>
+        }
+    </button>
+
+    @if (isFormVisible)
+    {
+        <div class="form-container mx-auto p-4 shadow-lg rounded">
+            <EditForm Model="@banedCountry" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group mb-3">
+                    <label for="ipAddressToBann">IP Address to Ban</label>
+                    <InputText id="ipAddressToBann" class="form-control" @bind-Value="banedCountry.IpAdressToBann" placeholder="First 2 digit Of Ip" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="countryName">Country Name</label>
+                    <InputText id="countryName" class="form-control" @bind-Value="banedCountry.CountryName" placeholder="Enter country name" />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary px-4">Save</button>
+                    <button type="button" class="btn btn-secondary px-4" @onclick="NavigateBack">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+    }
+</div>
+
+<style>
+    .form-container {
+        width: 20%;
+        background-color: #f9f9f9;
+    }
+
+    .form-control {
+        font-size: 1rem;
+        padding: 10px;
+    
+    }
+
+    .btn {
+        font-size: 1rem;
+        padding: 10px;
+    }
+</style>
+
+
+@code {
+    private BanedCountries banedCountry = new BanedCountries();
+    private bool isFormVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Optionally, load the existing data for editing if needed.
+        // You can retrieve the data from the database or an API here.
+    }
+    private void ToggleForm()
+    {
+        isFormVisible = !isFormVisible;
+    }
+    private async Task HandleValidSubmit()
+    {
+        var x = _adminInterface.AddBannCountries(banedCountry);
+
+        
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/somewhere"); // Navigate to the desired page
+    }
 }
