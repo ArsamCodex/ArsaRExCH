@@ -15,5 +15,6 @@
         public int BanedCountriesId { get; set; }
         public string? IpAdressToBann { get; set; }
         public string? CountryName { get; set; }
+    
     }
 }
