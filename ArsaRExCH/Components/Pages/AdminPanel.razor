@@ -1,5 +1,4 @@
 ﻿@page "/AdminPanel"
-
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
@@ -13,7 +12,7 @@
     @for (int i = 0; i < divNames.Length; i++)
     {
         <div class="grid-item">
-            <li>@divNames[i]: <a href="@links[i]">@links[i]</a></li>
+            @divNames[i]: <a href="@links[i]">@links[i]</a>
         </div>
     }
 </div>
@@ -60,7 +59,7 @@
         // Log the content of each array
         for (int i = 0; i < divNames.Length; i++)
         {
-            Console.WriteLine($"Div {i}: Name = {divNames[i]}, Link = {links[i]}");
+            Console.WriteLine($"Div {i}: Name = {divNames[i]}, Link = {links[i]}");//debug
         }
     }
 }
