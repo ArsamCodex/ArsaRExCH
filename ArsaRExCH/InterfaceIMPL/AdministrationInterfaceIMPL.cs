@@ -15,7 +15,7 @@ namespace ArsaRExCH.InterfaceIMPL
             throw new NotImplementedException();
         }
 
-        public Task<BanedCountries> GetAllBannedCountriesInDatabase()
+        public Task<List<BanedCountries>> GetAllBannedCountriesInDatabase()
         {
             throw new NotImplementedException();
         }
