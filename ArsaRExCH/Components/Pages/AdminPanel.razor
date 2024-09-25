@@ -6,7 +6,7 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject HttpClient Http
 @using System.Text.Json
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="grid-container">
     @for (int i = 0; i < divNames.Length; i++)

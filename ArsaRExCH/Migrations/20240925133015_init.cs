@@ -54,6 +54,20 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BanedCountris",
+                columns: table => new
+                {
+                    BanedCountriesId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IpAdressToBann = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CountryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BanedCountris", x => x.BanedCountriesId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Bet",
                 columns: table => new
                 {
@@ -261,7 +275,8 @@ namespace ArsaRExCH.Migrations
                     UserDatesRecordId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserLoggedInDates = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserIpAdress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserIpAdressX = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserIpAdressPublic = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -278,27 +293,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "56791f32-8bde-43d4-aa4f-bdbeeef9e77f", null, "Admin", "ADMIN" });
+                values: new object[] { "2e06ec6c-138c-4d73-a42a-2b774d085fc7", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "b4aa59ab-fc89-48da-979c-c9657a65c3a7", 0, "a133f505-4d0a-43b1-9f2f-5c138836948f", "arminttwat@gmail.com", true, null, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "31c9d6ea-49bb-462a-bc56-f82d02e9b466", false, "arminttwat@gmail.com" });
+                values: new object[] { "23a44c43-bcc7-4a44-a0a4-f25da7c7089a", 0, "087002c0-2676-45cf-b666-0e09320f5d2a", "arminttwat@gmail.com", true, null, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "82f4b30a-14b1-4c8a-9a29-d29b3b03b180", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 9, 19, 22, 55, 37, 992, DateTimeKind.Local).AddTicks(7198), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 9, 19, 22, 55, 37, 992, DateTimeKind.Local).AddTicks(7247), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 9, 19, 22, 55, 37, 992, DateTimeKind.Local).AddTicks(7252), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1172), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1235), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1241), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "56791f32-8bde-43d4-aa4f-bdbeeef9e77f", "b4aa59ab-fc89-48da-979c-c9657a65c3a7" });
+                values: new object[] { "2e06ec6c-138c-4d73-a42a-2b774d085fc7", "23a44c43-bcc7-4a44-a0a4-f25da7c7089a" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -362,6 +377,9 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "BanedCountris");
 
             migrationBuilder.DropTable(
                 name: "Bet");

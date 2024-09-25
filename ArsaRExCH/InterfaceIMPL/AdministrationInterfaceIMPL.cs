@@ -39,6 +39,18 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<List<ApplicationUser>> AllUsers()
+        {
+            try
+            {
+                return await _context.Users.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Some Problem");
+            }
+        }
+
         public async Task<List<BanedCountries>> GetAllBannedCountriesInDatabase()
         {
             try

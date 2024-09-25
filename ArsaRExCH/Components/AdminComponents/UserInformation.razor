@@ -1,0 +1,113 @@
+﻿@page "/UserInformation"
+@using ArsaRExCH.Data
+@using ArsaRExCH.Model
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@using System.Text.Json
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="container my-3">
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" @bind="searchQuery" class="form-control" placeholder="Search by Email" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary" @onclick="PerformSearch">Search</button>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped table-hover table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (filteredUsers != null && filteredUsers.Any())
+        {
+            @foreach (var user in filteredUsers)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Email</td>
+                    <td>
+                        <button class="btn btn-danger">Details</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="text-center">No users found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<style>
+    .table {
+        width: 100%;
+        max-width: 90%;
+        margin: auto;
+        background-color: #f9f9f9;
+    }
+
+    .thead-dark {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    th, td {
+        text-align: center;
+        padding: 15px;
+    }
+
+    tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    td {
+        color: #555555;
+    }
+
+    th {
+        font-weight: bold;
+        color: white;
+    }
+</style>
+
+@code {
+    private string searchQuery = string.Empty;
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private List<ApplicationUser> filteredUsers = new List<ApplicationUser>();
+    protected override async Task OnInitializedAsync()
+    {
+        users = await _adminInterface.AllUsers();
+        filteredUsers = users;
+
+    }
+    private void PerformSearch()
+    {
+        // Filter users based on the search query
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            filteredUsers = users.Where(u => u.Email.Equals(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            filteredUsers = users;
+        }
+    }
+}

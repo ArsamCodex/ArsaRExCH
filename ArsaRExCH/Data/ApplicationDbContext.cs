@@ -36,7 +36,7 @@ namespace ArsaRExCH.Data
             */
             
 
-            SeedInitialData(modelBuilder);
+           // SeedInitialData(modelBuilder);
             SeedInitialWalletData(modelBuilder);
 
 
@@ -56,8 +56,8 @@ namespace ArsaRExCH.Data
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = "arminttwat@gmail.com",
-                NormalizedUserName = "arminttwat@gmail.com",
-                Email = "arminttwat@gmail.com",
+                NormalizedUserName = "arminttwat@gmail.com70",
+                Email = "arminttwat@gmail.com70",
                 NormalizedEmail = "NEWUSER@EXAMPLE.COM",
                 EmailConfirmed = true,
                 PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", // Replace this with the hashed password

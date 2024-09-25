@@ -87,7 +87,7 @@
         var userPublicIp = await _userFace.GetPublicIpAddress();
         //You are banned from accessing this service.
         string cheCkIt = await _userFace.CheckIfIpIsBanned(userPublicIp);
-        
+
         if (cheCkIt == "You are banned from accessing this service.")
         {
             errorMessage = "Error ,Banned Country IP , Change IP ,Use VPN";
@@ -100,10 +100,11 @@
         if (result.Succeeded)
         {
             var user = await SignInManager.UserManager.FindByEmailAsync(Input.Email);
+            Console.WriteLine(user.Id);
             if (user != null)
             {
                 user.LastLoginDate = DateTime.UtcNow; // Update last login date
-                await SignInManager.UserManager.UpdateAsync(user);
+                //await SignInManager.UserManager.UpdateAsync(user);
 
                 var ipAddress = await _face.GetClientIpAddress();
                 var publicUserIp = await _userFace.GetPublicIpAddress();
