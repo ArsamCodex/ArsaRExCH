@@ -8,6 +8,8 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 @attribute [Authorize(Roles = "Admin")]
+@using ArsaRExCH.Components.AdminComponents
+
 
 <style>
     .user-profile-container {
@@ -99,7 +101,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Date</th>
+                        <th>Date Login</th>
                         <th>Public IP Address</th>
                         <th>X-Forwarded IP Address</th>
                     </tr>
@@ -123,6 +125,12 @@
         <p>Loading user information...</p>
     }
 </div>
+
+
+<WalletForUser id="@userID"></WalletForUser>
+
+
+
 @code {
     [Parameter]
     public string userID { get; set; }

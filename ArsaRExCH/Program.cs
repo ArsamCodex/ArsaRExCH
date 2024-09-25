@@ -69,6 +69,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddSingleton<DbContextFactory>();
 
 
 

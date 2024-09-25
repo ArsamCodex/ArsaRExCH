@@ -23,12 +23,14 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly ApplicationDbContext _context;
         public readonly HttpClient httpClient;
         private readonly IConfiguration _configuration;
+        private readonly DbContextFactory _dbContextFactory;
 
-        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient, IConfiguration configuration)
+        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient, IConfiguration configuration, DbContextFactory dbContextFactory)
         {
             _context = context;
             this.httpClient = httpClient;
             _configuration = configuration;
+            _dbContextFactory = dbContextFactory;
         }
 
         public async Task<string> CreateBNBWallet(string id, string PairName)
@@ -314,25 +316,30 @@ namespace ArsaRExCH.InterfaceIMPL
 
             try
             {
-                var wallets = await _context.Wallet
-                                   .Where(w => w.UserIDSec == id)
-                                   .Select(w => new WalletDTO
-                                   {
-                                       PairName = w.PairName,
-                                       Adress = w.Adress,
-                                       CurrentBalance = w.CurrentPrice,
-                                       Amount = w.Amount,
-                                       Network = w.Network
-                                   })
-                                   .ToListAsync();
+                using (var context = _dbContextFactory.CreateDbContext())
+                {
+                    var wallets = await context.Wallet
+                        .Where(w => w.UserIDSec == id)
+                        .Select(w => new WalletDTO
+                        {
+                            PairName = w.PairName,
+                            Adress = w.Adress,
+                            CurrentBalance = w.CurrentPrice,
+                            Amount = w.Amount,
+                            Network = w.Network
+                        })
+                        .ToListAsync();
 
-                return wallets;
+                    return wallets;
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception($"Internal server error: {ex.Message}");
             }
         }
+
+
 
         public async Task<(List<double> BtcBalances, List<double> EthBalances, List<double> BnbBalances)> GetWalletBalancesForUser(string userId)
         {
