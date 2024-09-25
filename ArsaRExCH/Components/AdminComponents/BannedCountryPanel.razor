@@ -13,16 +13,32 @@
 <div class="container">
     <h3 class="text-center mt-4">Manage Banned Countries</h3>
 
-    <button class="btn btn-primary mb-3" @onclick="ToggleForm">
-        @if (isFormVisible)
-        {
-            <text>Hide</text>
-        }
-        else
-        {
-            <text>Add Countrie To Bann</text>
-        }
-    </button>
+    <!-- Button Group Container -->
+    <div class="d-flex gap-2 mb-3">
+        <!-- First Button -->
+        <button class="btn btn-primary" @onclick="ToggleForm">
+            @if (isFormVisible)
+            {
+                <text>Hide</text>
+            }
+            else
+            {
+                <text>Add Countrie To Bann</text>
+            }
+        </button>
+
+        <!-- Second Button -->
+        <button class="btn btn-primary" @onclick="ToggleForm2">
+            @if (isFormVisible2)
+            {
+                <text>Hide</text>
+            }
+            else
+            {
+                <text>List Of BannedCountries</text>
+            }
+        </button>
+    </div>
 
     @if (isFormVisible)
     {
@@ -43,54 +59,91 @@
 
                 <div class="d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary px-4">Save</button>
-                    <button type="button" class="btn btn-secondary px-4" @onclick="NavigateBack">Cancel</button>
                 </div>
             </EditForm>
+        </div>
+    }
+
+    @if (isFormVisible2)
+    {
+        <div class="form-container mx-auto p-4 shadow-lg rounded">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Ban ID</th>
+                        <th>Country Name</th>
+                        <th>IP Address to Ban</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var target in BannedCOuntryList)
+                    {
+                        <tr>
+                            <td>@target.BanedCountriesId</td>
+                            <td>@target.CountryName</td>
+                            <td>@target.IpAdressToBann</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     }
 </div>
 
 <style>
     .form-container {
-        width: 20%;
+        width: 80%;
         background-color: #f9f9f9;
     }
 
     .form-control {
         font-size: 1rem;
         padding: 10px;
-    
     }
 
     .btn {
         font-size: 1rem;
         padding: 10px;
     }
+
+    .d-flex {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+
+    .gap-2 {
+        gap: 0.5rem; /* Adjusts the gap between the buttons */
+    }
 </style>
 
 
 @code {
     private BanedCountries banedCountry = new BanedCountries();
+    private List<BanedCountries> BannedCOuntryList = new List<BanedCountries>();
     private bool isFormVisible = false;
-
+    private bool isFormVisible2 = false;
     protected override async Task OnInitializedAsync()
     {
-        // Optionally, load the existing data for editing if needed.
-        // You can retrieve the data from the database or an API here.
+        BannedCOuntryList = await _adminInterface.GetAllBannedCountriesInDatabase();
     }
     private void ToggleForm()
     {
         isFormVisible = !isFormVisible;
     }
+    private async void ToggleForm2()
+    {
+        isFormVisible2 = !isFormVisible2;
+       await _adminInterface.GetAllBannedCountriesInDatabase();
+ 
+       // isFormVisible2 = false;
+     
+    }
     private async Task HandleValidSubmit()
     {
-        var x = _adminInterface.AddBannCountries(banedCountry);
-
-        
+        await _adminInterface.AddBannCountries(banedCountry);
+        banedCountry = new BanedCountries();
+        isFormVisible = false;
     }
 
-    private void NavigateBack()
-    {
-        NavigationManager.NavigateTo("/somewhere"); // Navigate to the desired page
-    }
 }

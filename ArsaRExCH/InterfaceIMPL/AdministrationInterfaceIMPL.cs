@@ -39,12 +39,6 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
-
-        public Task<BanedCountries> EditBannedCountries()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<BanedCountries>> GetAllBannedCountriesInDatabase()
         {
             try
