@@ -73,6 +73,7 @@
                         <th>Ban ID</th>
                         <th>Country Name</th>
                         <th>IP Address to Ban</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,6 +83,9 @@
                             <td>@target.BanedCountriesId</td>
                             <td>@target.CountryName</td>
                             <td>@target.IpAdressToBann</td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="() => RemoveCountry(target.BanedCountriesId)">Remove</button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -145,5 +149,23 @@
         banedCountry = new BanedCountries();
         isFormVisible = false;
     }
+    private async Task RemoveCountry(int banedCountriesId)
+    {
+        var success = await _adminInterface.RemoveBannedCuntries(banedCountriesId); // Assuming your service class is called `MyService`
 
+        if (success)
+        {
+            // Update the local list by removing the banned country
+            var countryToRemove = BannedCOuntryList.FirstOrDefault(c => c.BanedCountriesId == banedCountriesId);
+            if (countryToRemove != null)
+            {
+                BannedCOuntryList.Remove(countryToRemove);
+            }
+        }
+        else
+        {
+            // Handle failure (e.g., show an error message)
+            Console.WriteLine("Failed to remove the banned country.");
+        }
+    }
 }

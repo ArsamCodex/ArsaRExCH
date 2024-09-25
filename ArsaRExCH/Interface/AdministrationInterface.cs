@@ -6,7 +6,7 @@ namespace ArsaRExCH.Interface
     {
         Task AddBannCountries(BanedCountries banedCountries);
         Task<List<BanedCountries>> GetAllBannedCountriesInDatabase();
-        Task<BanedCountries> RemoveBannedCuntries();
+        Task<bool> RemoveBannedCuntries(int banbId);
        
         
     }

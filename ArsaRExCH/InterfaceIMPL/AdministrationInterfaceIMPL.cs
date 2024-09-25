@@ -51,9 +51,25 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
-        public Task<BanedCountries> RemoveBannedCuntries()
+        public async Task<bool> RemoveBannedCuntries(int banbId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var bannedCountry = await _context.BanedCountris.FindAsync(banbId);
+                if (bannedCountry != null)
+                {
+                    _context.BanedCountris.Remove(bannedCountry);
+                    await _context.SaveChangesAsync(); // Save changes to the database
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error removing country: {ex.Message}");
+                return false;
+            }
         }
     }
-}
+    }
+
