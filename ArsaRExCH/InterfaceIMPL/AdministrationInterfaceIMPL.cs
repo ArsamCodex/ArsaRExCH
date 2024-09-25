@@ -63,6 +63,53 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<List<UserDatesRecord>> GetAllUserDates(string userID)
+        {
+            var userDates = await _context.UserDatesRecords
+                  .Where(ud => ud.ApplicationUserId == userID) // Filter by userID
+                  .ToListAsync();
+            return userDates;
+        }
+
+        public async Task<ApplicationUser> GetUserById(string userId)
+        {
+            try
+            {
+                // Fetch the user from the database by their ID, including UserLoginDates
+                var user = await _context.Users
+                    .Include(u => u.UserLoginDates) // Include related UserLoginDates
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+
+                // Check if the user was found
+                if (user == null)
+                {
+                    throw new KeyNotFoundException($"User with ID '{userId}' was not found.");
+                }
+
+                return user;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Log the exception (optional) and rethrow for higher-level handling
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle database update exception (connection issues, etc.)
+                Console.WriteLine("Database update error: " + ex.Message);
+                throw new Exception("An error occurred while retrieving the user from the database.");
+            }
+            catch (Exception ex)
+            {
+                // Handle any other unexpected errors
+                Console.WriteLine("An unexpected error occurred: " + ex.Message);
+                throw new Exception("An error occurred while retrieving the user.");
+            }
+        }
+
+
+
         public async Task<bool> RemoveBannedCuntries(int banbId)
         {
             try
@@ -83,5 +130,5 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
     }
-    }
+}
 

@@ -1,0 +1,156 @@
+﻿@page "/UserProfile/{userID}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Security.Claims
+@using ArsaRExCH.Data
+@using ArsaRExCH.Model
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@attribute [Authorize(Roles = "Admin")]
+
+<style>
+    .user-profile-container {
+        max-width: 100%; /* Set a max width for the container */
+        margin: 20px auto; /* Center the container */
+        padding: 20px; /* Add padding */
+        background-color: #ffffff; /* White background */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        font-family: Arial, sans-serif; /* Font styling */
+    }
+
+    h3 {
+        text-align: center; /* Center the heading */
+        color: #333; /* Dark gray color */
+    }
+
+    .user-info-grid {
+        display: flex; /* Use flexbox for layout */
+        flex-wrap: wrap; /* Allow wrapping of items */
+        gap: 20px; /* Space between items */
+        justify-content: center; /* Center items */
+    }
+
+    .user-info-item {
+        background-color: #f9f9f9; /* Light gray background for each item */
+        border: 1px solid #ddd; /* Light border */
+        border-radius: 8px; /* Rounded corners */
+        padding: 15px; /* Inner padding */
+        flex: 1 1 calc(25% - 20px); /* 4 items per row, accounting for gap */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        min-width: 180px; /* Minimum width for items */
+        /* Remove the fixed height to allow auto-sizing */
+        height: auto; /* Allow height to be determined by content */
+    }
+
+    .btn {
+        display: block; /* Display as block for proper spacing */
+        font-size: 1rem; /* Font size for buttons */
+        padding: 10px 15px; /* Inner padding for buttons */
+        margin-top: 20px; /* Space above the button */
+        width: 100%; /* Full width button */
+    }
+</style>
+
+
+<div class="user-profile-container">
+    <h3>User Profile</h3>
+
+    @if (TargetUser != null)
+    {
+        <div class="user-info-grid">
+            <div class="user-info-item">
+                <strong>User ID:</strong> @TargetUser.Id
+            </div>
+            <div class="user-info-item">
+                <strong>Username:</strong> @TargetUser.UserName
+            </div>
+            <div class="user-info-item">
+                <strong>Email:</strong> @TargetUser.Email
+            </div>
+            <div class="user-info-item">
+                <strong>Email Confirmed:</strong> @TargetUser.EmailConfirmed
+            </div>
+            <div class="user-info-item">
+                <strong>Phone Number:</strong> @TargetUser.PhoneNumber
+            </div>
+            <div class="user-info-item">
+                <strong>Phone Number Confirmed:</strong> @TargetUser.PhoneNumberConfirmed
+            </div>
+            <div class="user-info-item">
+                <strong>2FA Enabled:</strong> @TargetUser.TwoFactorEnabled
+            </div>
+            <div class="user-info-item">
+                <strong>Lock Out End:</strong> @TargetUser.LockoutEnd
+            </div>
+            <div class="user-info-item">
+                <strong>Lock Out Enabled:</strong> @TargetUser.LockoutEnabled
+            </div>
+            <div class="user-info-item">
+                <strong>Access Failed Count:</strong> @TargetUser.AccessFailedCount
+            </div>
+            <div class="user-info-item">
+                <strong>Last Login Date:</strong> @TargetUser.LastLoginDate
+            </div>
+        </div>
+        @if (TargetUser.UserLoginDates != null && TargetUser.UserLoginDates.Count > 0)
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Public IP Address</th>
+                        <th>X-Forwarded IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in TargetUser.UserLoginDates)
+                    {
+                        <tr>
+                            <td>@record.UserLoggedInDates.ToShortDateString()</td>
+                            <td>@record.UserIpAdressPublic</td>
+                            <td>@record.UserIpAdressX</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+ 
+    }
+    else
+    {
+        <p>Loading user information...</p>
+    }
+</div>
+@code {
+    [Parameter]
+    public string userID { get; set; }
+
+    private string user2 { get; set; }
+    public ApplicationUser TargetUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Get the logged-in user's ID from the claims
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            // Fetch the target user by ID
+            if (!string.IsNullOrEmpty(userID))
+            {
+                TargetUser = await _adminInterface.GetUserById(userID);
+            }
+        }
+        else
+        {
+            // Handle unauthenticated users (optional)
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

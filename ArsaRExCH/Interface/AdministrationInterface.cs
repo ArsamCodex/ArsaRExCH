@@ -9,6 +9,8 @@ namespace ArsaRExCH.Interface
         Task<List<BanedCountries>> GetAllBannedCountriesInDatabase();
         Task<bool> RemoveBannedCuntries(int banbId);
         Task<List<ApplicationUser>> AllUsers();
+        Task<ApplicationUser> GetUserById(string userId);
+        Task<List<UserDatesRecord>> GetAllUserDates(string userID);
         
     }
 }
