@@ -10,6 +10,7 @@
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager Navigation
 
 <div class="container my-3">
     <div class="row">
@@ -39,7 +40,7 @@
                     <td>@user.Id</td>
                     <td>@user.Email</td>
                     <td>
-                        <button class="btn btn-danger">Details</button>
+                        <button class="btn btn-danger" @onclick="() => NavigateToBet(user.Id)">Details</button>
                     </td>
                 </tr>
             }
@@ -109,5 +110,10 @@
         {
             filteredUsers = users;
         }
+    }
+    private void NavigateToBet(string userId)
+    {
+        // Redirect to the /bet page with the user ID as a route parameter
+        Navigation.NavigateTo($"/UserProfile/{userId}");
     }
 }
