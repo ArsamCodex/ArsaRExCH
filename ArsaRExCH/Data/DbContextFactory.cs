@@ -4,6 +4,9 @@ namespace ArsaRExCH.Data
 {
     public class DbContextFactory
     {
+        /*Manual implementation of dbcontext factory every time new instance 
+         * I Also Add IdbcontextFactory if you like to use , i wil also use in other method to use both 
+         */
         private readonly string _connectionString;
 
         public DbContextFactory(IConfiguration configuration)
