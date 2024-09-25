@@ -98,6 +98,9 @@
         </div>
         @if (TargetUser.UserLoginDates != null && TargetUser.UserLoginDates.Count > 0)
         {
+            var lastTwoRecords = TargetUser.UserLoginDates
+            .OrderByDescending(record => record.UserLoggedInDates) // Order by date descending
+            .Take(2);
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -107,7 +110,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var record in TargetUser.UserLoginDates)
+                    @foreach (var record in lastTwoRecords)
                     {
                         <tr>
                             <td>@record.UserLoggedInDates.ToShortDateString()</td>
