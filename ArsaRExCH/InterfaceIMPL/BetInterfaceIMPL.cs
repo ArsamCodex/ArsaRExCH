@@ -63,7 +63,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 if (Math.Abs(bet.BtcPriceExpireBet - btcPrice) <= 200 && Math.Abs(bet.EthPriceExpireBet - ethPrice) <= 200)
                 {
                     // Bet is a winning one; update the bet and user wallet
-                  //  bet.WiningAmount = bet.BetAmountBtc * 7;
+                    //  bet.WiningAmount = bet.BetAmountBtc * 7;
                     bet.CompletedTime = DateTime.UtcNow;
                     bet.BtcPriceNow = btcPrice;
                     bet.EthPriceNow = ethPrice;
@@ -71,20 +71,20 @@ namespace ArsaRExCH.InterfaceIMPL
                     bet.IsBetActive = false;
 
                     // Update user's wallet with the winning amount
-                
-                        foreach (var wallet in userWallets)
-                        {
-                            if (wallet.PairName == "BTC")
-                            {
-                                wallet.Amount = bet.BetAmountBtc * 7;  // Replace with actual BTC amount
-                            }
-                            else if (wallet.PairName == "ETH")
-                            {
-                                wallet.Amount = bet.BetAmountETH*7; // Replace with actual ETH amount
-                            }
 
+                    foreach (var wallet in userWallets)
+                    {
+                        if (wallet.PairName == "BTC")
+                        {
+                            wallet.Amount = bet.BetAmountBtc * 7;  // Replace with actual BTC amount
                         }
-                    
+                        else if (wallet.PairName == "ETH")
+                        {
+                            wallet.Amount = bet.BetAmountETH * 7; // Replace with actual ETH amount
+                        }
+
+                    }
+
 
                     // Save changes to the database only for winning bets
                     await _context.SaveChangesAsync();
@@ -95,19 +95,19 @@ namespace ArsaRExCH.InterfaceIMPL
                     bet.WiningAmount = 0;
                     bet.CompletedTime = DateTime.UtcNow;
                     bet.BtcPriceNow = btcPrice;
-                    bet.EthPriceNow= ethPrice;
+                    bet.EthPriceNow = ethPrice;
                     bet.IsBetActive = false;
                     await _context.SaveChangesAsync();
-                    
+
 
                 }
             }
 
-       
+
         }
 
 
-            public async Task<string> Generatesha256()
+        public async Task<string> Generatesha256()
         {
             return await Task.Run(() =>
             {
@@ -138,9 +138,16 @@ namespace ArsaRExCH.InterfaceIMPL
         public async Task<Bet> GetBetBySha(string sha)
         {
             // Assuming Bet has a property named Hash of type string
-            return await _context.Bet
-                .Where(c => c.BetSignutare == sha)
-                .FirstOrDefaultAsync();
+            try
+            {
+                return await _context.Bet
+                    .Where(c => c.BetSignutare == sha)
+                    .FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("cant get the bet", ex);
+            }
         }
 
         public async Task<List<Bet>> GetBetsByUseId(string useId)
@@ -200,6 +207,20 @@ namespace ArsaRExCH.InterfaceIMPL
             return "Unknown"; // Return "Unknown" if no valid address is found
         }
 
+        public async Task<List<Bet>> GetListOfAllBets()
+        {
+            try
+            {
+                using var context = _dbContextFactory.CreateDbContext();
+                var target = await context.Bet.ToListAsync();
+                return target;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetch ", ex);
+            }
+        }
+
         public async Task SaveBet(Bet bet)
         {
             try
@@ -223,7 +244,7 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             // Fetch bets from the database using the context
             var bets = await _context.Bet
-                                     .Where(bet => bet.UserIdSec == userId )
+                                     .Where(bet => bet.UserIdSec == userId)
                                      .ToListAsync();
 
             // Calculate the total number of trades
@@ -263,7 +284,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     BetAmountBtc = bet.BetAmountBtc,
                     WiningAmount = bet.WiningAmount,
                     WiningAmountEth = winningBetsETH,
-                    
+
                 })
                 .ToList();
 

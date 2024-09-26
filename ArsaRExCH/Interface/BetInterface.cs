@@ -12,5 +12,6 @@ namespace ArsaRExCH.Interface
         Task CalculateBetResault(DateTime time,string id);
         Task<UserAnalyticsDTO> UserTradeAnalytics(string id);
         Task<string> GetClientIpAddress();
+        Task<List<Bet>> GetListOfAllBets();
     }
 }
