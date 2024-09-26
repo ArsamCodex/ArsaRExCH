@@ -1,0 +1,97 @@
+﻿@page "/BetPreviewAdmin/{Hash}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@inject NavigationManager manager
+<h4>Bet Summary Administration</h4>
+<hr />
+<style>
+    .bet-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .bet-item {
+        border: 1px solid #ccc; /* Optional styling */
+        padding: 10px;
+        background-color: #f9f9f9; /* Optional background color */
+        border-radius: 4px; /* Optional border radius */
+    }
+
+    /* Light red background for zero winning amount */
+    .bg-light-red {
+        background-color: #f8d7da; /* Light red color */
+    }
+
+    .bg-light-green {
+        background-color: lightgreen; /* Light green color */
+    }
+</style>
+@if (bet == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="bet-grid">
+        <div class="bet-item"><strong>Bet ID:</strong> @bet.BetId</div>
+        <div class="bet-item"><strong>User ID:</strong> @bet.UserIdSec</div>
+        <div class="bet-item"><strong>Current BTC Price:</strong> @bet.BtcPriceNow</div>
+
+        <div class="bet-item"><strong>BTC Price at Bet Expiry:</strong> @bet.BtcPriceExpireBet</div>
+        <div class="bet-item"><strong>BTC Hit Date:</strong> @bet.HitDateBTC.ToString("g")</div>
+        <div class="bet-item"><strong>Bet Amount in BTC:</strong> @bet.BetAmountBtc</div>
+
+        <div class="bet-item"><strong>Current ETH Price:</strong> @bet.EthPriceNow</div>
+        <div class="bet-item"><strong>ETH Hit Date:</strong> @bet.HitDateETH.ToString("g")</div>
+        <div class="bet-item"><strong>ETH Price at Bet Expiry:</strong> @bet.EthPriceExpireBet</div>
+
+        <div class="bet-item"><strong>Bet Amount in ETH:</strong> @bet.BetAmountETH</div>
+
+        <!-- Conditional class based on Winning Amount -->
+        <div class="bet-item @(bet.WiningAmount.GetValueOrDefault() == 0 ? "bg-light-red" : "bg-light-green")">
+            <strong>Winning Amount:</strong> @bet.WiningAmount.GetValueOrDefault()
+        </div>
+
+        <div class="bet-item"><strong>Is Bet Active:</strong> @(bet.IsBetActive ? "Yes" : "No")</div>
+        <div class="bet-item"><strong>Is Deleted:</strong> @(bet.ISDeleted ? "Yes" : "No")</div>
+        <div class="bet-item"><strong>Completed Time:</strong> @bet.CompletedTime.ToString("g")</div>
+        <div class="bet-item"><strong>Opened Bet Article:</strong> @bet.OpendBetAtricle?.ToString("g") ?? "N/A"</div>
+
+        <div class="bet-item"><strong>Bet Signature:</strong> @bet.BetSignutare</div>
+    </div>
+}
+<br />
+<br />
+
+
+@code {
+    [Parameter]
+    public string Hash { get; set; }
+    private string user2 { get; set; }
+    private Bet bet = new Bet();
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            bet = await _interface.GetBetBySha(Hash);
+
+        }
+
+    }
+ 
+}

@@ -11,7 +11,7 @@
 @using ArsaRExCH.Model
 @using ArsaRExCH.Components.Pages
 @using ArsaRExCH.Components.MyComponents
-@inject NavigationManager manager
+
 
 <h3>Bets List</h3>
 
@@ -45,8 +45,10 @@ else
                     <td>
 
 
-                        <a href="/BetPreview/@bet.BetSignutare">View Details</a>
+
+                        <button class="btn btn-danger" @onclick="() => NavigateToDetails(bet.BetSignutare)">Details</button>
                     </td>
+                   
                 </tr>
             }
         </tbody>
@@ -79,5 +81,10 @@ else
             BetLists = await _interface.GetBetsByUseId(user2);
 
         }
+    }
+    private void NavigateToDetails(string sig)
+    {
+        // Redirect to the /bet page with the user ID as a route parameter
+        NavigationManager.NavigateTo($"/BetPreviewAdmin/{sig}");
     }
 }

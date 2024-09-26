@@ -4,6 +4,7 @@
 @using System.Security.Claims
 @using ArsaRExCH.Data
 @using ArsaRExCH.Model
+@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
@@ -36,8 +37,11 @@
                 <div class="table-cell">@bet.BetAmountETH</div>
                 <div class="table-cell">
                     <td>
-                        <button class="btn btn-danger">Details</button>
+                        <button class="btn btn-danger" @onclick="() => NavigateToBetDetails(bet.BetSignutare)">Details</button>
                     </td>
+
+
+
                 </div>
             </div>
         }
@@ -116,4 +120,10 @@
             bets = await _betInterface.GetListOfAllBets();
         }
     }
+    private void NavigateToBetDetails(string betSignutare)
+    {
+        NavigationManager.NavigateTo($"BetPreviewAdmin/{betSignutare}");
+    }
+
+
 }
