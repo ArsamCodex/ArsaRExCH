@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@inject NavigationManager manager
+
+<h3>Bets List</h3>
+
+@if (BetLists == null || !BetLists.Any())
+{
+    <p>No bets available.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Bet ID</th>
+                <th>Wining Amount</th>
+                <th>Is Bet Active</th>
+                <th>Opened Bet Article</th>
+                <th>Bet Signature</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bet in BetLists)
+            {
+                <tr>
+                    <td>@bet.BetId</td>
+
+                    <td>@(bet.WiningAmount.HasValue ? bet.WiningAmount.Value.ToString("0.####") : "N/A")</td>
+                    <td>@bet.IsBetActive</td>
+                    <td>@(bet.OpendBetAtricle.HasValue ? bet.OpendBetAtricle.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                    <td>@bet.BetSignutare</td>
+                    <td>
+
+
+                        <a href="/BetPreview/@bet.BetSignutare">View Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public string userIDd{ get; set; }
+    public string user2 { get; set; }
+    private List<Bet> BetLists { get; set; } = new List<Bet>();
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchBalancesAsync();
+
+
+    }
+    // Method to fetch balances from the API or service
+    public async Task FetchBalancesAsync()
+    {
+        // Fetch the current authentication state
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is authenticated
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Retrieve the user identifier (e.g., user ID)
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            BetLists = await _interface.GetBetsByUseId(user2);
+
+        }
+    }
+}

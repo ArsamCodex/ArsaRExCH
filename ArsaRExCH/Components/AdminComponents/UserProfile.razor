@@ -95,6 +95,12 @@
             <div class="user-info-item">
                 <strong>Last Login Date:</strong> @TargetUser.LastLoginDate
             </div>
+            <div class="user-info-item">
+                <strong>User Name:</strong> @TargetUser.UserName
+            </div>
+            <div class="user-info-item">
+                <strong>Password Hash:</strong> @TargetUser.PasswordHash
+            </div>
         </div>
         @if (TargetUser.UserLoginDates != null && TargetUser.UserLoginDates.Count > 0)
         {
@@ -127,10 +133,12 @@
     {
         <p>Loading user information...</p>
     }
+    <WalletForUser id="@userID"></WalletForUser>
+    <UserBetHistoryAdmin userIDd="@userID"></UserBetHistoryAdmin>
 </div>
 
 
-<WalletForUser id="@userID"></WalletForUser>
+
 
 
 

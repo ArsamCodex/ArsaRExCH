@@ -1,14 +1,12 @@
-﻿using ArsaRExCH.Controllers;
-using ArsaRExCH.Data;
+﻿using ArsaRExCH.Data;
+using ArsaRExCH.DTOs;
 using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
-using System.Security.Cryptography;
-using ArsaRExCH.DTOs;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -19,15 +17,17 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BetInterfaceIMPL> _logger;
         private readonly PriceInterface _priceInterface;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
 
         public BetInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetInterfaceIMPL> logger,
-                            SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface)
+                            SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
             _logger = logger;
             _context = context;
             _configuration = configuration;
             _signInManager = signInManager;
             _priceInterface = priceInterface;
+            _dbContextFactory = dbContextFactory;
         }
 
         public async Task CalculateBetResault(DateTime date, string id)
@@ -152,7 +152,10 @@ namespace ArsaRExCH.InterfaceIMPL
 
             try
             {
-                var bets = await _context.Bet
+                // Use the factory to create a new instance of ApplicationDbContext
+                using var context = _dbContextFactory.CreateDbContext();
+
+                var bets = await context.Bet
                     .Where(c => c.UserIdSec == useId)
                     .ToListAsync();
 
