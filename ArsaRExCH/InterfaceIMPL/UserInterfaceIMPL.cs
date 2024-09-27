@@ -12,8 +12,11 @@ namespace ArsaRExCH.InterfaceIMPL
     public class UserInterfaceIMPL : UserIpInterface
     {
         private readonly ApplicationDbContext _context;
-        public UserInterfaceIMPL(ApplicationDbContext context) {
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
+        public UserInterfaceIMPL(ApplicationDbContext context, IDbContextFactory<ApplicationDbContext> dbContext)
+        {
             _context = context;
+            _dbContext = dbContext;
         }
 
         public async Task<List<MaxInzetResultDTO>> CalculateMaxInzetAsync()
@@ -22,8 +25,9 @@ namespace ArsaRExCH.InterfaceIMPL
 
             try
             {
+                var cont = _dbContext.CreateDbContext();
                 // Query all bets from the database
-                var allBets = await _context.Bet
+                var allBets = await cont.Bet
                     .Where(b => !b.ISDeleted && b.IsBetActive)
                     .ToListAsync();
 

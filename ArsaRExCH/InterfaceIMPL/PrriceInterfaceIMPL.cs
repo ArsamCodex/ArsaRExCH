@@ -9,46 +9,61 @@ namespace ArsaRExCH.InterfaceIMPL
 {
     public class PrriceInterfaceIMPL : PriceInterface
     {
-       
-
         public async Task<double> GetBtcPriceFromBinance()
         {
-            HttpClient httpClient = new HttpClient();
-
-                try
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    // Fetch BTC price
                     var btcResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
-                    var btcPriceData = JsonSerializer.Deserialize<double>(btcResponse);
-                    return btcPriceData;
+                    var btcPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(btcResponse);
 
- 
+                    // Convert the price string to double
+                    if (decimal.TryParse(btcPriceData.Price, out decimal btcPrice))
+                    {
+                        return (double)btcPrice; // Return as double
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error fetching prices: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching BTC price: {ex.Message}");
+            }
+
             return 0;
         }
 
         public async Task<double> GetEthPriceFromBinance()
         {
-            HttpClient httpClient = new HttpClient();
-
             try
             {
-                // Fetch BTC price
-                var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
-                var btcPriceData = JsonSerializer.Deserialize<double>(ethResponse);
-                return btcPriceData;
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+                    var ethPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(ethResponse);
 
-
+                    // Convert the price string to double
+                    if (decimal.TryParse(ethPriceData.Price, out decimal ethPrice))
+                    {
+                        return (double)ethPrice; // Return as double
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching prices: {ex.Message}");
+                Console.WriteLine($"Error fetching ETH price: {ex.Message}");
             }
+
             return 0;
         }
     }
+
+
+    // Adjust the BinancePriceResponse class to match the API's response
+    public class CryptoPriceResponse
+    {
+        [JsonPropertyName("price")]
+        public string Price { get; set; }
+    }
+
 }
