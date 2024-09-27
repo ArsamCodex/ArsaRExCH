@@ -32,7 +32,7 @@ else
                             <td>@((result.HitBtcPrice != 0) ? result.HitBtcPrice.ToString() : "N/A")</td>
                             <td>@((result.MaxBtcTotalInBTC != 0) ? result.MaxBtcTotalInBTC.ToString() : "N/A")</td>
                             <td>@((result.HitEthPrice != 0) ? result.HitEthPrice.ToString() : "N/A")</td>
-                            <td>@((result.MaxEthTotal != 0) ? result.MaxEthTotal.ToString() : "N/A")</td>
+                            <td>@((result.MaxEthTotal != 0) ? result.MaxEthTotal.ToString("F4") : "N/A")</td>
                         </tr>
                     }
                 }
