@@ -13,5 +13,6 @@ namespace ArsaRExCH.Interface
         Task<UserAnalyticsDTO> UserTradeAnalytics(string id);
         Task<string> GetClientIpAddress();
         Task<List<Bet>> GetListOfAllBets();
+   
     }
 }
