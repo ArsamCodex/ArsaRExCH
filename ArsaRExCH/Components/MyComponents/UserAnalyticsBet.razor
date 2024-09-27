@@ -4,38 +4,104 @@
 
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject ArsaRExCH.Interface.BetInterface _interface
-
 @if (analyticsData != null)
 {
-    <div>
-        <p>Trade Count: @analyticsData.TradeCount</p>
-        <p>Win Count: @analyticsData.WinCOunt</p>
-        <p>Loss Count: @analyticsData.LossCount</p>
-        <p>Total WinBTC: @analyticsData.TottalWIn</p>
-        <p>Total WinETH: @analyticsData.TottalWInEth</p>
-        <p>Total Inzet: @analyticsData.TottalInzet</p>
-        <p>Pair Name: @analyticsData.PairName</p>
+    <div class="analytics-table-container">
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Trade Count</th>
+                    <th>Win Count</th>
+                    <th>Loss Count</th>
+                    <th>Total Win BTC</th>
+                    <th>Total Win ETH</th>
+                    <th>Total Inzet</th>
+                    <th>Pair Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@analyticsData.TradeCount</td>
+                    <td>@analyticsData.WinCOunt</td>
+                    <td>@analyticsData.LossCount</td>
+                    <td>@analyticsData.TottalWIn</td>
+                    <td>@analyticsData.TottalWInEth</td>
+                    <td>@analyticsData.TottalInzet</td>
+                    <td>@analyticsData.PairName</td>
+                </tr>
+            </tbody>
+        </table>
+
         <h4>Winning Bets:</h4>
-        <ul>
-            @foreach (var bet in analyticsData.WiningBets)
-            {
-                <li>
-                    <strong>Bet ID:</strong> @bet.BetId |
-                    <strong>Bet Amount BTC:</strong> @bet.BetAmountBtc |
-                    <strong>BTC Price At Bet Time:</strong> @bet.BtcPriceNow |
-                    <strong>BTC Expire Price Guess:</strong> @bet.BtcPriceExpireBet |
-                    <strong>BTC Hit Date:</strong> @bet.HitDateBTC |
-                    <strong>Winning Amount BTC:</strong> @bet.WiningAmount
-                 
-                </li>
-            }
-        </ul>
+        @if (analyticsData.WiningBets != null && analyticsData.WiningBets.Any())
+        {
+            <table class="winning-bets-table">
+                <thead>
+                    <tr>
+                        <th>Bet ID</th>
+                        <th>Bet Amount BTC</th>
+                        <th>BTC Price At Bet Time</th>
+                        <th>BTC Expire Price Guess</th>
+                        <th>BTC Hit Date</th>
+                        <th>Winning Amount BTC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bet in analyticsData.WiningBets)
+                    {
+                        <tr>
+                            <td>@bet.BetId</td>
+                            <td>@bet.BetAmountBtc</td>
+                            <td>@bet.BtcPriceNow</td>
+                            <td>@bet.BtcPriceExpireBet</td>
+                            <td>@bet.HitDateBTC</td>
+                            <td>@bet.WiningAmount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No winning bets available.</p>
+        }
     </div>
 }
 else
 {
     <p>Loading analytics...</p>
 }
+
+<style>
+    .analytics-table-container {
+        width: 100%; /* Full width of the parent container */
+        margin: 0 auto; /* Center the container */
+    }
+
+    .analytics-table, .winning-bets-table {
+        width: 100%; /* Full width of the container */
+        border-collapse: collapse; /* Merge table borders */
+        margin-bottom: 20px; /* Space between tables */
+    }
+
+    th, td {
+        padding: 8px; /* Adjust padding as needed */
+        text-align: left;
+        border: 1px solid #ddd; /* Border for cells */
+        white-space: nowrap; /* Prevent text from wrapping */
+    }
+
+    th {
+        background-color: #f1f1f1; /* Header background color */
+        font-weight: bold; /* Bold text in header */
+    }
+
+    tr:nth-child(even) td {
+        background-color: #f9f9f9; /* Zebra striping for even rows */
+    }
+</style>
+
+
 
 @code {
     [Parameter]
