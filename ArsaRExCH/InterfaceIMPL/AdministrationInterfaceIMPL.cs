@@ -3,6 +3,7 @@ using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -13,9 +14,9 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BetInterfaceIMPL> _logger;
         private readonly PriceInterface _priceInterface;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
         public AdministrationInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetInterfaceIMPL> logger,
-                         SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, ApplicationDbContext dbContext)
+                         SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContext)
         {
             _logger = logger;
             _context = context;
@@ -28,14 +29,17 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                await _context.AddAsync(banedCountries);
-                await _context.SaveChangesAsync();
+                // Create a new context from the factory
+                using var context = _dbContext.CreateDbContext();
+
+                await context.AddAsync(banedCountries);
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 // Log the exception (you can adjust this to your logging mechanism)
                 Console.WriteLine($"Error adding banned country: {ex.Message}");
-                throw new Exception("An unexpected error occurred while saving the bet.", ex);
+                throw new Exception("An unexpected error occurred while saving the country ban.", ex);
             }
         }
 
@@ -43,7 +47,8 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                return await _context.Users.ToListAsync();
+                using var context = _dbContext.CreateDbContext();
+                return await context.Users.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -55,7 +60,8 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                return await _context.BanedCountris.ToListAsync();
+                using var context = _dbContext.CreateDbContext();
+                return await context.BanedCountris.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -65,7 +71,8 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<List<UserDatesRecord>> GetAllUserDates(string userID)
         {
-            var userDates = await _context.UserDatesRecords
+            using var context = _dbContext.CreateDbContext();
+            var userDates = await context.UserDatesRecords
                   .Where(ud => ud.ApplicationUserId == userID) // Filter by userID
                   .ToListAsync();
             return userDates;
@@ -75,8 +82,10 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
+                using var context = _dbContext.CreateDbContext();
+
                 // Fetch the user from the database by their ID, including UserLoginDates
-                var user = await _context.Users
+                var user = await context.Users
                     .Include(u => u.UserLoginDates) // Include related UserLoginDates
                     .FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -114,11 +123,12 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                var bannedCountry = await _context.BanedCountris.FindAsync(banbId);
+                using var context = _dbContext.CreateDbContext();
+                var bannedCountry = await context.BanedCountris.FindAsync(banbId);
                 if (bannedCountry != null)
                 {
-                    _context.BanedCountris.Remove(bannedCountry);
-                    await _context.SaveChangesAsync(); // Save changes to the database
+                    context.BanedCountris.Remove(bannedCountry);
+                    await context.SaveChangesAsync(); // Save changes to the database
                     return true;
                 }
                 return false;

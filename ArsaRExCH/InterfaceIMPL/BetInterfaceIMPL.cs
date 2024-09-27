@@ -41,13 +41,13 @@ namespace ArsaRExCH.InterfaceIMPL
             //This sample method will return Final balance or final amount of user (intern)
             //about the current rewarding system maybe new thing will be come but not now , to make it more flixable to win
 
-
-            var targetBets = await _context.Bet
+            using var context = _dbContextFactory.CreateDbContext();
+            var targetBets = await context.Bet
                    .Where(c => c.UserIdSec == id && c.HitDateBTC.Date == date.Date) // Ensure both dates match to the day
                    .ToListAsync();
 
             // Fetch the user's wallet amount
-            var userWallets = await _context.Wallet
+            var userWallets = await context.Wallet
         .Where(c => c.UserIDSec == id)
         .ToListAsync();
 
@@ -87,7 +87,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
 
                     // Save changes to the database only for winning bets
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
                 }
                 else
                 {
@@ -97,7 +97,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     bet.BtcPriceNow = btcPrice;
                     bet.EthPriceNow = ethPrice;
                     bet.IsBetActive = false;
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
 
                 }
@@ -140,7 +140,8 @@ namespace ArsaRExCH.InterfaceIMPL
             // Assuming Bet has a property named Hash of type string
             try
             {
-                return await _context.Bet
+                using var context = _dbContextFactory.CreateDbContext();
+                return await context.Bet
                     .Where(c => c.BetSignutare == sha)
                     .FirstOrDefaultAsync();
             }
@@ -225,8 +226,10 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                await _context.Bet.AddAsync(bet);
-                await _context.SaveChangesAsync();
+                using var context = _dbContextFactory.CreateDbContext();
+
+                await context.Bet.AddAsync(bet);
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateException dbEx)
             {
@@ -242,8 +245,10 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<UserAnalyticsDTO> UserTradeAnalytics(string userId)
         {
+            using var context = _dbContextFactory.CreateDbContext();
+
             // Fetch bets from the database using the context
-            var bets = await _context.Bet
+            var bets = await context.Bet
                                      .Where(bet => bet.UserIdSec == userId)
                                      .ToListAsync();
 

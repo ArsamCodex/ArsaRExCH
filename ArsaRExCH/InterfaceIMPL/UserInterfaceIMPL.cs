@@ -25,7 +25,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
             try
             {
-                var cont = _dbContext.CreateDbContext();
+               using var cont = _dbContext.CreateDbContext();
                 // Query all bets from the database
                 var allBets = await cont.Bet
                     .Where(b => !b.ISDeleted && b.IsBetActive)
@@ -74,8 +74,10 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
+                using var cont = _dbContext.CreateDbContext();
+
                 // Retrieve the list of banned IP addresses (which are already two digits) from the database
-                var bannedIpAddresses = await _context.BanedCountris
+                var bannedIpAddresses = await cont.BanedCountris
                     .Where(b => !string.IsNullOrEmpty(b.IpAdressToBann))
                     .Select(b => b.IpAdressToBann)
                     .ToListAsync();

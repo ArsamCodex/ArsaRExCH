@@ -23,9 +23,9 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly ApplicationDbContext _context;
         public readonly HttpClient httpClient;
         private readonly IConfiguration _configuration;
-        private readonly DbContextFactory _dbContextFactory;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
 
-        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient, IConfiguration configuration, DbContextFactory dbContextFactory)
+        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient, IConfiguration configuration, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
             _context = context;
             this.httpClient = httpClient;
@@ -35,6 +35,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<string> CreateBNBWallet(string id, string PairName)
         {
+            var context = _dbContextFactory.CreateDbContext();
             Key privateKey = new Key();
             string privateKeyHex = privateKey.ToHex();
 
@@ -76,14 +77,15 @@ namespace ArsaRExCH.InterfaceIMPL
             };
 
 
-            await _context.Wallet.AddAsync(walletEntity);
-            await _context.SaveChangesAsync();
+            await context.Wallet.AddAsync(walletEntity);
+            await context.SaveChangesAsync();
             return publicKey.ToString();
 
         }
 
         public async Task<string> CreateBTCWallet(string id, string PairName)
         {
+            var context = _dbContextFactory.CreateDbContext();
             Mnemonic mnemonic = new Mnemonic(Wordlist.English, WordCount.Twelve);
             string[] seedPhraseArray = mnemonic.Words;
 
@@ -115,13 +117,14 @@ namespace ArsaRExCH.InterfaceIMPL
             };
 
             // Save the wallet entity to the database
-            await _context.Wallet.AddAsync(walletEntity);
-            await _context.SaveChangesAsync();
+            await context.Wallet.AddAsync(walletEntity);
+            await context.SaveChangesAsync();
             return address.ToString();
         }
 
         public async Task<string> CreateETHWallet(string id, string PairName)
         {
+            var context = _dbContextFactory.CreateDbContext();
             var wallet = new Nethereum.HdWallet.Wallet(Wordlist.English, WordCount.Twelve);
             var seedPhrase = wallet.Words;
             var account = wallet.GetAccount(0);
@@ -140,8 +143,8 @@ namespace ArsaRExCH.InterfaceIMPL
             };
 
             // Save the wallet entity to the database
-            await _context.Wallet.AddAsync(walletEntity);
-            await _context.SaveChangesAsync();
+            await context.Wallet.AddAsync(walletEntity);
+            await context.SaveChangesAsync();
             return account.Address;
         }
 
@@ -175,7 +178,8 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                var pairs = await _context.Pair
+                var context = _dbContextFactory.CreateDbContext();
+                var pairs = await context.Pair
                       .Select(p => new { p.PaiName, p.NetworkName })
                       .ToListAsync();
 
@@ -210,8 +214,8 @@ namespace ArsaRExCH.InterfaceIMPL
                             };
 
                             // Save the wallet entity to the database
-                            await _context.Wallet.AddAsync(walletEntity);
-                            await _context.SaveChangesAsync();
+                            await context.Wallet.AddAsync(walletEntity);
+                            await context.SaveChangesAsync();
                         }
                     }
                     if (pair.NetworkName == "BNB")
@@ -231,7 +235,8 @@ namespace ArsaRExCH.InterfaceIMPL
         }
         public async Task<string> CreateETHNetworksWallet(string id, string PairName)
         {
-            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserIDSec == id && c.Network == "ETH");
+            var context = _dbContextFactory.CreateDbContext();
+            var x = await context.Wallet.FirstOrDefaultAsync(c => c.UserIDSec == id && c.Network == "ETH");
             var ad = x.Adress;
             var seed = x.SeedPhrase;
             var privateKey = x.PrivateKey;
@@ -248,8 +253,8 @@ namespace ArsaRExCH.InterfaceIMPL
             };
 
             // Save the wallet entity to the database
-            await _context.Wallet.AddAsync(walletEntity);
-            await _context.SaveChangesAsync();
+            await context.Wallet.AddAsync(walletEntity);
+            await context.SaveChangesAsync();
             return PairName;
         }
         public Task SendEmailAsync(EmailRequest request)
@@ -376,8 +381,9 @@ namespace ArsaRExCH.InterfaceIMPL
          * in wining possition or increassing we make other method*/
         public async Task<double> EditWalletAmountDecrease(string userID, double amount)
         {
+            var context = _dbContextFactory.CreateDbContext();
             // Retrieve the wallet entry for the specified user and currency pair
-            var wallet = await _context.Wallet
+            var wallet = await context.Wallet
                 .Where(c => c.UserIDSec == userID && c.PairName == "BTC")
                 .FirstOrDefaultAsync(); // Execute the query and get the first result
 
@@ -395,8 +401,8 @@ namespace ArsaRExCH.InterfaceIMPL
             }
 
             // Save the updated wallet entry to the database
-            _context.Wallet.Update(wallet);
-            await _context.SaveChangesAsync();
+            context.Wallet.Update(wallet);
+            await context.SaveChangesAsync();
 
             // Return the updated amount
             return wallet.Amount;
@@ -407,8 +413,8 @@ namespace ArsaRExCH.InterfaceIMPL
             /* Here we have now 2 seperate method for edit wallet in both winning and lost position
              * . you can make 1 method fot both also  , but i like this way 
              * */
-
-            var wallet = await _context.Wallet
+            var context = _dbContextFactory.CreateDbContext();
+            var wallet = await context.Wallet
                 .Where(c => c.UserIDSec == userID && c.PairName == "BTC")
                 .FirstOrDefaultAsync(); // Execute the query and get the first result
 
@@ -421,8 +427,8 @@ namespace ArsaRExCH.InterfaceIMPL
             wallet.Amount += amount;
 
             // Save the updated wallet entry to the database
-            _context.Wallet.Update(wallet);
-            await _context.SaveChangesAsync();
+            context.Wallet.Update(wallet);
+            await context.SaveChangesAsync();
 
             // Return the updated amount
             return wallet.Amount;
@@ -503,8 +509,9 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<double> EditWalletAmountDecresETH(string userID, double amount)
         {
+            using var context = _dbContextFactory.CreateDbContext();
             // Retrieve the wallet entry for the specified user and currency pair
-            var wallet = await _context.Wallet
+            var wallet = await context.Wallet
                 .Where(c => c.UserIDSec == userID && c.PairName == "ETH")
                 .FirstOrDefaultAsync(); // Execute the query and get the first result
 
@@ -522,8 +529,8 @@ namespace ArsaRExCH.InterfaceIMPL
             }
 
             // Save the updated wallet entry to the database
-            _context.Wallet.Update(wallet);
-            await _context.SaveChangesAsync();
+            context.Wallet.Update(wallet);
+            await context.SaveChangesAsync();
 
             // Return the updated amount
             return wallet.Amount;
