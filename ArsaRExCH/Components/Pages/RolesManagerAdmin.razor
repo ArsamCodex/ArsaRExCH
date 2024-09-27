@@ -1,0 +1,134 @@
+﻿@page "/RoleManager"
+@using ArsaRExCH.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@using System.Text.Json
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject IJSRuntime JSRuntime
+
+<style>
+    .grid-table {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr; /* User Name wider */
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .grid-header {
+        font-weight: bold;
+        background-color: #8B4513; /* Brown for header */
+        color: white; /* White text for contrast */
+        padding: 10px;
+    }
+
+    .grid-cell {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        transition: background-color 0.3s; /* Smooth transition for hover effect */
+    }
+
+    .grid-row {
+        display: contents; /* Ensure rows are not containers */
+    }
+
+        /* Row styling */
+        .grid-row:nth-child(even) .grid-cell {
+            background-color: yellow; /* Light Gray for even rows */
+        }
+
+        .grid-row:nth-child(odd) .grid-cell {
+            background-color: red; /* Darker Gray for odd rows */
+        }
+
+        .grid-row:hover .grid-cell {
+            background-color: #C0C0C0; /* Slightly darker gray on hover */
+        }
+</style>
+
+@if (users == null)
+{
+    <p>Loading users...</p>
+}
+else
+{
+    <div class="grid-table">
+        <!-- Header -->
+        <div class="grid-header">User Name</div>
+        <div class="grid-header">Email</div>
+        <div class="grid-header">Current Role</div>
+        <div class="grid-header">Change Role</div>
+
+        <!-- Rows -->
+        @foreach (var user in users)
+        {
+            <div class="grid-row">
+                <div class="grid-cell">@user.UserName</div>
+                <div class="grid-cell">@user.Email</div>
+                <div class="grid-cell">@(userRoles.ContainsKey(user.Id) ? string.Join(", ", userRoles[user.Id]) : "No Role")</div>
+                <div class="grid-cell">
+                    <select @onchange="async (e) => await ConfirmAndChangeUserRole(user, e.Value.ToString())">
+                        <option value="">Select Role</option>
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role" selected="@userRoles[user.Id].Contains(role)">@role</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<ApplicationUser> users;
+    private List<string> roles;
+    private Dictionary<string, IList<string>> userRoles = new Dictionary<string, IList<string>>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserManager.Users.ToListAsync();
+        roles = await RoleManager.Roles.Select(r => r.Name).ToListAsync();
+
+        foreach (var user in users)
+        {
+            var rolesForUser = await UserManager.GetRolesAsync(user);
+            userRoles[user.Id] = rolesForUser;
+        }
+    }
+
+    private async Task ConfirmAndChangeUserRole(ApplicationUser user, string newRole)
+    {
+        if (string.IsNullOrEmpty(newRole))
+        {
+            return;
+        }
+
+        // Show confirmation popup
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to change the role for {user.UserName} to {newRole}?");
+
+        if (confirmed)
+        {
+            // Proceed with the role change if confirmed
+            await ChangeUserRole(user, newRole);
+        }
+    }
+
+    private async Task ChangeUserRole(ApplicationUser user, string newRole)
+    {
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        await UserManager.RemoveFromRolesAsync(user, currentRoles);
+        await UserManager.AddToRoleAsync(user, newRole);
+
+        // Update the role in the dictionary after change
+        userRoles[user.Id] = new List<string> { newRole };
+    }
+}
