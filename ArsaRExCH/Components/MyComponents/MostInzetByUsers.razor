@@ -5,8 +5,6 @@
 @using ArsaRExCH.Components.MyComponents
 @rendermode InteractiveServer
 
-<h3>Most Inzet</h3>
-
 @if (isLoading)
 {
     <p>Loading...</p>
@@ -14,81 +12,73 @@
 else
 {
     <div class="table-container">
-        <div class="table-header">
-            <div class="table-row">
-                <div class="table-cell">Date</div>
-                <div class="table-cell">BTC Target Price</div>
-                <div class="table-cell">Total BTC Inzet</div>
-                <div class="table-cell">ETH Target Price</div>
-                <div class="table-cell">Total ETH Inzet</div>
-            </div>
-        </div>
-        <div class="table-body">
-            @if (results != null && results.Any())
-            {
-                foreach (var result in results)
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>BTC Price</th>
+                    <th>Total Inzet</th>
+                    <th>ETH Price</th>
+                    <th>Total Inzet</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (results != null && results.Any())
                 {
-                    <div class="table-row">
-                        <div class="table-cell">@result.MyDateTime.ToString("dd/MM/yyyy")</div>
-                        <div class="table-cell">@((result.HitBtcPrice != 0) ? result.HitBtcPrice.ToString() : "N/A")</div>
-                        <div class="table-cell">@((result.MaxBtcTotalInBTC != 0) ? result.MaxBtcTotalInBTC.ToString() : "N/A")</div>
-                        <div class="table-cell">@((result.HitEthPrice != 0) ? result.HitEthPrice.ToString() : "N/A")</div>
-                        <div class="table-cell">@((result.MaxEthTotal != 0) ? result.MaxEthTotal.ToString() : "N/A")</div>
-                    </div>
+                    foreach (var result in results)
+                    {
+                        <tr>
+                            <td>@result.MyDateTime.ToString("dd/MM/yyyy")</td>
+                            <td>@((result.HitBtcPrice != 0) ? result.HitBtcPrice.ToString() : "N/A")</td>
+                            <td>@((result.MaxBtcTotalInBTC != 0) ? result.MaxBtcTotalInBTC.ToString() : "N/A")</td>
+                            <td>@((result.HitEthPrice != 0) ? result.HitEthPrice.ToString() : "N/A")</td>
+                            <td>@((result.MaxEthTotal != 0) ? result.MaxEthTotal.ToString() : "N/A")</td>
+                        </tr>
+                    }
                 }
-            }
-            else
-            {
-                <div class="table-row">
-                    <div class="table-cell" colspan="6">No results available.</div>
-                </div>
-            }
-        </div>
+                else
+                {
+                    <tr>
+                        <td colspan="5">No results available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
+
 <style>
+    .table-container {
+        width: 50%; /* Set to half of the screen width */
+        margin-left: auto; /* Align to the right side */
+        margin-right: 0; /* No right margin */
+        overflow-x: auto; /* Allow horizontal scrolling if needed */
+    }
+
     .table {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        border: 1px solid #ddd;
-        margin-top: 10px;
+        width: 100%; /* Take full width of the container */
+        border-collapse: collapse; /* Merge table borders */
     }
 
-    .table-header {
-        font-weight: bold;
-        background-color: #f9f9f9;
-    }
-
-    .table-row {
-        display: flex;
-        border-bottom: 1px solid #ddd;
-    }
-
-        .table-row:last-child {
-            border-bottom: none;
-        }
-
-    .table-cell {
-        flex: 1;
-        padding: 10px;
+    th, td {
+        padding: 8px; /* Adjust padding as needed */
         text-align: left;
-        border-right: 1px solid #ddd;
+        border: 1px solid #ddd; /* Border for cells */
+        white-space: nowrap; /* Prevent text from wrapping */
     }
 
-        .table-cell:last-child {
-            border-right: none;
-        }
-
-    .table-header .table-cell {
-        background-color: #f1f1f1;
-        text-align: center;
+    th {
+        background-color: #f1f1f1; /* Header background color */
+        font-weight: bold; /* Bold text in header */
     }
 
-    .table-body .table-row:nth-child(even) .table-cell {
-        background-color: #f9f9f9;
+    tr:nth-child(even) td {
+        background-color: #f9f9f9; /* Zebra striping for even rows */
     }
-    </style>
+</style>
+
+
+
 
 @code {
     private List<MaxInzetResultDTO> results = new List<MaxInzetResultDTO>();
