@@ -31,7 +31,6 @@
 </center>
 <ArsaRExCH.Components.MyComponents.MostInzetByUsers></ArsaRExCH.Components.MyComponents.MostInzetByUsers>
 
-<p>Your IP Address: @ipadressII</p>
 
 @if (!string.IsNullOrEmpty(BanMessage))
 {
@@ -41,7 +40,6 @@
 @code {
     public string ipadress { get; set; }        
     public string ipadressII { get; set; }
-    public string Hitid { get; set; }
     public string BanMessage { get; set; }
 
     protected override async Task OnInitializedAsync()

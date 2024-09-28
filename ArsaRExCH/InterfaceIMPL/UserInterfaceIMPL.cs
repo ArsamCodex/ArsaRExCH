@@ -2,7 +2,9 @@
 using ArsaRExCH.DTOs;
 using ArsaRExCH.Interface;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -150,6 +152,38 @@ namespace ArsaRExCH.InterfaceIMPL
                 Console.WriteLine("An error occurred: " + ex.Message);
                 return ex.Message; // Return "Unknown" if there's an error
             }
+        }
+
+        public async Task<string> GetPublicIpAddressWhitCountryName()
+        
+        {
+            // Create a new instance of HttpClient
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    // Fetch the external IP address
+                    string externalIpString = (await httpClient.GetStringAsync("http://icanhazip.com")).Trim();
+
+                    // Parse the string into an IPAddress object
+                    var externalIp = IPAddress.Parse(externalIpString);
+
+                    // Fetch country information using a geolocation service
+                    var geoInfo = await httpClient.GetStringAsync($"http://ip-api.com/json/{externalIpString}");
+                    dynamic geoData = JsonConvert.DeserializeObject(geoInfo);
+
+                    // Extract the country code and get the first three characters
+                    string countryCode = geoData.countryCode; // This will give you the country code
+                    string countryCodeFirstThreeChars = countryCode.Length >= 3 ? countryCode.Substring(0, 3) : countryCode;
+
+                    return $"{externalIp} - {countryCodeFirstThreeChars}"; // Return IP and first three chars of country code
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error occurred: " + ex.Message);
+                    return "Unknown"; // Return "Unknown" if there's an error
+                }
+            } // The HttpClient instance is disposed of here
         }
     }
 }

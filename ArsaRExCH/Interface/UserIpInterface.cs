@@ -12,5 +12,6 @@ namespace ArsaRExCH.Interface
          * bet
          */
         Task<List<MaxInzetResultDTO>> CalculateMaxInzetAsync();
+        Task<string> GetPublicIpAddressWhitCountryName();
     }
 }

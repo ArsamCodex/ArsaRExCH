@@ -1,0 +1,30 @@
+﻿@using ArsaRExCH.Data
+@using ArsaRExCH.Model
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@using System.Net
+@using System.Net.Sockets
+@using System.Diagnostics
+@using System.Text.RegularExpressions
+@using Microsoft.EntityFrameworkCore
+@inject ArsaRExCH.Interface.BetInterface _face
+@inject ArsaRExCH.Interface.UserIpInterface _faceUser
+@inject ApplicationDbContext _context
+
+<p>@ipadressII</p>
+
+
+
+@code {
+
+    public string ipadressII { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        ipadressII = await _faceUser.GetPublicIpAddressWhitCountryName();
+
+    }
+}
