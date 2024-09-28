@@ -1,0 +1,28 @@
+﻿@page "/AirDrop"
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _interface
+@inject ArsaRExCH.Interface.WalletInterface<double> _interface2
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@inject NavigationManager manager
+@inject ArsaRExCH.Interface.PriceInterface _priceInterface
+<p>
+    * This component is responsibale to give daily bounus for users , every day you allowed to make some click and you get free
+    * airdrop credit which we user for furthure calculation for real token or a cryptocurrency airdrop
+</p>
+@code {
+     /*
+     * This component is responsibale to give daily bounus for users , every day you allowed to make some click and you get free
+     * airdrop credit which we user for furthure calculation for real token or a cryptocurrency airdrop
+     *
+     *
+         *
+    */
+
+}
