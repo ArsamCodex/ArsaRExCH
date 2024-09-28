@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Components\MyComponents\AirDrop.razor" />
     <Content Remove="Components\MyComponents\CalculateBetResault.razor" />
   </ItemGroup>
 
@@ -42,6 +43,7 @@
 
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\MyComponents\AirDrop.razor" />
     <_ContentIncludedByDefault Remove="Components\MyComponents\CalculateBetResault.razor" />
   </ItemGroup>
 
@@ -50,7 +52,16 @@
 
 
   <ItemGroup>
+    <None Include="Components\MyComponents\AirDrop.razor" />
     <None Include="Components\MyComponents\CalculateBetResault.razor" />
+  </ItemGroup>
+
+
+
+
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\MyComponents\AirDrop.razor" />
   </ItemGroup>
 
 

@@ -9,7 +9,6 @@
 @using ArsaRExCH.Components.MyComponents
 
 
-<h4>Winners</h4>
 <style>
     .bet-grid {
         display: grid;
@@ -35,7 +34,7 @@ else if (userTotalWinningAmounts.Count == 0)
 }
 else
 {
-    <center> <p>Most 10 Winners</p></center>
+    <center><b> <p>Most 10 Winners</p></b></center>
     <div class="bet-container" style="width:auto">
         @foreach (var userBet in userTotalWinningAmounts)
         {
