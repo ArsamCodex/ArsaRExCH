@@ -1,4 +1,6 @@
 ﻿@page "/AirDrop"
+@using ArsaRExCH.Data
+@using ArsaRExCH.Interface
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
@@ -9,18 +11,75 @@
 @using ArsaRExCH.Components.Pages
 @using ArsaRExCH.Components.MyComponents
 @inject NavigationManager manager
-@inject ArsaRExCH.Interface.PriceInterface _priceInterface
+@inject ArsaRExCH.Interface.AirDropInterface _airdropInterface
 <p>
     * This component is responsibale to give daily bounus for users , every day you allowed to make some click and you get free
     * airdrop credit which we user for furthure calculation for real token or a cryptocurrency airdrop
 </p>
-@code {
-     /*
-     * This component is responsibale to give daily bounus for users , every day you allowed to make some click and you get free
-     * airdrop credit which we user for furthure calculation for real token or a cryptocurrency airdrop
-     *
-     *
-         *
-    */
+<h3>AirDrop Click</h3>
 
+<button @onclick="HandleSubmit">Click Me!</button>
+
+@if (isSuccess)
+{
+    <p style="color: green;">Click count incremented!</p>
+}
+else if (isFailed)
+{
+    <p style="color: red;">Failed to increment click count.</p>
+}
+
+@code {
+    private bool isSuccess = false;
+    private bool isFailed = false;
+    private string user2{ get; set; }
+    public ArsaRExCH.Model.AirDrop newAirDrop = new Model.AirDrop();
+
+    public async Task HandleSubmit()
+    {
+        try
+        {
+            // Retrieve the user's AirDrop entry
+            var airDrop = await _airdropInterface.GetAirDropById(user2);
+
+            if (airDrop != null)
+            {
+                await _airdropInterface.IncrementAndSaveAirDrop(user2);
+            }
+            else
+            {
+                // If no AirDrop exists, create a new one
+                newAirDrop.TimeClick = DateTime.Now;
+                newAirDrop.ApplicationUserId = user2;
+                newAirDrop.HowMannyClickInTottal = 1; // First click
+
+                // Save the new AirDrop entry (AirDropID is automatically generated)
+                await _airdropInterface.SaveDrop(newAirDrop);
+                Console.WriteLine("First time click: new AirDrop entry added to DB.");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle potential errors and log the exception
+            Console.WriteLine($"Error handling submit: {ex.Message}");
+            throw; // Re-throw the exception to propagate it if needed
+        }
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+
+
+        }
+
+    }
 }
