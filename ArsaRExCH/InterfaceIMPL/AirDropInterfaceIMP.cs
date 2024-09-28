@@ -14,6 +14,32 @@ namespace ArsaRExCH.InterfaceIMPL
             this.dbContextFactory = dbContextFactory;
         }
 
+        public async Task<int> AirDropDailyClick(string id)
+        {
+            try
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                var currentBalance = await context.AirDrops
+                    .Where(c => c.ApplicationUser.Id == id)
+                    .Select(c => c.DailyClickCount) // Select just the balance
+                    .FirstOrDefaultAsync();
+
+                // Check if currentBalance is null and handle accordingly
+                if (currentBalance == default) // Default is 0 for int
+                {
+                    Console.WriteLine("No AirDrop entry found for this user or balance is 0.");
+                    return 0; // No entry found or balance is 0
+                }
+
+                Console.WriteLine($"Current balance: {currentBalance}");
+                return currentBalance;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Airdrop get data failed: " + ex.Message, ex); // Include original exception
+            }
+        }
+
         public async Task<int> AirDropWalletBalance(string id)
         {
             try
@@ -66,20 +92,31 @@ namespace ArsaRExCH.InterfaceIMPL
 
             if (airDrop != null)
             {
-                // Increment the click count
-                airDrop.HowMannyClickInTottal += 1;
-                airDrop.TimeClick = DateTime.Now; // Update the click time
+                var today = DateTime.Now.Date;
 
-                // Save the changes
-                context.AirDrops.Update(airDrop);
-                await context.SaveChangesAsync();
-                return true;
-            }
+                // Check if it's a new day
+                if (airDrop.LastClickDate != today)
+                {
+                    airDrop.DailyClickCount = 0; // Reset daily clicks for a new day
+                    airDrop.LastClickDate = today; // Update last click date
+                }
 
-            // If no existing AirDrop is found, return false or handle accordingly
+                if (airDrop.DailyClickCount < 20)
+                {
+                    airDrop.DailyClickCount++;
+                    airDrop.HowMannyClickInTottal++; // Increment total clicks
+
+                    // Save updated AirDrop info
+                    await context.SaveChangesAsync();
+                    Console.WriteLine("Click registered.");
+                    return true;
+                }
+
+                // If no existing AirDrop is found, return false or handle accordingly
+               
+            } 
             return false;
         }
-
 
         public async Task<bool> SaveDrop(AirDrop airDrop)
         {

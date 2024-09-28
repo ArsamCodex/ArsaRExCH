@@ -8,5 +8,6 @@ namespace ArsaRExCH.Interface
         Task<AirDrop> GetAirDropById(string id);
         Task<bool> IncrementAndSaveAirDrop(string userId);
         Task<int> AirDropWalletBalance(string id);
+        Task<int> AirDropDailyClick(string id);
     }
 }

@@ -14,7 +14,7 @@
 @inject ArsaRExCH.Interface.AirDropInterface _airdropInterface
 
    <div class="div-container">
-        <div class="fixed-div">Level 1</div>
+        <div class="fixed-div">70</div>
     <div class="fixed-div">Level 2</div>
     <div class="fixed-div">Level 3</div>
     <div class="fixed-div">Level 4</div>
@@ -26,6 +26,7 @@
     <div class="fixed-div">Level 10</div>
     </div>
 <AirDropBalanceExtractor @ref="airDropBalanceExtractor"></AirDropBalanceExtractor>
+<DailyClickCount @ref="dailyClickCount"></DailyClickCount>
 <center>
 <div class="container">
 
@@ -40,7 +41,7 @@
         <p class="error-message">Failed to increment click count.</p>
     }
 </div>
-
+<p>@Message</p>
 </center>
 <style>
     .airdrop-title {
@@ -103,12 +104,16 @@
     }
 </style>
 @code {
+    public string? Message { get; set; }
     private bool isSuccess = false;
     private bool isFailed = false;
     private string user2{ get; set; }
     public ArsaRExCH.Model.AirDrop newAirDrop = new Model.AirDrop();
     public int WalletBalanceAirDrop { get; set; }
     private ArsaRExCH.Components.MyComponents.AirDropBalanceExtractor airDropBalanceExtractor;
+
+    private ArsaRExCH.Components.MyComponents.DailyClickCount dailyClickCount;
+
     public async Task HandleSubmit()
     {
         try
@@ -118,8 +123,13 @@
 
             if (airDrop != null)
             {
-                await _airdropInterface.IncrementAndSaveAirDrop(user2);
+                var x =  await _airdropInterface.IncrementAndSaveAirDrop(user2);
+                if (x == false)
+                {
+                    Message = "reached  daily limit";
+                }
                 await airDropBalanceExtractor.FetchBalancesAsync();
+                await dailyClickCount.FetchBalancesAsync();
             }
             else
             {
@@ -127,11 +137,13 @@
                 newAirDrop.TimeClick = DateTime.Now;
                 newAirDrop.ApplicationUserId = user2;
                 newAirDrop.HowMannyClickInTottal = 1; // First click
-
-                // Save the new AirDrop entry (AirDropID is automatically generated)
-                await _airdropInterface.SaveDrop(newAirDrop);
-                await airDropBalanceExtractor.FetchBalancesAsync();
+                newAirDrop.DailyClickCount = 1;
+                newAirDrop.LastClickDate = DateTime.Now.Date;
                 Console.WriteLine("First time click: new AirDrop entry added to DB.");
+                // Save new AirDrop
+                await _airdropInterface.SaveDrop(newAirDrop);
+                await dailyClickCount.FetchBalancesAsync();
+
             }
         }
         catch (Exception ex)

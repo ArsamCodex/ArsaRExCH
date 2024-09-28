@@ -13,5 +13,8 @@ namespace ArsaRExCH.Model
 
         // Navigation property
         public ApplicationUser ApplicationUser { get; set; }
+        // New property to track clicks per day
+        public int DailyClickCount { get; set; } // Number of clicks today
+        public DateTime LastClickDate { get; set; } // The date of the last click
     }
 }

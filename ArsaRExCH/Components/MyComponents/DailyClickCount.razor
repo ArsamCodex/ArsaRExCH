@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@inject NavigationManager manager
+@inject ArsaRExCH.Interface.AirDropInterface _airDropInterface
+
+<p class="balance-display">XX Daily CLick : @Currentbalance </p>
+
+<style>
+    .balance-display {
+        font-family: Arial, sans-serif; /* Font style */
+        font-size: 24px; /* Font size */
+        color: #333; /* Text color */
+        text-align: center; /* Center the text */
+        margin-top: 20px; /* Margin on top */
+        padding: 10px; /* Padding inside the element */
+        border: 2px solid #4CAF50; /* Green border */
+        border-radius: 8px; /* Rounded corners */
+        background-color: #f9f9f9; /* Light background */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+</style>
+
+
+@code {
+    private int Currentbalance { get; set; }
+    public string? user2 { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchBalancesAsync();
+
+
+    }
+    // Method to fetch balances from the API or service
+    public async Task FetchBalancesAsync()
+    {
+        // Fetch the current authentication state
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is authenticated
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Retrieve the user identifier (e.g., user ID)
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            if (!string.IsNullOrEmpty(user2))
+            {
+                // Fetch wallet balances for the authenticated user
+                Currentbalance = await _airDropInterface.AirDropDailyClick(user2);
+
+                // Refresh the UI to reflect updated balances
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            Console.WriteLine("User is not authenticated.");
+        }
+    }
+}
