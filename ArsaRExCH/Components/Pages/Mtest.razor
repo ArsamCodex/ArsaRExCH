@@ -1,0 +1,93 @@
+﻿@page "/multi-step-form"
+@rendermode InteractiveServer
+@code {
+    private MultiStepFormModel formModel = new MultiStepFormModel();
+    private int currentStep = 1;
+
+    // Go to the next step
+    private void NextStep()
+    {
+        currentStep++;
+    }
+
+    // Go to the previous step
+    private void PreviousStep()
+    {
+        if (currentStep > 1)
+        {
+            currentStep--;
+        }
+    }
+
+    // Submit the form
+    private void SubmitForm()
+    {
+        // Form submission logic here, e.g., saving data
+        Console.WriteLine($"Form Submitted - Name: {formModel.FirstName} {formModel.LastName}, Email: {formModel.Email}");
+    }
+    public class MultiStepFormModel
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
+
+}
+
+<h3>Multi-Step Form</h3>
+
+@if (currentStep == 1)
+{
+    <div>
+        <h4>Step 1: Enter First Name</h4>
+        <EditForm Model="@formModel">
+            <div>
+                <label>First Name:</label>
+                <InputText @bind-Value="formModel.FirstName" class="form-control" />
+            </div>
+            <button type="button" @onclick="NextStep" class="btn btn-primary" disabled="@(string.IsNullOrEmpty(formModel.FirstName))">Next</button>
+        </EditForm>
+    </div>
+}
+
+@if (currentStep == 2)
+{
+    <div>
+        <h4>Step 2: Enter Last Name</h4>
+        <EditForm Model="@formModel">
+            <div>
+                <label>Last Name:</label>
+                <InputText @bind-Value="formModel.LastName" class="form-control" />
+            </div>
+            <button type="button" @onclick="PreviousStep" class="btn btn-secondary">Previous</button>
+            <button type="button" @onclick="NextStep" class="btn btn-primary" disabled="@(string.IsNullOrEmpty(formModel.LastName))">Next</button>
+        </EditForm>
+    </div>
+}
+
+@if (currentStep == 3)
+{
+    <div>
+        <h4>Step 3: Enter Email</h4>
+        <EditForm Model="@formModel">
+            <div>
+                <label>Email:</label>
+                <InputText @bind-Value="formModel.Email" class="form-control" />
+            </div>
+            <button type="button" @onclick="PreviousStep" class="btn btn-secondary">Previous</button>
+            <button type="button" @onclick="NextStep" class="btn btn-primary" disabled="@(string.IsNullOrEmpty(formModel.Email))">Next</button>
+        </EditForm>
+    </div>
+}
+
+@if (currentStep == 4)
+{
+    <div>
+        <h4>Step 4: Review Information</h4>
+        <p><strong>First Name:</strong> @formModel.FirstName</p>
+        <p><strong>Last Name:</strong> @formModel.LastName</p>
+        <p><strong>Email:</strong> @formModel.Email</p>
+        <button type="button" @onclick="PreviousStep" class="btn btn-secondary">Previous</button>
+        <button type="button" @onclick="SubmitForm" class="btn btn-success">Submit</button>
+    </div>
+}

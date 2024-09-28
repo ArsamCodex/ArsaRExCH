@@ -25,7 +25,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
             try
             {
-               using var cont = _dbContext.CreateDbContext();
+                using var cont = _dbContext.CreateDbContext();
                 // Query all bets from the database
                 var allBets = await cont.Bet
                     .Where(b => !b.ISDeleted && b.IsBetActive)
@@ -34,8 +34,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 // Collect all unique dates from HitDateBTC and HitDateETH
                 var uniqueDates = allBets
                     .Select(b => b.HitDateBTC.Date)
-                  //  .Union(allBets.Select(b => b.HitDateETH.Date))
-                    .Distinct()  // Ensure dates are unique
+                    //.Union(allBets.Select(b => b.HitDateETH.Date))  // If you want to include ETH dates
+                    .Distinct()
                     .ToList();
 
                 foreach (var date in uniqueDates)
@@ -55,6 +55,9 @@ namespace ArsaRExCH.InterfaceIMPL
                     results.Add(result);
                 }
 
+                // Filter out results where the date is in the past
+                results = results.Where(r => r.MyDateTime >= DateTime.Today).ToList();
+
                 Console.WriteLine($"Querying for all dates.");
                 Console.WriteLine($"Found {results.Count} unique dates with bets.");
             }
@@ -66,6 +69,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
             return results;
         }
+
 
 
 

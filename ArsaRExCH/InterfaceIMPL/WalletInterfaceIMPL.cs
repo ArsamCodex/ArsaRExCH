@@ -348,8 +348,9 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<(List<double> BtcBalances, List<double> EthBalances, List<double> BnbBalances)> GetWalletBalancesForUser(string userId)
         {
+            var context = _dbContextFactory.CreateDbContext();
             // Retrieve all wallets for the given user
-            var userWallets = await _context.Wallet
+            var userWallets = await context.Wallet
                 .Where(c => c.UserIDSec == userId)
                 .ToListAsync();
 
