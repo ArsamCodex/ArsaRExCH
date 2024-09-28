@@ -7,6 +7,7 @@ namespace ArsaRExCH.Model
         public int AirDropID { get; set; }
         public int AirDropBalance { get; set; }
         public DateTime TimeClick { get; set; }
+        public int HowMannyClickInTottal { get; set; }
         // Foreign key property for ApplicationUser
         public string ApplicationUserId { get; set; }
 

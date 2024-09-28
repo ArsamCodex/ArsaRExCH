@@ -17,6 +17,7 @@ namespace ArsaRExCH.Data
         public DbSet<UserDatesRecord> UserDatesRecords { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
         public DbSet<Bet> Bet { get; set; }
+        public DbSet<AirDrop> AirDrops { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
