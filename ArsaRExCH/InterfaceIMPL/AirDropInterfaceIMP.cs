@@ -14,6 +14,33 @@ namespace ArsaRExCH.InterfaceIMPL
             this.dbContextFactory = dbContextFactory;
         }
 
+        public async Task<int> AirDropWalletBalance(string id)
+        {
+            try
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                var currentBalance = await context.AirDrops
+                    .Where(c => c.ApplicationUser.Id == id)
+                    .Select(c => c.HowMannyClickInTottal) // Select just the balance
+                    .FirstOrDefaultAsync();
+
+                // Check if currentBalance is null and handle accordingly
+                if (currentBalance == default) // Default is 0 for int
+                {
+                    Console.WriteLine("No AirDrop entry found for this user or balance is 0.");
+                    return 0; // No entry found or balance is 0
+                }
+
+                Console.WriteLine($"Current balance: {currentBalance}");
+                return currentBalance;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Airdrop get data failed: " + ex.Message, ex); // Include original exception
+            }
+        }
+
+
         public async Task<AirDrop> GetAirDropById(string id)
         {
             using var context = dbContextFactory.CreateDbContext();

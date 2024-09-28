@@ -12,29 +12,103 @@
 @using ArsaRExCH.Components.MyComponents
 @inject NavigationManager manager
 @inject ArsaRExCH.Interface.AirDropInterface _airdropInterface
-<p>
-    * This component is responsibale to give daily bounus for users , every day you allowed to make some click and you get free
-    * airdrop credit which we user for furthure calculation for real token or a cryptocurrency airdrop
-</p>
-<h3>AirDrop Click</h3>
 
-<button @onclick="HandleSubmit">Click Me!</button>
+   <div class="div-container">
+        <div class="fixed-div">Level 1</div>
+    <div class="fixed-div">Level 2</div>
+    <div class="fixed-div">Level 3</div>
+    <div class="fixed-div">Level 4</div>
+    <div class="fixed-div">Level 5</div>
+    <div class="fixed-div">Level 6</div>
+    <div class="fixed-div">Level 7</div>
+    <div class="fixed-div">Level 8</div>
+    <div class="fixed-div">Level 9</div>
+    <div class="fixed-div">Level 10</div>
+    </div>
+<AirDropBalanceExtractor @ref="airDropBalanceExtractor"></AirDropBalanceExtractor>
+<center>
+<div class="container">
 
-@if (isSuccess)
-{
-    <p style="color: green;">Click count incremented!</p>
-}
-else if (isFailed)
-{
-    <p style="color: red;">Failed to increment click count.</p>
-}
+        <button class="airdrop-button" @onclick="HandleSubmit">Click To Get Free AirDrop Point</button>
 
+    @if (isSuccess)
+    {
+        <p class="success-message">click Garanted</p>
+    }
+    else if (isFailed)
+    {
+        <p class="error-message">Failed to increment click count.</p>
+    }
+</div>
+
+</center>
+<style>
+    .airdrop-title {
+        font-family: Arial, sans-serif;
+        color: #333;
+        text-align: center;
+    }
+
+    .airdrop-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 10px;
+        width: 500px;
+        height: 150px;
+    }
+
+        .airdrop-button:hover {
+            background-color: #45a049;
+        }
+
+    .success-message {
+        color: green;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .div-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .fixed-div {
+        background-color: #2196F3;
+        color: white;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        font-size: 24px;
+    }
+
+    .container {
+        text-align: center;
+    }
+</style>
 @code {
     private bool isSuccess = false;
     private bool isFailed = false;
     private string user2{ get; set; }
     public ArsaRExCH.Model.AirDrop newAirDrop = new Model.AirDrop();
-
+    public int WalletBalanceAirDrop { get; set; }
+    private ArsaRExCH.Components.MyComponents.AirDropBalanceExtractor airDropBalanceExtractor;
     public async Task HandleSubmit()
     {
         try
@@ -45,6 +119,7 @@ else if (isFailed)
             if (airDrop != null)
             {
                 await _airdropInterface.IncrementAndSaveAirDrop(user2);
+                await airDropBalanceExtractor.FetchBalancesAsync();
             }
             else
             {
@@ -55,6 +130,7 @@ else if (isFailed)
 
                 // Save the new AirDrop entry (AirDropID is automatically generated)
                 await _airdropInterface.SaveDrop(newAirDrop);
+                await airDropBalanceExtractor.FetchBalancesAsync();
                 Console.WriteLine("First time click: new AirDrop entry added to DB.");
             }
         }
