@@ -9,5 +9,6 @@ namespace ArsaRExCH.Interface
         Task<bool> IncrementAndSaveAirDrop(string userId);
         Task<int> AirDropWalletBalance(string id);
         Task<int> AirDropDailyClick(string id);
+        Task<bool> SaveAirDropFaq(AirDropFaq airDropFaq);
     }
 }

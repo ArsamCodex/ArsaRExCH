@@ -13,7 +13,7 @@ namespace ArsaRExCH.Data
         public DbSet<Pair> Pair { get; set; }
         public DbSet<UserTradeActivity> UserTradeActivities { get; set; }
         public DbSet<BanedCountries> BanedCountris { get; set; }
-
+        public DbSet<AirDropFaq> airDropFaqs { get; set; }
         public DbSet<UserDatesRecord> UserDatesRecords { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
         public DbSet<Bet> Bet { get; set; }

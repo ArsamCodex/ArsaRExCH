@@ -1,4 +1,5 @@
-﻿using ArsaRExCH.Data;
+﻿using ArsaRExCH.Components.Pages;
+using ArsaRExCH.Data;
 using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
 using Microsoft.EntityFrameworkCore;
@@ -66,8 +67,7 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
-
-        public async Task<AirDrop> GetAirDropById(string id)
+        public async Task<Model.AirDrop> GetAirDropById(string id)
         {
             using var context = dbContextFactory.CreateDbContext();
             var airDrop = await context.AirDrops
@@ -118,7 +118,19 @@ namespace ArsaRExCH.InterfaceIMPL
             return false;
         }
 
-        public async Task<bool> SaveDrop(AirDrop airDrop)
+        public async Task<bool> SaveAirDropFaq(AirDropFaq airDropFaq)
+        {
+            using var _context = dbContextFactory.CreateDbContext();
+            if (airDropFaq != null)
+            {
+                _context.airDropFaqs.Add(airDropFaq); // No need to set AirDropID here
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+        public async Task<bool> SaveDrop(Model.AirDrop airDrop)
         {
             using var _context = dbContextFactory.CreateDbContext();
 
@@ -132,5 +144,6 @@ namespace ArsaRExCH.InterfaceIMPL
 
             return false;
         }
+
     }
 }

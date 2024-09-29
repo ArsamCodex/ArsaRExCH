@@ -56,6 +56,18 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<List<AirDropFaq>> GetAllAirDropFaq()
+        {
+            try
+            {
+                using var context = _dbContext.CreateDbContext();
+                return await context.airDropFaqs.ToListAsync();
+            }catch(Exception ex)
+            {
+                throw new Exception($"Gant gets airdopFaq",ex);
+            }
+        }
+
         public async Task<List<BanedCountries>> GetAllBannedCountriesInDatabase()
         {
             try

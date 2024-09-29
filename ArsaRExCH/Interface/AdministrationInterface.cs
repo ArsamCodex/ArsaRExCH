@@ -11,6 +11,7 @@ namespace ArsaRExCH.Interface
         Task<List<ApplicationUser>> AllUsers();
         Task<ApplicationUser> GetUserById(string userId);
         Task<List<UserDatesRecord>> GetAllUserDates(string userID);
+        Task<List<AirDropFaq>> GetAllAirDropFaq();
         
     }
 }
