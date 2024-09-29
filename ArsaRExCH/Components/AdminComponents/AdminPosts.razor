@@ -1,0 +1,76 @@
+﻿@page "/AdminPost"
+@inject NavigationManager NavigationManager
+@inject ArsaRExCH.Interface.PostNadReplyInterface _interface
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using ArsaRExCH.Model
+@using ArsaRExCH.Components.Pages
+@using ArsaRExCH.Components.MyComponents
+@using System.Security.Claims
+@rendermode InteractiveServer
+<h3>Create New Post</h3>
+
+<div class="post-form">
+    <div class="form-group">
+        <label for="postTitle">Post Title</label>
+        <input type="text" id="postTitle" class="form-control" @bind="newPost.Title" />
+    </div>
+
+    <div class="form-group">
+        <label for="postContent">Post Content</label>
+        <textarea id="postContent" class="form-control" @bind="newPost.Content"></textarea>
+    </div>
+
+    <button class="btn btn-primary" @onclick="SubmitPost">Submit Post</button>
+</div>
+
+<p>@message</p>
+<style>
+    .post-form {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+</style>
+@code {
+    private Post newPost = new Post();
+    private string message = "";
+
+    private async Task SubmitPost()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is authenticated as admin
+        if (user.Identity?.IsAuthenticated == true && user.IsInRole("Admin"))
+        {
+            newPost.CreatedAt = DateTime.Now;
+            newPost.ApplicationUserId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            // Call the CreatePostAsync method without assigning to a variable
+            await _interface.CreatePostAsync(newPost);
+
+            // Show success message and reset the form
+            message = "Post created successfully!";
+            newPost = new Post(); // Reset the form
+        }
+        else
+        {
+            message = "You are not authorized to create a post.";
+        }
+    }
+
+}

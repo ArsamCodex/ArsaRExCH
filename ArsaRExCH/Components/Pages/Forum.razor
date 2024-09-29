@@ -1,108 +1,104 @@
-﻿@page "/PostReply"
-@using ArsaRExCH.Model
+﻿@page "/Forum"
 @using ArsaRExCH.Interface
+@using ArsaRExCH.Model
 @using System.Security.Claims
-@inject PostNadReplyInterface PostReplyService
+@inject PostNadReplyInterface PostService
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>Post and Reply Page</h3>
+<h3>All Posts</h3>
 
-<!-- Create a New Post -->
-@if (isAdmin)
+@if (posts != null && posts.Any())
 {
-    <div>
-        <h4>Create a New Post</h4>
-        <input type="text" @bind="newPostTitle" placeholder="Enter post title" />
-        <textarea @bind="newPostContent" placeholder="Enter post content"></textarea>
-        <button @onclick="CreatePost">Post</button>
-    </div>
-}
-<hr />
-
-<!-- Display Posts and their Replies -->
-@foreach (var post in posts)
-{
-    <div class="post-container">
-        <h4>@post.Title</h4>
-        <p>@post.Content</p>
-        <p><small>Posted on: @post.CreatedAt</small></p>
-
-        <!-- Replies for this post -->
-        <h5>Replies:</h5>
-        @foreach (var reply in post.Replies)
+    <div class="post-list">
+        @foreach (var post in posts)
         {
-            <div class="reply-container">
-                <p>@reply.Content</p>
-                <p><small>Replied by: on @reply.RepliedAt</small></p>
+            <div class="post-item">
+                <h4>@post.Title</h4>
+                <p>@post.Content</p>
+                <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
+                <button class="btn btn-secondary" @onclick="() => ShowPostDetails(post)">View Details</button>
             </div>
         }
-
-        <!-- Add a reply if the user is logged in -->
-        @if (isAuthenticated)
-        {
-            <textarea @bind="newReplyContent" placeholder="Enter your reply"></textarea>
-            <button @onclick="(() => CreateReply(post.PostId))">Reply</button>
-        }
     </div>
-    <hr />
+
+    @if (selectedPost != null)
+    {
+        <div class="post-details">
+            <h3>@selectedPost.Title</h3>
+            <p>@selectedPost.Content</p>
+            <small>Posted by Admin on @selectedPost.CreatedAt.ToString("dd/MM/yyyy")</small>
+
+            <h4>Replies:</h4>
+            @if (selectedPost.Replies != null && selectedPost.Replies.Any())
+            {
+                <ul>
+                    @foreach (var reply in selectedPost.Replies)
+                    {
+                        <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy"))</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No replies yet.</p>
+            }
+
+            <h4>Leave a Reply:</h4>
+            <textarea class="form-control" @bind="newReply.Content" placeholder="Write your reply..."></textarea>
+            <button class="btn btn-primary" @onclick="SubmitReply">Submit Reply</button>
+
+            <p>@replyMessage</p>
+        </div>
+    }
+}
+else
+{
+    <p>No posts available at the moment.</p>
 }
 
 @code {
-    private bool isAuthenticated;
-    private bool isAdmin;
-    private List<Post> posts = new();
-    private string newPostTitle;
-    private string newPostContent;
-    private string newReplyContent;
+    private List<Post> posts = new List<Post>();
+    private Post selectedPost = null;
+    private Reply newReply = new Reply();
+    private string replyMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        // Check if the user is authenticated
-        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
-
-        // Check if the user is an admin
-        isAdmin = user.IsInRole("Admin");
-
-        // Load posts
-        posts = (await PostReplyService.GetAllPostsAsync()).ToList();
+        posts = await PostService.GetAllPostsAsync();
     }
 
-    private async Task CreatePost()
+    private void ShowPostDetails(Post post)
+    {
+        selectedPost = post;
+        newReply = new Reply { PostId = post.PostId };
+    }
+
+    private async Task SubmitReply()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var post = new Post
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            newReply.RepliedAt = DateTime.Now;
+            var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var success = await PostService.AddReplyAsync(newReply, userId);
+
+            if (success)
             {
-                Title = newPostTitle,
-                Content = newPostContent,
-                CreatedAt = DateTime.Now,
-                ApplicationUserId = userId
-            };
-
-        await PostReplyService.CreatePostAsync(post);
-        posts = (await PostReplyService.GetAllPostsAsync()).ToList();
-    }
-
-    private async Task CreateReply(int postId)
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        var reply = new Reply
+                replyMessage = "Reply submitted successfully!";
+                selectedPost.Replies.Add(newReply); // Add the new reply to the displayed replies
+                newReply = new Reply { PostId = selectedPost.PostId }; // Reset the reply form
+            }
+            else
             {
-                Content = newReplyContent,
-                RepliedAt = DateTime.Now,
-                PostId = postId
-               // ApplicationUserId = userId
-            };
-
-        await PostReplyService.CreateReplyAsync(reply);
-        posts = (await PostReplyService.GetAllPostsAsync()).ToList();
+                replyMessage = "Failed to submit reply.";
+            }
+        }
+        else
+        {
+            replyMessage = "You must be logged in to reply.";
+        }
     }
 }

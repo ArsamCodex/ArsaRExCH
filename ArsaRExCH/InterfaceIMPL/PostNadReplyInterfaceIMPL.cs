@@ -2,6 +2,7 @@
 using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -15,7 +16,7 @@ namespace ArsaRExCH.InterfaceIMPL
         }
 
         // For posts
-        public async Task<IEnumerable<Post>> GetAllPostsAsync()
+        public async Task<List<Post>> GetAllPostsAsync()
         {
             using var context = _dbContextFactory.CreateDbContext();
             return await context.Post.Include(p => p.Replies).ToListAsync();
@@ -31,7 +32,7 @@ namespace ArsaRExCH.InterfaceIMPL
         public async Task CreatePostAsync(Post post)
         {
             using var context = _dbContextFactory.CreateDbContext();
-            context.Post.Add(post);
+           await context.Post.AddAsync(post);
             await context.SaveChangesAsync();
         }
 
@@ -75,6 +76,27 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 context.Reply.Remove(reply);
                 await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<bool> AddReplyAsync(Reply reply, string userId)
+        {
+            using var context = _dbContextFactory.CreateDbContext();
+            try
+            {
+                var user = await context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                  //  reply.ApplicationUserId = userId; // Set the user ID of the reply
+                    context.Reply.Add(reply);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
