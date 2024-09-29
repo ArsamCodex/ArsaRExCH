@@ -10,5 +10,6 @@ namespace ArsaRExCH.Interface
         Task<int> AirDropWalletBalance(string id);
         Task<int> AirDropDailyClick(string id);
         Task<bool> SaveAirDropFaq(AirDropFaq airDropFaq);
+        Task<bool> ResetDailyCOUnt(string id,DateTime time);
     }
 }

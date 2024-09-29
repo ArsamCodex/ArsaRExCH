@@ -32,21 +32,15 @@
 
         <button class="airdrop-button" @onclick="HandleSubmit">Click To Get Free AirDrop Point</button>
 
-    @if (isSuccess)
-    {
-        <p class="success-message">click Garanted</p>
-    }
-    else if (isFailed)
-    {
-        <p class="error-message">Failed to increment click count.</p>
-    }
+ 
 </div>
 <p>@Message</p>
 </center>
 <br />
 <br />
 <br />
-<p><a href="">Go To AirDrop Faq</a></p>
+<p> Available Click : @Currentbalance</p>
+<p><a href="AirDropFaq">Go To AirDrop Faq</a></p>
 <style>
     .airdrop-title {
         font-family: Arial, sans-serif;
@@ -115,7 +109,7 @@
     public ArsaRExCH.Model.AirDrop newAirDrop = new Model.AirDrop();
     public int WalletBalanceAirDrop { get; set; }
     private ArsaRExCH.Components.MyComponents.AirDropBalanceExtractor airDropBalanceExtractor;
-
+    public int Currentbalance { get; set; }
     private ArsaRExCH.Components.MyComponents.DailyClickCount dailyClickCount;
 
     public async Task HandleSubmit()
@@ -127,13 +121,23 @@
 
             if (airDrop != null)
             {
-                var x =  await _airdropInterface.IncrementAndSaveAirDrop(user2);
+                var x = await _airdropInterface.IncrementAndSaveAirDrop(user2);
                 if (x == false)
                 {
-                    Message = "reached  daily limit";
+                    Message = "Reached daily limit";
+                    Currentbalance = 0;
                 }
-                await airDropBalanceExtractor.FetchBalancesAsync();
-                await dailyClickCount.FetchBalancesAsync();
+
+                // Ensure airDropBalanceExtractor and dailyClickCount are not null before calling their methods
+                if (airDropBalanceExtractor != null)
+                {
+                    await airDropBalanceExtractor.FetchBalancesAsync();
+                }
+                if (dailyClickCount != null)
+                {
+                   // Currentbalance = await _airdropInterface.AirDropDailyClick(user2);
+                    await dailyClickCount.FetchBalancesAsync();
+                }
             }
             else
             {
@@ -144,10 +148,15 @@
                 newAirDrop.DailyClickCount = 1;
                 newAirDrop.LastClickDate = DateTime.Now.Date;
                 Console.WriteLine("First time click: new AirDrop entry added to DB.");
+
                 // Save new AirDrop
                 await _airdropInterface.SaveDrop(newAirDrop);
-                await dailyClickCount.FetchBalancesAsync();
 
+                // Check for null before calling FetchBalancesAsync
+                if (dailyClickCount != null)
+                {
+                    Currentbalance = await _airdropInterface.AirDropDailyClick(user2);
+                }
             }
         }
         catch (Exception ex)
@@ -158,8 +167,6 @@
         }
     }
 
-
-
     protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
@@ -169,9 +176,18 @@
         {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
 
+            // Check date and reset counter
+            var x = _airdropInterface.ResetDailyCOUnt(user2, DateTime.Now);
 
-
+            // Ensure dailyClickCount is not null before calling FetchBalancesAsync
+            Currentbalance = await _airdropInterface.AirDropDailyClick(user2);
+            if (Currentbalance == 20)
+            {
+                Currentbalance = 0;
+            }
+            StateHasChanged();
         }
-
     }
+
+
 }

@@ -118,7 +118,34 @@ namespace ArsaRExCH.InterfaceIMPL
             return false;
         }
 
-        public async Task<bool> SaveAirDropFaq(AirDropFaq airDropFaq)
+        public async Task<bool> ResetDailyCOUnt(string id,DateTime t)
+        {
+            using var _context = dbContextFactory.CreateDbContext();
+
+            // Retrieve the AirDrop entry asynchronously
+            var airDrop = await _context.AirDrops
+                                        .Where(c => c.ApplicationUserId == id&&c.LastClickDate==t)
+                                        .FirstOrDefaultAsync();
+
+            // Check if the AirDrop entry exists
+            if (airDrop != null)
+            {
+                // If no AirDrop is found for this user, return false
+                return true;
+            }
+
+            // Reset the DailyClickCount to 0
+            airDrop.DailyClickCount = 0;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            // Return true indicating the reset was successful
+            return false;
+        }
+
+
+        public async Task<bool> SaveAirDropFaq(Model.AirDropFaq airDropFaq)
         {
             using var _context = dbContextFactory.CreateDbContext();
             if (airDropFaq != null)
