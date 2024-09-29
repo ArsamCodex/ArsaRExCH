@@ -3,7 +3,8 @@
 @using ArsaRExCH.Model
 @using System.Security.Claims
 @inject PostNadReplyInterface PostService
-
+@inject NavigationManager _mnager
+@rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h3>All Posts</h3>
@@ -14,91 +15,75 @@
         @foreach (var post in posts)
         {
             <div class="post-item">
-                <h4>@post.Title</h4>
-                <p>@post.Content</p>
+                <h4 @onclick="() => NavigateToPostDetails(post.PostId)" style="cursor:pointer;">
+                    @post.Title
+                </h4>
                 <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
-                <button class="btn btn-secondary" @onclick="() => ShowPostDetails(post)">View Details</button>
             </div>
         }
     </div>
-
-    @if (selectedPost != null)
-    {
-        <div class="post-details">
-            <h3>@selectedPost.Title</h3>
-            <p>@selectedPost.Content</p>
-            <small>Posted by Admin on @selectedPost.CreatedAt.ToString("dd/MM/yyyy")</small>
-
-            <h4>Replies:</h4>
-            @if (selectedPost.Replies != null && selectedPost.Replies.Any())
-            {
-                <ul>
-                    @foreach (var reply in selectedPost.Replies)
-                    {
-                        <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy"))</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>No replies yet.</p>
-            }
-
-            <h4>Leave a Reply:</h4>
-            <textarea class="form-control" @bind="newReply.Content" placeholder="Write your reply..."></textarea>
-            <button class="btn btn-primary" @onclick="SubmitReply">Submit Reply</button>
-
-            <p>@replyMessage</p>
-        </div>
-    }
 }
 else
 {
     <p>No posts available at the moment.</p>
 }
+<style>
+    /* General styles for the posts section */
+    .post-list {
+        margin: 20px 0;
+        max-width: 800px; /* Limit the width for better readability */
+        margin-left: auto;
+        margin-right: auto; /* Center the list */
+    }
+
+    /* Styles for each post item */
+    .post-item {
+        border: 1px solid #ddd; /* Light border around each post */
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease; /* Smooth background transition */
+    }
+
+        .post-item:hover {
+            background-color: #f1f1f1; /* Change background on hover */
+        }
+
+        .post-item h4 {
+            margin: 0;
+            color: #007BFF; /* Bootstrap primary color */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+
+        .post-item small {
+            color: #888; /* Lighter color for timestamps */
+        }
+
+    /* Styling for the main heading */
+    h3 {
+        color: #333; /* Darker color for the main heading */
+        text-align: center; /* Center the main heading */
+        margin-bottom: 20px; /* Space below the heading */
+    }
+
+    /* Style for the 'No posts available' message */
+    p {
+        text-align: center; /* Center the no posts message */
+        color: #666; /* Lighter gray color */
+    }
+</style>
 
 @code {
     private List<Post> posts = new List<Post>();
-    private Post selectedPost = null;
-    private Reply newReply = new Reply();
-    private string replyMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
         posts = await PostService.GetAllPostsAsync();
     }
 
-    private void ShowPostDetails(Post post)
+    private void NavigateToPostDetails(int postId)
     {
-        selectedPost = post;
-        newReply = new Reply { PostId = post.PostId };
-    }
-
-    private async Task SubmitReply()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity?.IsAuthenticated == true)
-        {
-            newReply.RepliedAt = DateTime.Now;
-            var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var success = await PostService.AddReplyAsync(newReply, userId);
-
-            if (success)
-            {
-                replyMessage = "Reply submitted successfully!";
-                selectedPost.Replies.Add(newReply); // Add the new reply to the displayed replies
-                newReply = new Reply { PostId = selectedPost.PostId }; // Reset the reply form
-            }
-            else
-            {
-                replyMessage = "Failed to submit reply.";
-            }
-        }
-        else
-        {
-            replyMessage = "You must be logged in to reply.";
-        }
+        _mnager.NavigateTo($"/PostDetails/{postId}");
     }
 }

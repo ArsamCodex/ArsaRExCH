@@ -25,8 +25,9 @@ namespace ArsaRExCH.InterfaceIMPL
         public async Task<Post> GetPostByIdAsync(int postId)
         {
             using var context = _dbContextFactory.CreateDbContext();
-            return await context.Post.Include(p => p.Replies)
-                                      .FirstOrDefaultAsync(p => p.PostId == postId);
+            return await context.Post
+                .Include(p => p.Replies) // Include replies
+                .FirstOrDefaultAsync(p => p.PostId == postId);
         }
 
         public async Task CreatePostAsync(Post post)

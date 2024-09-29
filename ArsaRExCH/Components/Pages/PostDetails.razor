@@ -1,0 +1,94 @@
+﻿@page "/PostDetails/{postId:int}"
+@using ArsaRExCH.Interface
+@using ArsaRExCH.Model
+@inject PostNadReplyInterface PostService
+@inject NavigationManager NavigationManager
+
+<h3>Post Details</h3>
+
+@if (post != null)
+{
+    <div class="post-details">
+        <h4>@post.Title</h4>
+        <p>@post.Content</p>
+        <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
+
+        <h4>Replies:</h4>
+        @if (post.Replies != null && post.Replies.Any())
+        {
+            <ul>
+                @foreach (var reply in post.Replies)
+                {
+                    <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy"))</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No replies yet.</p>
+        }
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+<style>
+    /* General styles for the post details section */
+    .post-details {
+        border: 1px solid #007BFF; /* Primary color border */
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        background-color: #f9f9f9; /* Light background for readability */
+        max-width: 800px; /* Limit the width for better readability */
+        margin-left: auto;
+        margin-right: auto; /* Center the details box */
+    }
+
+        .post-details h4 {
+            color: #007BFF; /* Bootstrap primary color for the title */
+            margin-top: 0; /* Remove top margin */
+        }
+
+        .post-details p {
+            color: #333; /* Darker text color for content */
+        }
+
+        .post-details small {
+            color: #888; /* Lighter color for timestamps */
+        }
+
+    /* Styling for the replies section */
+    ul {
+        list-style-type: none; /* Remove bullets */
+        padding-left: 0; /* Remove padding */
+    }
+
+    li {
+        padding: 5px;
+        border-bottom: 1px solid #ddd; /* Separate replies */
+        color: #555; /* Grey color for replies */
+    }
+
+        li:last-child {
+            border-bottom: none; /* Remove bottom border for last reply */
+        }
+
+    /* Style for the loading message */
+    p {
+        text-align: center; /* Center the loading message */
+        color: #666; /* Lighter gray color */
+    }
+</style>
+
+@code {
+    [Parameter]
+    public int postId { get; set; }
+    private Post post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await PostService.GetPostByIdAsync(postId);
+    }
+}
