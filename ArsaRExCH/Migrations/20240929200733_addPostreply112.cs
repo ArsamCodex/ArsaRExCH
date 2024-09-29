@@ -8,11 +8,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class addPostreply112 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "airDropFaqs",
+                columns: table => new
+                {
+                    AirDropFaqId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    time = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_airDropFaqs", x => x.AirDropFaqId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -184,6 +198,30 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AirDrops",
+                columns: table => new
+                {
+                    AirDropID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AirDropBalance = table.Column<int>(type: "int", nullable: false),
+                    TimeClick = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HowMannyClickInTottal = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DailyClickCount = table.Column<int>(type: "int", nullable: false),
+                    LastClickDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AirDrops", x => x.AirDropID);
+                    table.ForeignKey(
+                        name: "FK_AirDrops_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -269,6 +307,28 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Post",
+                columns: table => new
+                {
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Post", x => x.PostId);
+                    table.ForeignKey(
+                        name: "FK_Post_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserDatesRecords",
                 columns: table => new
                 {
@@ -290,30 +350,41 @@ namespace ArsaRExCH.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "2e06ec6c-138c-4d73-a42a-2b774d085fc7", null, "Admin", "ADMIN" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "23a44c43-bcc7-4a44-a0a4-f25da7c7089a", 0, "087002c0-2676-45cf-b666-0e09320f5d2a", "arminttwat@gmail.com", true, null, false, null, "NEWUSER@EXAMPLE.COM", "arminttwat@gmail.com", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "82f4b30a-14b1-4c8a-9a29-d29b3b03b180", false, "arminttwat@gmail.com" });
+            migrationBuilder.CreateTable(
+                name: "Reply",
+                columns: table => new
+                {
+                    ReplyID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RepliedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reply", x => x.ReplyID);
+                    table.ForeignKey(
+                        name: "FK_Reply_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "PostId",
+                        onDelete: ReferentialAction.Restrict);
+                });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1172), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1235), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1241), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5785), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5834), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5837), "ETH", "ETH" }
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "2e06ec6c-138c-4d73-a42a-2b774d085fc7", "23a44c43-bcc7-4a44-a0a4-f25da7c7089a" });
+            migrationBuilder.CreateIndex(
+                name: "IX_AirDrops_ApplicationUserId",
+                table: "AirDrops",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -355,6 +426,16 @@ namespace ArsaRExCH.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Post_ApplicationUserId",
+                table: "Post",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reply_PostId",
+                table: "Reply",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserDatesRecords_ApplicationUserId",
                 table: "UserDatesRecords",
                 column: "ApplicationUserId");
@@ -363,6 +444,12 @@ namespace ArsaRExCH.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "airDropFaqs");
+
+            migrationBuilder.DropTable(
+                name: "AirDrops");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -391,6 +478,9 @@ namespace ArsaRExCH.Migrations
                 name: "Pair");
 
             migrationBuilder.DropTable(
+                name: "Reply");
+
+            migrationBuilder.DropTable(
                 name: "UserDatesRecords");
 
             migrationBuilder.DropTable(
@@ -401,6 +491,9 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Post");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

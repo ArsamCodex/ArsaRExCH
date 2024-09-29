@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240925133015_init")]
-    partial class init
+    [Migration("20240929200733_addPostreply112")]
+    partial class addPostreply112
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,24 +91,60 @@ namespace ArsaRExCH.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "23a44c43-bcc7-4a44-a0a4-f25da7c7089a",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "087002c0-2676-45cf-b666-0e09320f5d2a",
-                            Email = "arminttwat@gmail.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "NEWUSER@EXAMPLE.COM",
-                            NormalizedUserName = "arminttwat@gmail.com",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "82f4b30a-14b1-4c8a-9a29-d29b3b03b180",
-                            TwoFactorEnabled = false,
-                            UserName = "arminttwat@gmail.com"
-                        });
+            modelBuilder.Entity("ArsaRExCH.Model.AirDrop", b =>
+                {
+                    b.Property<int>("AirDropID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AirDropID"));
+
+                    b.Property<int>("AirDropBalance")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DailyClickCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HowMannyClickInTottal")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastClickDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TimeClick")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("AirDropID");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("AirDrops");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.AirDropFaq", b =>
+                {
+                    b.Property<int>("AirDropFaqId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AirDropFaqId"));
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("time")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("AirDropFaqId");
+
+                    b.ToTable("airDropFaqs");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.BanedCountries", b =>
@@ -249,7 +285,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1172),
+                            ListedDate = new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5785),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -257,7 +293,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1235),
+                            ListedDate = new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5834),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -265,10 +301,65 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 9, 25, 14, 30, 14, 636, DateTimeKind.Local).AddTicks(1241),
+                            ListedDate = new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5837),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
+                {
+                    b.Property<int>("PostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PostId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Post");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
+                {
+                    b.Property<int>("ReplyID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReplyID"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RepliedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ReplyID");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Reply");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserDatesRecord", b =>
@@ -390,14 +481,6 @@ namespace ArsaRExCH.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2e06ec6c-138c-4d73-a42a-2b774d085fc7",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -485,13 +568,6 @@ namespace ArsaRExCH.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "23a44c43-bcc7-4a44-a0a4-f25da7c7089a",
-                            RoleId = "2e06ec6c-138c-4d73-a42a-2b774d085fc7"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -511,6 +587,39 @@ namespace ArsaRExCH.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.AirDrop", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserAirdops")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "Admin")
+                        .WithMany("Posts")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
+                {
+                    b.HasOne("ArsaRExCH.Model.Post", "Post")
+                        .WithMany("Replies")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserDatesRecord", b =>
@@ -577,7 +686,16 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Data.ApplicationUser", b =>
                 {
+                    b.Navigation("Posts");
+
+                    b.Navigation("UserAirdops");
+
                     b.Navigation("UserLoginDates");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
+                {
+                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

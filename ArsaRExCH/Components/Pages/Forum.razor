@@ -1,0 +1,108 @@
+﻿@page "/PostReply"
+@using ArsaRExCH.Model
+@using ArsaRExCH.Interface
+@using System.Security.Claims
+@inject PostNadReplyInterface PostReplyService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Post and Reply Page</h3>
+
+<!-- Create a New Post -->
+@if (isAdmin)
+{
+    <div>
+        <h4>Create a New Post</h4>
+        <input type="text" @bind="newPostTitle" placeholder="Enter post title" />
+        <textarea @bind="newPostContent" placeholder="Enter post content"></textarea>
+        <button @onclick="CreatePost">Post</button>
+    </div>
+}
+<hr />
+
+<!-- Display Posts and their Replies -->
+@foreach (var post in posts)
+{
+    <div class="post-container">
+        <h4>@post.Title</h4>
+        <p>@post.Content</p>
+        <p><small>Posted on: @post.CreatedAt</small></p>
+
+        <!-- Replies for this post -->
+        <h5>Replies:</h5>
+        @foreach (var reply in post.Replies)
+        {
+            <div class="reply-container">
+                <p>@reply.Content</p>
+                <p><small>Replied by: on @reply.RepliedAt</small></p>
+            </div>
+        }
+
+        <!-- Add a reply if the user is logged in -->
+        @if (isAuthenticated)
+        {
+            <textarea @bind="newReplyContent" placeholder="Enter your reply"></textarea>
+            <button @onclick="(() => CreateReply(post.PostId))">Reply</button>
+        }
+    </div>
+    <hr />
+}
+
+@code {
+    private bool isAuthenticated;
+    private bool isAdmin;
+    private List<Post> posts = new();
+    private string newPostTitle;
+    private string newPostContent;
+    private string newReplyContent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is authenticated
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        // Check if the user is an admin
+        isAdmin = user.IsInRole("Admin");
+
+        // Load posts
+        posts = (await PostReplyService.GetAllPostsAsync()).ToList();
+    }
+
+    private async Task CreatePost()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var post = new Post
+            {
+                Title = newPostTitle,
+                Content = newPostContent,
+                CreatedAt = DateTime.Now,
+                ApplicationUserId = userId
+            };
+
+        await PostReplyService.CreatePostAsync(post);
+        posts = (await PostReplyService.GetAllPostsAsync()).ToList();
+    }
+
+    private async Task CreateReply(int postId)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var reply = new Reply
+            {
+                Content = newReplyContent,
+                RepliedAt = DateTime.Now,
+                PostId = postId
+               // ApplicationUserId = userId
+            };
+
+        await PostReplyService.CreateReplyAsync(reply);
+        posts = (await PostReplyService.GetAllPostsAsync()).ToList();
+    }
+}

@@ -282,7 +282,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 9, 29, 9, 49, 38, 160, DateTimeKind.Local).AddTicks(5800),
+                            ListedDate = new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5785),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -290,7 +290,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 9, 29, 9, 49, 38, 160, DateTimeKind.Local).AddTicks(5851),
+                            ListedDate = new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5834),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -298,10 +298,65 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 9, 29, 9, 49, 38, 160, DateTimeKind.Local).AddTicks(5855),
+                            ListedDate = new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5837),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
+                {
+                    b.Property<int>("PostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PostId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Post");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
+                {
+                    b.Property<int>("ReplyID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReplyID"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RepliedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ReplyID");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Reply");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserDatesRecord", b =>
@@ -542,6 +597,28 @@ namespace ArsaRExCH.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "Admin")
+                        .WithMany("Posts")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
+                {
+                    b.HasOne("ArsaRExCH.Model.Post", "Post")
+                        .WithMany("Replies")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("ArsaRExCH.Model.UserDatesRecord", b =>
                 {
                     b.HasOne("ArsaRExCH.Data.ApplicationUser", "ApplicationUser")
@@ -606,9 +683,16 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Data.ApplicationUser", b =>
                 {
+                    b.Navigation("Posts");
+
                     b.Navigation("UserAirdops");
 
                     b.Navigation("UserLoginDates");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
+                {
+                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

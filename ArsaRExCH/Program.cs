@@ -36,6 +36,8 @@ builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
 builder.Services.AddScoped<UserIpInterface, UserInterfaceIMPL>();
 builder.Services.AddScoped<AdministrationInterface, AdministrationInterfaceIMPL>();
 builder.Services.AddScoped<AirDropInterface, AirDropInterfaceIMP>();
+builder.Services.AddScoped<PostNadReplyInterface, PostNadReplyInterfaceIMPL>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped(http => new HttpClient
 {

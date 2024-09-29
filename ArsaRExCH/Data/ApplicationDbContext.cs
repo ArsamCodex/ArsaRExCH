@@ -18,9 +18,25 @@ namespace ArsaRExCH.Data
         public DbSet<Wallet> Wallet { get; set; }
         public DbSet<Bet> Bet { get; set; }
         public DbSet<AirDrop> AirDrops { get; set; }
+        public DbSet<Post> Post { get; set; }
+        public DbSet<Reply> Reply { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Reply>()
+       .HasOne(r => r.Post)
+       .WithMany(p => p.Replies)
+       .HasForeignKey(r => r.PostId)
+       .OnDelete(DeleteBehavior.Restrict); // Disable cascade delete
+
+            // Disable cascading delete for Post -> ApplicationUser (Admin)
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Admin)
+                .WithMany(a => a.Posts)
+                .HasForeignKey(p => p.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict); // Or use DeleteBehavior.NoAction
+
             base.OnModelCreating(modelBuilder);
+       
             /*
             modelBuilder.Entity<ApplicationUser>()
            .HasMany(a => a.Wallets)
@@ -35,9 +51,9 @@ namespace ArsaRExCH.Data
            .HasForeignKey(b => b.UserId)
            .OnDelete(DeleteBehavior.Cascade);
             */
-            
 
-           // SeedInitialData(modelBuilder);
+
+            // SeedInitialData(modelBuilder);
             SeedInitialWalletData(modelBuilder);
 
 
