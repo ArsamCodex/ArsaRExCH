@@ -10,8 +10,9 @@
 {
     <div class="post-details">
         <h4>@post.Title</h4>
-        <p>@post.Content</p>
         <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
+        <p>@post.Content</p>
+        
 
         <h4>Replies:</h4>
         @if (post.Replies != null && post.Replies.Any())
@@ -19,7 +20,7 @@
             <ul>
                 @foreach (var reply in post.Replies)
                 {
-                    <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy"))</li>
+                    <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy")) User : @reply.UserIdRelied</li>
                 }
             </ul>
         }

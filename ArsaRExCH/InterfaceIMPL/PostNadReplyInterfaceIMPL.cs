@@ -65,7 +65,7 @@ namespace ArsaRExCH.InterfaceIMPL
         public async Task CreateReplyAsync(Reply reply)
         {
             using var context = _dbContextFactory.CreateDbContext();
-            context.Reply.Add(reply);
+            await context.Reply.AddAsync(reply);
             await context.SaveChangesAsync();
         }
 
@@ -89,7 +89,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 if (user != null)
                 {
                   //  reply.ApplicationUserId = userId; // Set the user ID of the reply
-                    context.Reply.Add(reply);
+                    await context.Reply.AddAsync(reply);
                     await context.SaveChangesAsync();
                     return true;
                 }

@@ -7,7 +7,7 @@ namespace ArsaRExCH.Model
         public int ReplyID { get; set; }
         public string Content { get; set; }
         public DateTime RepliedAt { get; set; }
-
+        public string UserIdRelied { get; set; }
 
         // Foreign key for the Post being replied to
         public int PostId { get; set; }
