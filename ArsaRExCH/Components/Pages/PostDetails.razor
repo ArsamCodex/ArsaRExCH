@@ -4,28 +4,31 @@
 @inject PostNadReplyInterface PostService
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @rendermode InteractiveServer
-<h3>Post Details</h3>
 
+<h3>Post Details</h3>
 @if (post != null)
 {
     <div class="post-details">
         <h4>@post.Title</h4>
         <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
         <p><b>@post.Content</b></p>
-
-
         <div style="width:auto;background-color:black"><h4>Replies:</h4></div>
         @if (post.Replies != null && post.Replies.Any())
         {
             <ul>
                 @foreach (var reply in post.Replies)
                 {
-                    <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy")) User: @reply.UserIdRelied.Substring(Math.Max(0, @reply.UserIdRelied.Length - 10))</li>
-
+                    <li>
+                        @reply.Content <br />
+                        (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy")) User: @reply.UserIdRelied.Substring(Math.Max(0, @reply.UserIdRelied.Length - 10))  
+                    </li>
+                    @if (isAdmin) // Check if the user is an admin
+                    {
+                        <button class="btn btn-danger">Remove</button>
+                    }
                 }
             </ul>
             <hr />
@@ -46,21 +49,20 @@ else
 
         <DataAnnotationsValidator />
         <ValidationSummary />
-
         <div class="form-group">
             <label for="replyContent">Reply Content</label>
-            <InputTextArea id="replyContent" class="form-control" @bind-Value="PostReply.Content" />
-            <ValidationMessage For="@(() => PostReply.Content)" />
-
+            <InputTextArea id="replyContent"
+                           class="form-control"
+                           @bind-Value="PostReply.Content"
+                           @oninput="UpdateCharacterCount"
+                           maxlength="170" />
+            <small>@characterCount/170 characters</small>
         </div>
 
         <button type="submit" class="btn btn-primary">Submit Reply</button>
 
     </EditForm>
-
-
 </div>
-
 <style>
     /* General styles for the post details section */
     .post-details {
@@ -113,14 +115,15 @@ else
         color: #666; /* Lighter gray color */
     }
 </style>
-
+<p>Is Admin : @isAdmin</p>
 @code {
     [Parameter]
     public int postId { get; set; }
     private Post post;
     private Reply PostReply = new Reply();
     private string user2 { get; set; }
-
+    private int characterCount = 0;
+    private bool isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
@@ -128,7 +131,9 @@ else
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity?.IsAuthenticated ?? false)
+
         {
+            isAdmin = await IsAdmin();
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
 
             post = await PostService.GetPostByIdAsync(postId);
@@ -137,6 +142,11 @@ else
 
     }
 
+    private void UpdateCharacterCount(ChangeEventArgs e)
+    {
+        PostReply.Content = e.Value.ToString(); // Update the bound property
+        characterCount = PostReply.Content.Length; // Update character count
+    }
 
 
 
@@ -147,7 +157,7 @@ else
         PostReply.RepliedAt = DateTime.Now;
         PostReply.UserIdRelied = user2;
         PostReply.PostId = postId;
-       // PostReply.Content = "xssss";
+        // PostReply.Content = "xssss";
 
 
 
@@ -160,5 +170,12 @@ else
         // Optionally clear the PostReply for a new reply entry
         PostReply = new Reply(); // Reset the form
     }
+    private async Task<bool>  IsAdmin()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
+        // Check if the user has the admin role or specific claim
+        return user.IsInRole("Admin"); // Adjust according to your role system
+    }
 }
