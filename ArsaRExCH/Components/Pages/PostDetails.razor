@@ -3,7 +3,11 @@
 @using ArsaRExCH.Model
 @inject PostNadReplyInterface PostService
 @inject NavigationManager NavigationManager
-
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@rendermode InteractiveServer
 <h3>Post Details</h3>
 
 @if (post != null)
@@ -11,18 +15,20 @@
     <div class="post-details">
         <h4>@post.Title</h4>
         <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
-        <p>@post.Content</p>
-        
+        <p><b>@post.Content</b></p>
 
-        <h4>Replies:</h4>
+
+        <div style="width:auto;background-color:black"><h4>Replies:</h4></div>
         @if (post.Replies != null && post.Replies.Any())
         {
             <ul>
                 @foreach (var reply in post.Replies)
                 {
-                    <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy")) User : @reply.UserIdRelied</li>
+                    <li>@reply.Content (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy")) User: @reply.UserIdRelied.Substring(Math.Max(0, @reply.UserIdRelied.Length - 10))</li>
+
                 }
             </ul>
+            <hr />
         }
         else
         {
@@ -34,6 +40,27 @@ else
 {
     <p>Loading...</p>
 }
+<div class="fixed-edit-form">
+    <h4> Reply</h4>
+    <EditForm Model="@PostReply" OnValidSubmit="HandleValidSubmit" FormName="name">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="replyContent">Reply Content</label>
+            <InputTextArea id="replyContent" class="form-control" @bind-Value="PostReply.Content" />
+            <ValidationMessage For="@(() => PostReply.Content)" />
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Reply</button>
+
+    </EditForm>
+
+
+</div>
+
 <style>
     /* General styles for the post details section */
     .post-details {
@@ -41,15 +68,20 @@ else
         border-radius: 8px;
         padding: 20px;
         margin-top: 20px;
-        background-color: #f9f9f9; /* Light background for readability */
-        max-width: 800px; /* Limit the width for better readability */
+        background-color: white; /* Light background for readability */
+        max-width: auto; /* Limit the width for better readability */
         margin-left: auto;
         margin-right: auto; /* Center the details box */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 16px; /* Adjust font size for better readability */
+        color: #333; /* Text color for readability */
     }
 
+
         .post-details h4 {
-            color: #007BFF; /* Bootstrap primary color for the title */
+            color: red; /* Bootstrap primary color for the title */
             margin-top: 0; /* Remove top margin */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         .post-details p {
@@ -69,7 +101,7 @@ else
     li {
         padding: 5px;
         border-bottom: 1px solid #ddd; /* Separate replies */
-        color: #555; /* Grey color for replies */
+        color: black; /* Grey color for replies */
     }
 
         li:last-child {
@@ -78,7 +110,6 @@ else
 
     /* Style for the loading message */
     p {
-        text-align: center; /* Center the loading message */
         color: #666; /* Lighter gray color */
     }
 </style>
@@ -87,9 +118,47 @@ else
     [Parameter]
     public int postId { get; set; }
     private Post post;
+    private Reply PostReply = new Reply();
+    private string user2 { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
-        post = await PostService.GetPostByIdAsync(postId);
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            post = await PostService.GetPostByIdAsync(postId);
+            //  PostReply = new Reply();
+        }
+
     }
+
+
+
+
+
+    private async Task HandleValidSubmit()
+    {
+
+        PostReply.RepliedAt = DateTime.Now;
+        PostReply.UserIdRelied = user2;
+        PostReply.PostId = postId;
+       // PostReply.Content = "xssss";
+
+
+
+        // Call the service to create the reply (assuming it doesn't return anything)
+        await PostService.CreateReplyAsync(PostReply);
+
+        // Optionally, refresh the post to show the updated replies
+        post = await PostService.GetPostByIdAsync(postId);
+
+        // Optionally clear the PostReply for a new reply entry
+        PostReply = new Reply(); // Reset the form
+    }
+
 }

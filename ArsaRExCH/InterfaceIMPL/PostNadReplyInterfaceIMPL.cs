@@ -64,9 +64,18 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task CreateReplyAsync(Reply reply)
         {
-            using var context = _dbContextFactory.CreateDbContext();
-            await context.Reply.AddAsync(reply);
-            await context.SaveChangesAsync();
+            try
+            {
+                using var context = _dbContextFactory.CreateDbContext();
+                await context.Reply.AddAsync(reply);
+                await context.SaveChangesAsync();
+                Console.WriteLine($"Content: added");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("daasdasdasd",ex);
+            }
+
         }
 
         public async Task DeleteReplyAsync(int replyId)
