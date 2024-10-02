@@ -9,9 +9,9 @@
 @using System.Text.Json
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager Navigation
 
+@if(isAdmin){
 <div class="container my-3">
     <div class="row">
         <div class="col-md-6">
@@ -52,7 +52,12 @@
             </tr>
         }
     </tbody>
-</table>
+    </table>
+}
+else
+{
+    <p>Administration Section</p>
+}
 <style>
     .table {
         width: 100%;
@@ -90,13 +95,32 @@
 </style>
 
 @code {
+    private string user2 { get; set; }
+    private string currentUserRole;
+    private bool isAdmin;
     private string searchQuery = string.Empty;
     private List<ApplicationUser> users = new List<ApplicationUser>();
     private List<ApplicationUser> filteredUsers = new List<ApplicationUser>();
     protected override async Task OnInitializedAsync()
     {
-        users = await _adminInterface.AllUsers();
-        filteredUsers = users;
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Check if the user is an admin directly here
+
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var roles = await _adminInterface.GetUserRolesAsync(user);
+            // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+            isAdmin = roles.Contains("Admin");
+            currentUserRole = roles.FirstOrDefault();
+            users = await _adminInterface.AllUsers();
+            filteredUsers = users;
+
+        }
+
 
     }
     private void PerformSearch()

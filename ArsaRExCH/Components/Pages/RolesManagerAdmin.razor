@@ -1,7 +1,6 @@
 ﻿@page "/RoleManagerAdmin"
 @using ArsaRExCH.Data
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
@@ -9,11 +8,12 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
-@attribute [Authorize(Roles = "Admin")]
+
 @rendermode InteractiveServer
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject IJSRuntime JSRuntime
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 
 <style>
     .grid-table {
@@ -92,16 +92,38 @@ else
     private List<ApplicationUser> users;
     private List<string> roles;
     private Dictionary<string, IList<string>> userRoles = new Dictionary<string, IList<string>>();
+    private string user2 { get; set; }
+    private string currentUserRole;
+    private bool isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
-        users = await UserManager.Users.ToListAsync();
-        roles = await RoleManager.Roles.Select(r => r.Name).ToListAsync();
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        foreach (var user in users)
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
         {
-            var rolesForUser = await UserManager.GetRolesAsync(user);
-            userRoles[user.Id] = rolesForUser;
+            // Check if the user is an admin directly here
+
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var roles = await _adminInterface.GetUserRolesAsync(user);
+            // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+            isAdmin = roles.Contains("Admin");
+            currentUserRole = roles.FirstOrDefault();
+
+
+        }
+        if (isAdmin == true)
+        {
+            users = await UserManager.Users.ToListAsync();
+            roles = await RoleManager.Roles.Select(r => r.Name).ToListAsync();
+
+            foreach (var user5 in users)
+            {
+                var rolesForUser = await UserManager.GetRolesAsync(user5);
+                userRoles[user5.Id] = rolesForUser;
+            }
         }
     }
 
@@ -131,4 +153,5 @@ else
         // Update the role in the dictionary after change
         userRoles[user.Id] = new List<string> { newRole };
     }
+    /*@attribute [Authorize(Roles = "Admin")]   use if you likei go to get role manual*/
 }

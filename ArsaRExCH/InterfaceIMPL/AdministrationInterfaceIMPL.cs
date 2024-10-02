@@ -4,6 +4,7 @@ using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Security.Claims;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -15,8 +16,10 @@ namespace ArsaRExCH.InterfaceIMPL
         private readonly ILogger<BetInterfaceIMPL> _logger;
         private readonly PriceInterface _priceInterface;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
+        private readonly RoleManager<IdentityRole> RoleManager;
+        private readonly UserManager<ApplicationUser> UserManager;
         public AdministrationInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetInterfaceIMPL> logger,
-                         SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContext)
+                         SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContext, RoleManager<IdentityRole> _RoleManager, UserManager<ApplicationUser> _UserManager)
         {
             _logger = logger;
             _context = context;
@@ -24,6 +27,8 @@ namespace ArsaRExCH.InterfaceIMPL
             _signInManager = signInManager;
             _priceInterface = priceInterface;
             _dbContext = dbContext;
+            RoleManager = _RoleManager;
+            UserManager = _UserManager;
         }
         public async Task AddBannCountries(BanedCountries banedCountries)
         {
@@ -62,9 +67,10 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 using var context = _dbContext.CreateDbContext();
                 return await context.airDropFaqs.ToListAsync();
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                throw new Exception($"Gant gets airdopFaq",ex);
+                throw new Exception($"Gant gets airdopFaq", ex);
             }
         }
 
@@ -129,6 +135,26 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<List<string>> GetUserRolesAsync(ClaimsPrincipal user)
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return new List<string>(); // User is not authenticated
+            }
+
+            // Find the user using UserManager
+            var appUser = await UserManager.FindByIdAsync(userId);
+            if (appUser == null)
+            {
+                return new List<string>(); // User not found
+            }
+
+            // Get roles for the user
+            var roles = await UserManager.GetRolesAsync(appUser);
+            return roles.ToList();
+        }
 
 
         public async Task<bool> RemoveBannedCuntries(int banbId)

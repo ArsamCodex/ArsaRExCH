@@ -9,10 +9,9 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 @inject ArsaRExCH.Interface.BetInterface _betInterface
-@attribute [Authorize(Roles = "Admin")]
 @using ArsaRExCH.Components.AdminComponents
 
-
+@if(isAdmin){
 <div class="bet-container">
     <div class="table-header">
         <div class="table-cell"><strong>Bet ID</strong></div>
@@ -50,8 +49,12 @@
     {
         <p>No bets available.</p>
     }
-</div>
-
+    </div>
+}
+else
+{
+    <p>Administration Adin </p>
+}
 <style>
     .bet-container {
         width: 100%;
@@ -108,6 +111,8 @@
 @code {
     public List<Bet> bets = new List<Bet>();
     public string user2 { get; set; }
+    private string currentUserRole;
+    private bool isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,6 +121,11 @@
 
         if (user.Identity?.IsAuthenticated ?? false)
         {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var roles = await _adminInterface.GetUserRolesAsync(user);
+            // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+            isAdmin = roles.Contains("Admin");
+            currentUserRole = roles.FirstOrDefault();
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             bets = await _betInterface.GetListOfAllBets();
         }

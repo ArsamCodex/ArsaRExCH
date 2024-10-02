@@ -1,5 +1,6 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.Model;
+using System.Security.Claims;
 
 namespace ArsaRExCH.Interface
 {
@@ -12,6 +13,8 @@ namespace ArsaRExCH.Interface
         Task<ApplicationUser> GetUserById(string userId);
         Task<List<UserDatesRecord>> GetAllUserDates(string userID);
         Task<List<AirDropFaq>> GetAllAirDropFaq();
-        
+        Task<List<string>> GetUserRolesAsync(ClaimsPrincipal user);
+
+
     }
 }

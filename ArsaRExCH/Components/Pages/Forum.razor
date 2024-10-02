@@ -80,7 +80,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        posts = await PostService.GetAllPostsAsync();
+        var x = await PostService.GetAllPostsAsync();
+        posts = x.OrderByDescending(x=>x.CreatedAt).ToList();
     }
 
     private void NavigateToPostDetails(int postId)
