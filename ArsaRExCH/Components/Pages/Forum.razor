@@ -16,10 +16,10 @@
         {
             <div class="post-item">
                 <h4 @onclick="() => NavigateToPostDetails(post.PostId)" style="cursor:pointer;">
-                    @post.Title
+                    @post.Title &nbsp;&nbsp; <small style="font-size: 0.75em;">Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
                 </h4>
-                <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
             </div>
+
         }
     </div>
 }
@@ -31,7 +31,7 @@ else
     /* General styles for the posts section */
     .post-list {
         margin: 20px 0;
-        max-width: 800px; /* Limit the width for better readability */
+        max-width:auto; /* Limit the width for better readability */
         margin-left: auto;
         margin-right: auto; /* Center the list */
     }
@@ -54,6 +54,7 @@ else
             margin: 0;
             color: #007BFF; /* Bootstrap primary color */
             cursor: pointer; /* Change cursor to pointer */
+            
         }
 
         .post-item small {

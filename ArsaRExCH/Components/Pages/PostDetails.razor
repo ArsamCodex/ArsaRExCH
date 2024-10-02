@@ -2,20 +2,23 @@
 @using ArsaRExCH.Interface
 @using ArsaRExCH.Model
 @inject PostNadReplyInterface PostService
-@inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @rendermode InteractiveServer
 
-<h3>Post Details</h3>
-@if (post != null)
+<div style="width:100%;background-color:@(isReplyRemovedSuccessfully ? "lightgreen" : "white");height:50px">
+    <h3>Post Details</h3>
+</div>@if (post != null)
 {
     <div class="post-details">
         <h4>@post.Title</h4>
         <small>Posted on: @post.CreatedAt.ToString("dd/MM/yyyy")</small>
         <p><b>@post.Content</b></p>
-        <div style="width:auto;background-color:black"><h4>Replies:</h4></div>
+        <div style="width:auto;background-color:black">
+            <h4 style="color: white;">Replies:</h4> <!-- Added color for visibility -->
+        </div>
+
         @if (post.Replies != null && post.Replies.Any())
         {
             <ul>
@@ -23,12 +26,14 @@
                 {
                     <li>
                         @reply.Content <br />
-                        (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy")) User: @reply.UserIdRelied.Substring(Math.Max(0, @reply.UserIdRelied.Length - 10))  
+                        (Replied on: @reply.RepliedAt.ToString("dd/MM/yyyy"))
+                        User: @reply.UserIdRelied.Substring(Math.Max(0, @reply.UserIdRelied.Length - 10))
+
+                        @if (isAdmin) // Check if the user is an admin
+                        {
+                            <button class="btn btn-danger" @onclick="@(() => RemoveReply(reply.ReplyID))">Remove</button>
+                        }
                     </li>
-                    @if (isAdmin) // Check if the user is an admin
-                    {
-                        <button class="btn btn-danger">Remove</button>
-                    }
                 }
             </ul>
             <hr />
@@ -43,8 +48,8 @@ else
 {
     <p>Loading...</p>
 }
-<div class="fixed-edit-form">
-    <h4> Reply</h4>
+<div style="min-height: 50vh; display: flex; flex-direction: column; justify-content: space-between;">
+
     <EditForm Model="@PostReply" OnValidSubmit="HandleValidSubmit" FormName="name">
 
         <DataAnnotationsValidator />
@@ -64,7 +69,7 @@ else
     </EditForm>
 </div>
 <style>
-    /* General styles for the post details section */
+
     .post-details {
         border: 1px solid #007BFF; /* Primary color border */
         border-radius: 8px;
@@ -124,6 +129,8 @@ else
     private string user2 { get; set; }
     private int characterCount = 0;
     private bool isAdmin;
+    private bool isReplyRemovedSuccessfully = false; // Track success state
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,9 +164,6 @@ else
         PostReply.RepliedAt = DateTime.Now;
         PostReply.UserIdRelied = user2;
         PostReply.PostId = postId;
-        // PostReply.Content = "xssss";
-
-
 
         // Call the service to create the reply (assuming it doesn't return anything)
         await PostService.CreateReplyAsync(PostReply);
@@ -169,13 +173,27 @@ else
 
         // Optionally clear the PostReply for a new reply entry
         PostReply = new Reply(); // Reset the form
+        characterCount = 0;
     }
-    private async Task<bool>  IsAdmin()
+    private async Task<bool> IsAdmin()
     {
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         // Check if the user has the admin role or specific claim
         return user.IsInRole("Admin"); // Adjust according to your role system
+    }
+    private async Task RemoveReply(int replyId)
+    {
+        await PostService.DeleteReplyAsync(replyId);
+        post = await PostService.GetPostByIdAsync(postId);
+        // Change the background color after reply is removed
+        isReplyRemovedSuccessfully = true;
+        StateHasChanged(); // Trigger a re-render
+
+        // Optional: Reset after a delay to provide feedback
+        await Task.Delay(2000); // Wait for 2 seconds
+        isReplyRemovedSuccessfully = false; // Reset the flag
+        StateHasChanged(); // Trigger a re-render again
     }
 }
