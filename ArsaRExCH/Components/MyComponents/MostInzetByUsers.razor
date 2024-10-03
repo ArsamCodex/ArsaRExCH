@@ -92,7 +92,8 @@ else
        
         Console.WriteLine("OnInitializedAsync called"); //  debugging
 
-            results = await _user.CalculateMaxInzetAsync(); // Fetch all results
+        var x = await _user.CalculateMaxInzetAsync(); // Fetch all results
+        results = x.Take(2).ToList();
 
     }
 }

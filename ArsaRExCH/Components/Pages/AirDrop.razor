@@ -13,8 +13,8 @@
 @inject NavigationManager manager
 @inject ArsaRExCH.Interface.AirDropInterface _airdropInterface
 
-   <div class="div-container">
-        <div class="fixed-div">70</div>
+<div class="div-container">
+    <div class="fixed-div">70</div>
     <div class="fixed-div">100</div>
     <div class="fixed-div">140</div>
     <div class="fixed-div">200</div>
@@ -24,22 +24,22 @@
     <div class="fixed-div">Level 8</div>
     <div class="fixed-div">Level 9</div>
     <div class="fixed-div">Level 10</div>
-    </div>
+</div>
 <AirDropBalanceExtractor @ref="airDropBalanceExtractor"></AirDropBalanceExtractor>
 <DailyClickCount @ref="dailyClickCount"></DailyClickCount>
 <center>
-<div class="container">
+    <div class="container">
 
         <button class="airdrop-button" @onclick="HandleSubmit">Click To Get Free AirDrop Point</button>
 
- 
-</div>
-<p>@Message</p>
+
+    </div>
+    <p>@Message</p>
 </center>
 <br />
 <br />
 <br />
-<p> Available Click : @Currentbalance</p>
+
 <p><a href="AirDropFaq">Go To AirDrop Faq</a></p>
 <style>
     .airdrop-title {
@@ -105,7 +105,7 @@
     public string? Message { get; set; }
     private bool isSuccess = false;
     private bool isFailed = false;
-    private string user2{ get; set; }
+    private string user2 { get; set; }
     public ArsaRExCH.Model.AirDrop newAirDrop = new Model.AirDrop();
     public int WalletBalanceAirDrop { get; set; }
     private ArsaRExCH.Components.MyComponents.AirDropBalanceExtractor airDropBalanceExtractor;
@@ -135,7 +135,7 @@
                 }
                 if (dailyClickCount != null)
                 {
-                    Currentbalance = await _airdropInterface.AirDropDailyClick(user2);
+                    //   Currentbalance = await _airdropInterface.AirDropDailyClick(user2);
                     await dailyClickCount.FetchBalancesAsync();
                 }
             }
@@ -181,10 +181,8 @@
 
             // Ensure dailyClickCount is not null before calling FetchBalancesAsync
             Currentbalance = await _airdropInterface.AirDropDailyClick(user2);
-            if (Currentbalance == 20)
-            {
-                Currentbalance = 0;
-            }
+            await dailyClickCount.FetchBalancesAsync();
+         
             StateHasChanged();
         }
     }

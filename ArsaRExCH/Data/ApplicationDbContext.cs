@@ -11,7 +11,8 @@ namespace ArsaRExCH.Data
       //  public DbSet<Apllica> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
-        public DbSet<UserTradeActivity> UserTradeActivities { get; set; }
+        public DbSet<BitcoinPool> BitcoinPools { get; set; }
+        public DbSet<BitcoinPoolTransactions> poolTransactions { get; set; }
         public DbSet<BanedCountries> BanedCountris { get; set; }
         public DbSet<AirDropFaq> airDropFaqs { get; set; }
         public DbSet<UserDatesRecord> UserDatesRecords { get; set; }

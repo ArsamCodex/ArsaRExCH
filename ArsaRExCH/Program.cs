@@ -16,6 +16,8 @@ using ArsaRExCH.Model;
 using ArsaRExCH.StaticsHelper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using MudBlazor.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -76,7 +79,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddSingleton<DbContextFactory>();
-
+builder.Services.AddMudServices();
 
 
 

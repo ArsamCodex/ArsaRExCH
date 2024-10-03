@@ -51,7 +51,7 @@
 
         <div class="form-group" style="width: auto;">
             <label for="hitDateBTC">Hit Date BTC</label>
-            <InputDate @bind-Value="BetModel.HitDateBTC" id="hitDateBTC" class="form-control form-control-sm" />
+            <InputDate @bind-Value="BetModel.HitDateBTC" id="hitDateBTC" class="form-control form-control-sm"  />
         </div>
 
         <div class="form-group" style="width: auto">
@@ -171,56 +171,86 @@
 
     public async Task HandleValidSubmit()
     {
-        // Initialize the bet model with necessary values
-        BetModel.IsBetActive = true;
-        BetModel.ISDeleted = false;
-        BetModel.UserIdSec = user2; // Example user ID
-        BetModel.BtcPriceNow = await _priceInterface.GetBtcPriceFromBinance();
-        Console.WriteLine(BetModel.BtcPriceNow);
-        // Retrieve current BTC price from the database or API call
-        BetModel.EthPriceNow = await _priceInterface.GetEthPriceFromBinance(); // Retrieve current ETH price from the database or API call
-        /*this is shoow ase i just now work on btc*/
-        BetModel.OpendBetAtricle = DateTime.UtcNow; // Set the current time as the opening time of the bet
-        BetModel.WiningAmount = null; // To be calculated later
-
-        BtcBetAmout = BetModel.BetAmountBtc; // Set the bet amount in BTC
-        EthBetAmout = BetModel.BetAmountETH;
-        try
+        if (BetModel.HitDateETH.Date == BetModel.HitDateBTC.Date)
         {
-            // Generate a signature for the bet and save it to the database
-            BetModel.BetSignutare = await _interface.Generatesha256();
-            BetGeneratedHAsh = BetModel.BetSignutare;
-            await _interface.SaveBet(BetModel);
-            BetModel = new Bet(); // Reset the BetModel
 
-            // Try to edit the wallet amount for the user
-            await _interface2.EditWalletAmountDecrease(user2, BtcBetAmout);
-            await _interface2.EditWalletAmountDecresETH(user2, EthBetAmout);
+            // Initialize the bet model with necessary values
+            BetModel.IsBetActive = true;
+            BetModel.ISDeleted = false;
+            BetModel.UserIdSec = user2; // Example user ID
+            BetModel.BtcPriceNow = await _priceInterface.GetBtcPriceFromBinance();
+            Console.WriteLine(BetModel.BtcPriceNow);
+            // Retrieve current BTC price from the database or API call
+            BetModel.EthPriceNow = await _priceInterface.GetEthPriceFromBinance(); // Retrieve current ETH price from the database or API call
+            /*this is shoow ase i just now work on btc*/
+            BetModel.OpendBetAtricle = DateTime.UtcNow; // Set the current time as the opening time of the bet
+            BetModel.WiningAmount = null; // To be calculated later
 
-            // Clear any error messages on successful wallet update
-            ErrorMessage = string.Empty;
+            BtcBetAmout = BetModel.BetAmountBtc; // Set the bet amount in BTC
+            EthBetAmout = BetModel.BetAmountETH;
+            try
+            {
+                // Generate a signature for the bet and save it to the database
+                BetModel.BetSignutare = await _interface.Generatesha256();
+                BetGeneratedHAsh = BetModel.BetSignutare;
+                await _interface.SaveBet(BetModel);
+                BetModel = new Bet(); // Reset the BetModel
+
+                // Try to edit the wallet amount for the user
+                await _interface2.EditWalletAmountDecrease(user2, BtcBetAmout);
+                await _interface2.EditWalletAmountDecresETH(user2, EthBetAmout);
+
+                // Clear any error messages on successful wallet update
+                ErrorMessage = string.Empty;
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Display an error message if the wallet update fails due to insufficient funds
+                ErrorMessage = ex.Message;
+                return; // Stop further execution if there's an error
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                ErrorMessage = "An unexpected error occurred: " + ex.Message;
+                return; // Stop further execution if there's an error
+            }
+
+            // Additional actions after successfully handling the bet and updating the wallet
+            ChangeColor(); // Some method to change the color (ensure this method does not block the UI)
+            await br.FetchBalancesAsync(); // Fetch updated balances (ensure this does not block the UI)
+
+            // Navigate to the bet preview page if everything is successful
+            manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
         }
-        catch (InvalidOperationException ex)
+        else
         {
-            // Display an error message if the wallet update fails due to insufficient funds
-            ErrorMessage = ex.Message;
-            return; // Stop further execution if there's an error
+            ErrorMessage = "Dates SHould be same ";
         }
-        catch (Exception ex)
-        {
-            // Handle other exceptions
-            ErrorMessage = "An unexpected error occurred: " + ex.Message;
-            return; // Stop further execution if there's an error
-        }
-
-        // Additional actions after successfully handling the bet and updating the wallet
-        ChangeColor(); // Some method to change the color (ensure this method does not block the UI)
-        await br.FetchBalancesAsync(); // Fetch updated balances (ensure this does not block the UI)
-
-        // Navigate to the bet preview page if everything is successful
-        manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
     }
 
+    private async Task OnHitDateBTCChanged(DateTime? newDate)
+    {
+        if (newDate.HasValue)
+        {
+            // Synchronize ETH date when BTC date changes
+            BetModel.HitDateETH = newDate.Value;
 
+            // If you have any additional async operations, await them here
+            await Task.CompletedTask; // Placeholder if you need to await something
+        }
+    }
+
+    private async Task OnHitDateETHChanged(DateTime? newDate)
+    {
+        if (newDate.HasValue)
+        {
+            // Synchronize BTC date when ETH date changes
+            BetModel.HitDateBTC = newDate.Value;
+
+            // If you have any additional async operations, await them here
+            await Task.CompletedTask; // Placeholder if you need to await something
+        }
+    }
 }
 

@@ -35,33 +35,41 @@ namespace ArsaRExCH.InterfaceIMPL
 
                 // Collect all unique dates from HitDateBTC and HitDateETH
                 var uniqueDates = allBets
-                    .Select(b => b.HitDateBTC.Date)
-                    //.Union(allBets.Select(b => b.HitDateETH.Date))  // If you want to include ETH dates
+                    .Select(b => b.HitDateBTC.Date)  // Get dates from BTC
+                  //  .Union(allBets.Select(b => b.HitDateETH.Date))  // Include ETH dates
                     .Distinct()
                     .ToList();
 
+                Console.WriteLine($"Unique dates found: {string.Join(", ", uniqueDates)}");
+
                 foreach (var date in uniqueDates)
                 {
+                    // Collect BTC bets for the current date
                     var btcBets = allBets.Where(b => b.HitDateBTC.Date == date).ToList();
+                    // Collect ETH bets for the current date
                     var ethBets = allBets.Where(b => b.HitDateETH.Date == date).ToList();
 
+                    // Prepare the result object
                     var result = new MaxInzetResultDTO
                     {
                         MyDateTime = date,
-                        HitBtcPrice = btcBets.Any() ? btcBets.First().BtcPriceExpireBet : 0,
+                        HitBtcPrice = btcBets.FirstOrDefault()?.BtcPriceExpireBet ?? 0,
                         MaxBtcTotalInBTC = btcBets.Sum(b => b.BetAmountBtc),
-                        HitEthPrice = ethBets.Any() ? ethBets.First().EthPriceExpireBet : 0,
+                        HitEthPrice = ethBets.FirstOrDefault()?.EthPriceExpireBet ?? 0,
                         MaxEthTotal = ethBets.Sum(b => b.BetAmountETH)
                     };
 
+                    // Debug information for each date
+                    Console.WriteLine($"Date: {date}, BTC Bets Count: {btcBets.Count}, ETH Bets Count: {ethBets.Count}, BTC Total: {result.MaxBtcTotalInBTC}, ETH Total: {result.MaxEthTotal}");
+
+                    // Add the result to the list
                     results.Add(result);
                 }
 
                 // Filter out results where the date is in the past
                 results = results.Where(r => r.MyDateTime >= DateTime.Today).ToList();
 
-                Console.WriteLine($"Querying for all dates.");
-                Console.WriteLine($"Found {results.Count} unique dates with bets.");
+                Console.WriteLine($"Total unique dates with bets after filtering: {results.Count}");
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Authorization
+﻿@using ArsaRExCH.Interface
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
 @using System.Security.Claims
@@ -12,7 +13,7 @@
 @inject NavigationManager manager
 @inject ArsaRExCH.Interface.AirDropInterface _airDropInterface
 
-<p class="balance-display">Clicked Today : @Currentbalance </p>
+<p class="balance-display">Clicked Today : @Currentbalance / <small>20</small> </p>
 
 <style>
     .balance-display {
@@ -58,7 +59,8 @@
             {
                 // Fetch wallet balances for the authenticated user
                 Currentbalance = await _airDropInterface.AirDropDailyClick(user2);
-
+                var x = _airDropInterface.ResetDailyCOUnt(user2, DateTime.Now);
+                Console.WriteLine(x);
                 // Refresh the UI to reflect updated balances
                 StateHasChanged();
             }
