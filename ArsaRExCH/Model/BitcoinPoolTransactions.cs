@@ -1,4 +1,6 @@
-﻿namespace ArsaRExCH.Model
+﻿using ArsaRExCH.Data;
+
+namespace ArsaRExCH.Model
 {
     public class BitcoinPoolTransactions
     {
@@ -6,8 +8,10 @@
         public double Amount { get; set; }
         public DateTime TransactionDate { get; set; }
         public string TransactionType { get; set; } // e.g., Deposit, Withdrawal
+        public string TxHash { get; set; }
+        public string receiverAdress { get; set; }
         public string UserId { get; set; }
-        public int BitcoinPoolId { get; set; }
-        public BitcoinPool bitcoin { get; set; }
+        public int ApplicationUserId { get; set; }
+        public ApplicationUser user { get; set; }
     }
 }
