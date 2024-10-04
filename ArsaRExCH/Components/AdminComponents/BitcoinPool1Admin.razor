@@ -6,27 +6,31 @@
 @inject ArsaRExCH.Interface.IBitcoinPool _bitcoinPool
 
 <h3>Add New BitcoinPool</h3>
-<EditForm Model="bitcoinPool" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div style="width: 50%; margin: 0 auto;">
+    <h3>Edit Bitcoin Pool</h3>
 
-    <div class="form-group">
-        <label for="poolName">Pool Name</label>
-        <InputText @bind-Value="bitcoinPool.PoolName" id="poolName" class="form-control" />
-    </div>
+    <EditForm Model="bitcoinPool" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div class="form-group">
-        <label for="poolCurrentBalance">Current Balance</label>
-        <InputNumber @bind-Value="bitcoinPool.PoolCurrentBalance" id="poolCurrentBalance" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="poolName">Pool Name</label>
+            <InputText @bind-Value="bitcoinPool.PoolName" id="poolName" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label for="daterefilled">Date Refilled</label>
-        <InputDate @bind-Value="bitcoinPool.Daterefilled" id="daterefilled" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="poolCurrentBalance">Current Balance</label>
+            <InputNumber @bind-Value="bitcoinPool.PoolCurrentBalance" id="poolCurrentBalance" class="form-control" />
+        </div>
 
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</EditForm>
+        <div class="form-group">
+            <label for="daterefilled">Date Refilled</label>
+            <InputDate @bind-Value="bitcoinPool.Daterefilled" id="daterefilled" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </EditForm>
+</div>
 <p>@Message</p>
 @code {
     private string user2 { get; set; }
@@ -51,6 +55,7 @@
             isAdmin = roles.Contains("Admin");
             currentUserRole = roles.FirstOrDefault();
         }
+        bitcoinPool.Daterefilled = DateTime.Now;
 
     }
     private async Task HandleValidSubmit()
