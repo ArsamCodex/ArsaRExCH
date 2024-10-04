@@ -33,6 +33,27 @@ namespace ArsaRExCH.InterfaceIMPL
                 throw new Exception("Bitcoin pool not found.");
             }
         }
+
+        public async Task<List<BitcoinPool>> GetPools()
+        {
+            try
+            {
+                using var _context = _dbContextFactory.CreateDbContext();
+
+                // Retrieve all pools
+                return await _context.BitcoinPools.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (if necessary) and handle it accordingly
+                Console.WriteLine($"An error occurred while retrieving pools: {ex.Message}");
+
+                // Return an empty list or handle as per your requirement
+                throw new Exception("Error Get Pools", ex);
+                
+            }
+        }
+
         public async Task InitBitcoinPool(BitcoinPool bitcoinPool)
         {
 

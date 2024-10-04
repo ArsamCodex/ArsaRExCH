@@ -1,14 +1,13 @@
 ﻿@inject NavigationManager NavigationManager
 @using System.Security.Claims
+@using ArsaRExCH.Interface
 @using ArsaRExCH.Model
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
-@inject ArsaRExCH.Interface.IBitcoinPool _bitcoinPool
+@inject ArsaRExCH.Interface.IBitcoinPool _bitcoinPoolInterface
 
-<h3>Add New BitcoinPool</h3>
-<div style="width: 50%; margin: 0 auto;">
-    <h3>Edit Bitcoin Pool</h3>
-
+<h5>Add New Pool</h5>
+<div style="width: 30%; margin: 0 auto;float: left;">
     <EditForm Model="bitcoinPool" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -38,6 +37,7 @@
     private bool isAdmin;
     public BitcoinPool bitcoinPool = new BitcoinPool();
     private string Message{ get; set; }
+    [Parameter] public EventCallback OnPoolAdded { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,7 +60,8 @@
     }
     private async Task HandleValidSubmit()
     {
-        await _bitcoinPool.InitBitcoinPool(bitcoinPool);
+        await _bitcoinPoolInterface.InitBitcoinPool(bitcoinPool);
         Message = "Bitcoin Pool Addes Successfully";
+        await OnPoolAdded.InvokeAsync();
     }
 }

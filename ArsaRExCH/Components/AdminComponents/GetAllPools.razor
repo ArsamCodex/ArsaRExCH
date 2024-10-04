@@ -1,0 +1,84 @@
+﻿@using ArsaRExCH.Model
+@inject ArsaRExCH.Interface.IBitcoinPool _bitcooinPoolInterface
+
+<style>
+    .container {
+        display: flex;
+        justify-content: space-between; /* Space between the two columns */
+        margin: 20px; /* Add some margin for spacing */
+    }
+
+    .form-container, .list-container {
+        width: 48%; /* Adjust width to fit side by side */
+    }
+
+    .pools-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start; /* Align to the left */
+    }
+
+    .pool-card {
+        width: 20%; /* Set the width to 48% */
+        padding: 15px;
+        margin: 10px; /* Add margin between cards */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+        .pool-card:hover {
+            transform: scale(1.05);
+        }
+
+        .pool-card h4 {
+            margin-bottom: 10px;
+        }
+
+        .pool-card p {
+            margin: 5px 0;
+        }
+</style>
+<BitcoinPool1Admin OnPoolAdded="RefreshPools"></BitcoinPool1Admin>
+@if (Pools == null)
+{
+    <p>Loading...</p>
+}
+else if (!Pools.Any())
+{
+    <p>No pools found.</p>
+}
+else
+{
+    <div class="pools-container">
+        @foreach (var pool in Pools)
+        {
+            <div class="pool-card">
+                <h4>@pool.PoolName</h4>
+                <p><strong>Current Balance:</strong> @pool.PoolCurrentBalance BTC</p>
+                <p><strong>Date Refilled:</strong> @pool.Daterefilled.ToShortDateString()</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<BitcoinPool> Pools { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await recall();
+    }
+
+    private async Task RefreshPools() // Add this method
+    {
+        await recall(); // Refresh the pool list
+    }
+
+    public async Task recall()
+    {
+        Pools = await _bitcooinPoolInterface.GetPools();
+    }
+}

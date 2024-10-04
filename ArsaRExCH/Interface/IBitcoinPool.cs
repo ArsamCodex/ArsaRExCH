@@ -6,5 +6,6 @@ namespace ArsaRExCH.Interface
     {
         Task InitBitcoinPool(BitcoinPool bitcoinPool);
         Task EditPool(BitcoinPool bitcoinPool);
+        Task<List<BitcoinPool>> GetPools();
     }
 }
