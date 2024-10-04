@@ -8,8 +8,6 @@
 @inject HttpClient Http
 @using System.Text.Json
 @using Microsoft.AspNetCore.Identity
-@inject RoleManager<IdentityRole> RoleManager
-@inject UserManager<ApplicationUser> UserManager
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 
 @if (currentUserRole == "Admin")
@@ -64,7 +62,7 @@ else
     private string[] links = new string[]
     {
         "/BannedCountry", "/UserInformation", "/Add Pair", "/BetListAdmin", "/RoleManagerAdmin",
-        "/AirDropFaq", "/AdminPost", "/page8", "/page9", "/page10",
+        "/AirDropFaq", "/AdminPost", "/BitcoinPoolOne", "/page9", "/page10",
         "/page11", "/page12", "/page13", "/page14", "/page15"
     };
 

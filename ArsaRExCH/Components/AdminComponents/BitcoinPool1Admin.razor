@@ -1,0 +1,61 @@
+﻿@inject NavigationManager NavigationManager
+@using System.Security.Claims
+@using ArsaRExCH.Model
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@inject ArsaRExCH.Interface.IBitcoinPool _bitcoinPool
+
+<h3>Add New BitcoinPool</h3>
+<EditForm Model="bitcoinPool" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="poolName">Pool Name</label>
+        <InputText @bind-Value="bitcoinPool.PoolName" id="poolName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="poolCurrentBalance">Current Balance</label>
+        <InputNumber @bind-Value="bitcoinPool.PoolCurrentBalance" id="poolCurrentBalance" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="daterefilled">Date Refilled</label>
+        <InputDate @bind-Value="bitcoinPool.Daterefilled" id="daterefilled" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</EditForm>
+<p>@Message</p>
+@code {
+    private string user2 { get; set; }
+    private string currentUserRole;
+    private bool isAdmin;
+    public BitcoinPool bitcoinPool = new BitcoinPool();
+    private string Message{ get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Check if the user is an admin directly here
+
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var roles = await _adminInterface.GetUserRolesAsync(user);
+            // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+            isAdmin = roles.Contains("Admin");
+            currentUserRole = roles.FirstOrDefault();
+        }
+
+    }
+    private async Task HandleValidSubmit()
+    {
+        await _bitcoinPool.InitBitcoinPool(bitcoinPool);
+        Message = "Bitcoin Pool Addes Successfully";
+    }
+}
