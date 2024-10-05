@@ -27,7 +27,7 @@
             <InputDate @bind-Value="bitcoinPool.Daterefilled" id="daterefilled" class="form-control" />
         </div>
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary">Add Pool</button>
     </EditForm>
 </div>
 <p>@Message</p>
@@ -61,7 +61,7 @@
     private async Task HandleValidSubmit()
     {
         await _bitcoinPoolInterface.InitBitcoinPool(bitcoinPool);
-        Message = "Bitcoin Pool Addes Successfully";
+      //  Message = "Bitcoin Pool Addes Successfully";
         await OnPoolAdded.InvokeAsync();
     }
 }
