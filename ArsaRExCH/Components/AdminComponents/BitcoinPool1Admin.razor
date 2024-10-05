@@ -60,6 +60,7 @@
     }
     private async Task HandleValidSubmit()
     {
+        bitcoinPool.AdminUserId = user2;
         await _bitcoinPoolInterface.InitBitcoinPool(bitcoinPool);
       //  Message = "Bitcoin Pool Addes Successfully";
         await OnPoolAdded.InvokeAsync();

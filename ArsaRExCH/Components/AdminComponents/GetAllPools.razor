@@ -21,7 +21,7 @@
     }
 
     .pool-card {
-        width: 20%; /* Set the width to 48% */
+        width: 25%; /* Set the width to 48% */
         padding: 15px;
         margin: 10px; /* Add margin between cards */
         border: 1px solid #ccc;
@@ -36,7 +36,6 @@
         }
 
         .pool-card h4 {
-            margin-bottom: 10px;
         }
 
         .pool-card p {
@@ -60,7 +59,9 @@ else
             <div class="pool-card">
                 <h4>@pool.PoolName</h4>
                 <p><strong>Current Balance:</strong> @pool.PoolCurrentBalance BTC</p>
-                <p><strong>Date Refilled:</strong> @pool.Daterefilled.ToShortDateString()</p>
+                <p><strong>IsPool Active</strong> : @pool.IsPoolActive</p>
+                <p><strong>OpenedBy: @pool.AdminUserId.ToString().Substring(Math.Max(0, pool.AdminUserId.ToString().Length - 6))</strong></p>
+
             </div>
         }
     </div>
@@ -68,27 +69,11 @@ else
 
 @code {
     private List<BitcoinPool> Pools { get; set; }
-    private string user2 { get; set; }
-    private string currentUserRole;
-    private bool isAdmin;
+
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-        var user = authState.User;
-
-        if (user.Identity?.IsAuthenticated ?? false)
-        {
-            // Check if the user is an admin directly here
-
-            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-            var roles = await _adminInterface.GetUserRolesAsync(user);
-            // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
-            isAdmin = roles.Contains("Admin");
-            currentUserRole = roles.FirstOrDefault();
-            await recall();
-        }
+        await recall();
        
     }
 
