@@ -1,0 +1,91 @@
+﻿@page "/BitcoinPoolOneUsers"
+@rendermode InteractiveServer
+@using ArsaRExCH.Model
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject ArsaRExCH.Interface.IBitcoinPool _bitcoinPools
+<style>
+    .container {
+        display: flex;
+        justify-content: space-between; /* Space between the two columns */
+        margin: 20px; /* Add some margin for spacing */
+    }
+
+    .form-container, .list-container {
+        width: 48%; /* Adjust width to fit side by side */
+    }
+
+    .pools-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start; /* Align to the left */
+    }
+
+    .pool-card {
+        width: 25%; /* Set the width to 48% */
+        padding: 15px;
+        margin: 10px; /* Add margin between cards */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+        .pool-card:hover {
+            transform: scale(1.05);
+        }
+
+        .pool-card h4 {
+        }
+
+        .pool-card p {
+            margin: 5px 0;
+        }
+</style>
+<BitcoinPool1Admin OnPoolAdded="RefreshPools"></BitcoinPool1Admin>
+@if (bitcoinPools == null)
+{
+    <p>Loading...</p>
+}
+else if (!bitcoinPools.Any())
+{
+    <p>No pools found.</p>
+}
+else
+{
+    <div class="pools-container">
+        @foreach (var pool in bitcoinPools)
+        {
+            <div class="pool-card">
+                <h4>@pool.PoolName</h4>
+                <p><strong>Current Balance:</strong> @pool.PoolCurrentBalance BTC</p>
+                <p><strong>IsPool Active</strong> : @pool.IsPoolActive</p>
+                <p><strong>OpenedBy: @pool.AdminUserId.ToString().Substring(Math.Max(0, pool.AdminUserId.ToString().Length - 6))</strong></p>
+
+            </div>
+        }
+    </div>
+}
+@code {
+    public List<BitcoinPool> bitcoinPools = new List<BitcoinPool>();
+    public string user2{ get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Check if the user is an admin directly here
+
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            bitcoinPools = await _bitcoinPools.GetPools();
+
+
+        }
+    }
+}

@@ -11,22 +11,18 @@
     <EditForm Model="bitcoinPool" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
-
         <div class="form-group">
             <label for="poolName">Pool Name</label>
             <InputText @bind-Value="bitcoinPool.PoolName" id="poolName" class="form-control" />
         </div>
-
         <div class="form-group">
             <label for="poolCurrentBalance">Current Balance</label>
             <InputNumber @bind-Value="bitcoinPool.PoolCurrentBalance" id="poolCurrentBalance" class="form-control" />
         </div>
-
         <div class="form-group">
             <label for="daterefilled">Date Refilled</label>
             <InputDate @bind-Value="bitcoinPool.Daterefilled" id="daterefilled" class="form-control" />
         </div>
-
         <button type="submit" class="btn btn-primary">Add Pool</button>
     </EditForm>
 </div>
@@ -61,6 +57,7 @@
     private async Task HandleValidSubmit()
     {
         bitcoinPool.AdminUserId = user2;
+        bitcoinPool.PoolOpenedDate = DateTime.Now;
         await _bitcoinPoolInterface.InitBitcoinPool(bitcoinPool);
       //  Message = "Bitcoin Pool Addes Successfully";
         await OnPoolAdded.InvokeAsync();

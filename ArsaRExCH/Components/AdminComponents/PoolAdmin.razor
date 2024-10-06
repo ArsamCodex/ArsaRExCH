@@ -1,5 +1,4 @@
-﻿@page "/BitcoinPoolOne"
-@attribute [Authorize]
+﻿@page "/PoolAdmin"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
@@ -7,8 +6,11 @@
 @using ArsaRExCH.Model
 @using ArsaRExCH.Components.Pages
 @using ArsaRExCH.Components.MyComponents
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 
 <ArsaRExCH.Components.AdminComponents.GetAllPools></ArsaRExCH.Components.AdminComponents.GetAllPools>
+
+
 @code {
 
 }
