@@ -13,5 +13,6 @@
         /*track adminID*/
         public string AdminUserId { get; set; }
         public DateTime? PoolOpenedDate { get; set; }
+        public List<BitcoinPoolTransactions> Transactions { get; set; }
     }
 }

@@ -34,6 +34,27 @@ namespace ArsaRExCH.InterfaceIMPL
             }
         }
 
+        public async Task<List<BitcoinPoolTransactions>> GetBitcoinPoolTransactions()
+        {
+            try
+            {
+                using var _context = _dbContextFactory.CreateDbContext();
+
+                // Retrieve all pools
+                return await _context.poolTransactions.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (if necessary) and handle it accordingly
+                Console.WriteLine($"An error occurred while retrieving pools: {ex.Message}");
+
+                // Return an empty list or handle as per your requirement
+                throw new Exception("Error Get Pools", ex);
+
+            }
+
+        }
+
         public async Task<List<BitcoinPool>> GetPools()
         {
             try
