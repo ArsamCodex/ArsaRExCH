@@ -18,7 +18,7 @@
             @for (int i = 0; i < divNames.Length; i++)
             {
                 <div class="grid-item">
-                    @divNames[i]: <a href="@links[i]">@links[i]</a>
+                    @divNames[i] <a href="@links[i]">@links[i]</a>
                 </div>
             }
         </div>
@@ -43,6 +43,12 @@ else
         text-align: center; /* Center text */
         border-radius: 5px; /* Rounded corners */
         height: 100px; /* Fixed height for each div */
+
+    }
+
+        .grid-item:hover {
+        transform: scale(1.05);
+        background-color:lightyellow;
     }
 </style>
 <p>Is admin :@currentUserRole</p>
@@ -54,15 +60,15 @@ else
 
     private string[] divNames = new string[]
     {
-        "Div One", "Div Two", "Div Three", "Div Four", "Div Five",
+        "", "", "", "", "",
         "Div Six", "Div Seven", "Div Eight", "Div Nine", "Div Ten",
         "Div Eleven", "Div Twelve", "Div Thirteen", "Div Fourteen", "Div Fifteen"
     };
 
     private string[] links = new string[]
     {
-        "/BannedCountry", "/UserInformation", "/Add Pair", "/BetListAdmin", "/RoleManagerAdmin",
-        "/AirDropFaq", "/AdminPost", "/PoolAdmin", "/BitcoinPoolOneUsers", "/page10",
+        "BannedCountry", "UserInformation", "Add Pair", "BetListAdmin", "RoleManagerAdmin",
+        "AirDropFaq", "AdminPost", "PoolAdmin", "BitcoinPoolOneUsers", "/page10",
         "/page11", "/page12", "/page13", "/page14", "/page15"
     };
 
@@ -81,18 +87,7 @@ else
             // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
             isAdmin = roles.Contains("Admin");
             currentUserRole = roles.FirstOrDefault();
-
-
-        }
-        for (int i = 0; i < divNames.Length; i++)
-        {
-            Console.WriteLine($"Div {i}: Name = {divNames[i]}, Link = {links[i]}");//debug
         }
     }
-
-
-
-
-
 }
 
