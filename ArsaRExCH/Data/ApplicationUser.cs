@@ -12,7 +12,9 @@ namespace ArsaRExCH.Data
         public List<UserDatesRecord> UserLoginDates { get; set; } = new List<UserDatesRecord>();
         public List<AirDrop> UserAirdops { get; set; } = new List<AirDrop>();
         public ICollection<Post> Posts { get; set; }
-       
+
+        public List<LiveChat> liveChats { get; set; } = new List<LiveChat>();
+
 
 
 

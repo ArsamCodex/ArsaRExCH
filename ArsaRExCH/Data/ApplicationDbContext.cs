@@ -17,6 +17,7 @@ namespace ArsaRExCH.Data
         public DbSet<AirDropFaq> airDropFaqs { get; set; }
         public DbSet<UserDatesRecord> UserDatesRecords { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
+        public DbSet<LiveChat> lifeChat { get; set; }
         public DbSet<Bet> Bet { get; set; }
         public DbSet<AirDrop> AirDrops { get; set; }
         public DbSet<Post> Post { get; set; }

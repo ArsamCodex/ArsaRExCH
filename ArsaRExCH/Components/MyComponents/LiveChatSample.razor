@@ -1,0 +1,15 @@
+﻿@page "/"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject HttpClient Http
+@attribute [Authorize]
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+
+    }
+}
