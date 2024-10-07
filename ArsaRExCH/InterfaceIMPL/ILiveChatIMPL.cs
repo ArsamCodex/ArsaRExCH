@@ -31,6 +31,7 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 using var _context = dbContextFactory.CreateDbContext();
                 await _context.lifeChat.AddAsync(liveChat);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
