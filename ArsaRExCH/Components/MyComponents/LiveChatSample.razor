@@ -1,5 +1,4 @@
-﻿@page "/chat"
-@using System.Security.Claims
+﻿@using System.Security.Claims
 @using ArsaRExCH.Model
 @using Microsoft.AspNetCore.Authorization
 @inject AuthenticationStateProvider _AuthenticationStateProvider
@@ -7,6 +6,11 @@
 @inject ArsaRExCH.Interface.ILiveChat _liveCHatInterface
 @rendermode InteractiveServer
 @attribute [Authorize]
+
+<div class="form-group mt-3">
+    <label for="chat-box">Chat Messages</label>
+    <textarea id="chat-box" class="form-control" rows="10" readonly>@Messages</textarea>
+</div>
 
 <EditForm Model="@lifeChat" OnValidSubmit="SaveMessage" FormName="@FormName">
     <DataAnnotationsValidator />
@@ -19,11 +23,16 @@
 
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
+<p>@messagetoshow</p>
 
 @code {
-    private LiveChat lifeChat = new LiveChat(); 
+    private LiveChat lifeChat = new LiveChat();
+    private List<LiveChat> liveChats = new List<LiveChat>();
     private string user2 { get; set; }
     private string FormName = "Live Chat Form";
+    private string Messages = ""; // To store and display messages
+    private CancellationTokenSource _cancellationTokenSource;
+    public string messagetoshow { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -34,13 +43,58 @@
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
         }
 
-    }
-    private async Task SaveMessage()
+        await LoadMessages();
 
+        // Start the refresh task
+        _cancellationTokenSource = new CancellationTokenSource();
+        _ = RefreshMessagesAsync(_cancellationTokenSource.Token);
+    }
+
+    private async Task RefreshMessagesAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); // Wait for 5 seconds
+            await LoadMessages();
+            Console.WriteLine("refreshd DOne");
+            messagetoshow = "Refreshed"; // Update message
+            StateHasChanged(); // Ensure UI refreshes after each API call
+        }
+    }
+
+    private async Task SaveMessage()
     {
         lifeChat.TimeAndDate = DateTime.Now;
         lifeChat.ApplicationUserId = user2;
-        await  _liveCHatInterface.SaveMessage(lifeChat);
-        Console.WriteLine("datasaves");
+        await _liveCHatInterface.SaveMessage(lifeChat);
+        await LoadMessages();
+        lifeChat = new LiveChat();
+    }
+
+    private async Task LoadMessages()
+    {
+        // Retrieve all messages from the database
+        liveChats = await _liveCHatInterface.GetAllMessages();
+
+        // Clear the existing content
+        Messages = "";
+
+        // Append each message to the text area
+        foreach (var chat in liveChats.OrderBy(x => x.TimeAndDate))
+        {
+            // Take the last 6 characters of the ApplicationUserId string
+            string userIdLastSix = chat.ApplicationUserId.Length > 6
+                                   ? chat.ApplicationUserId.Substring(chat.ApplicationUserId.Length - 6)
+                                   : chat.ApplicationUserId;
+
+            Messages += $"{userIdLastSix}:({chat.TimeAndDate}) : {chat.Message} \n";
+        }
+    }
+
+    public void Dispose()
+    {
+        // Dispose the cancellation token source when the component is disposed
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
     }
 }
