@@ -2,13 +2,15 @@
 @inject NavigationManager NavigationManager
 @inject ArsaRExCH.Interface.PostNadReplyInterface _interface
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
-
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @using ArsaRExCH.Model
 @using ArsaRExCH.Components.Pages
 @using ArsaRExCH.Components.MyComponents
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
+@attribute [Authorize]
+
 <h3>Create New Post</h3>
 
 @if (isAdmin)
@@ -62,26 +64,15 @@ else
 
     private async Task SubmitPost()
     {
-        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        // Check if the user is authenticated as admin
-        if (user.Identity?.IsAuthenticated == true && user.IsInRole("Admin"))
-        {
+       
             newPost.CreatedAt = DateTime.Now;
-            newPost.ApplicationUserId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            newPost.ApplicationUserId = user2;
 
             // Call the CreatePostAsync method without assigning to a variable
             await _interface.CreatePostAsync(newPost);
-
-            // Show success message and reset the form
             message = "Post created successfully!";
             newPost = new Post(); // Reset the form
-        }
-        else
-        {
-            message = "You are not authorized to create a post.";
-        }
+       
     }
     protected override async Task OnInitializedAsync()
     {
@@ -98,8 +89,6 @@ else
             // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
             isAdmin = roles.Contains("Admin");
             currentUserRole = roles.FirstOrDefault();
-
-
         }
      
     }

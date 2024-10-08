@@ -184,7 +184,9 @@ namespace ArsaRExCH.InterfaceIMPL
                     string countryCode = geoData.countryCode; // This will give you the country code
                     string countryCodeFirstThreeChars = countryCode.Length >= 3 ? countryCode.Substring(0, 3) : countryCode;
 
-                    return $"{externalIp} - {countryCodeFirstThreeChars}"; // Return IP and first three chars of country code
+                    //  return $"{externalIp} - {countryCodeFirstThreeChars}"; // Return IP and first three chars of country code
+                    return $"{countryCodeFirstThreeChars}"; // Return IP and first three chars of country code
+
                 }
                 catch (Exception ex)
                 {
