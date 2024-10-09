@@ -80,7 +80,7 @@
         Messages = "";
 
         // Append each message to the text area
-        foreach (var chat in liveChats.OrderBy(x => x.TimeAndDate))
+        foreach (var chat in liveChats.OrderByDescending(x => x.TimeAndDate))
         {
             // Take the last 6 characters of the ApplicationUserId string
             string userIdLastSix = chat.ApplicationUserId.Length > 6
