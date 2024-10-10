@@ -36,11 +36,6 @@ namespace ArsarExTest
             var ipService = new UserInterfaceIMPL( dbContextFactory); // Pass both context and factory
 
             var expectedIpAddress = "123.456.789.101";
-
-            // Optionally seed the database if needed
-            // Example: context.IpAddresses.Add(new IpAddress { Address = expectedIpAddress });
-            // await context.SaveChangesAsync();
-
             // Act
             var result = await ipService.GetPublicIpAddress();
 
