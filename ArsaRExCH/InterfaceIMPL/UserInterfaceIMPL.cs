@@ -13,11 +13,9 @@ namespace ArsaRExCH.InterfaceIMPL
 {
     public class UserInterfaceIMPL : UserIpInterface
     {
-        private readonly ApplicationDbContext _context;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
-        public UserInterfaceIMPL(ApplicationDbContext context, IDbContextFactory<ApplicationDbContext> dbContext)
+        public UserInterfaceIMPL( IDbContextFactory<ApplicationDbContext> dbContext)
         {
-            _context = context;
             _dbContext = dbContext;
         }
 
