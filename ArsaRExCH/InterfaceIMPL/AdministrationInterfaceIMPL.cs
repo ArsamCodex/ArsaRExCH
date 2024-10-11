@@ -28,6 +28,12 @@ namespace ArsaRExCH.InterfaceIMPL
         }
         public async Task AddBannCountries(BanedCountries banedCountries)
         {
+            // Check if banedCountries is null and throw ArgumentNullException
+            if (banedCountries == null)
+            {
+                throw new ArgumentNullException(nameof(banedCountries), "BanedCountries cannot be null.");
+            }
+
             try
             {
                 // Create a new context from the factory

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace ArsarExTest
 {
@@ -86,7 +87,105 @@ namespace ArsarExTest
                 null,
                 logger);
         }
+        [Fact]
+        public async Task AddBannCountries_ShouldThrowException_WhenDatabaseErrorOccurs()
+        {
+            // Arrange
+            var dbContextFactory = new InMemoryDbContextFactory();
+            var logger = new Logger<AdministrationInterfaceIMPL>(new LoggerFactory());
+            var priceInterface = _priceInterface; // Assume this is defined
+            var userManager = _userManager; // Implement a test UserManager if needed
 
-      
+            var adminInterface = new AdministrationInterfaceIMPL(priceInterface, dbContextFactory, userManager);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => adminInterface.AddBannCountries(null));
+
+            // Assert: Check that the exception message is as expected
+            Assert.Contains("BanedCountries cannot be null", exception.Message);
+        }
+        [Fact]
+        public async Task AllUsers_ShouldReturnAllUsers_WhenUsersExist()
+        {
+            // Arrange
+            var dbContextFactory = new InMemoryDbContextFactory();
+            var logger = new Logger<AdministrationInterfaceIMPL>(new LoggerFactory());
+            var priceInterface = _priceInterface; // Assume this is defined
+            var userManager = _userManager; // Implement a test UserManager if needed
+
+            var adminInterface = new AdministrationInterfaceIMPL(priceInterface, dbContextFactory, userManager);
+
+            // Adding test users to the in-memory database
+            using (var context = dbContextFactory.CreateDbContext())
+            {
+                context.Users.Add(new ApplicationUser { Id = "1", UserName = "User1" });
+                context.Users.Add(new ApplicationUser { Id = "2", UserName = "User2" });
+                context.SaveChanges();
+            }
+
+            // Act
+            var result = await adminInterface.AllUsers();
+
+            // Assert
+            Assert.NotNull(result); // Check if result is not null
+            Assert.Equal(2, result.Count); // Check if we have 2 users
+            Assert.Contains(result, user => user.UserName == "User1"); // Check if User1 is in the result
+            Assert.Contains(result, user => user.UserName == "User2"); // Check if User2 is in the result
+        }
+
+        [Fact]
+        public async Task AllUsers_ShouldReturnEmptyList_WhenNoUsersExist()
+        {
+            // Arrange
+            var dbContextFactory = new InMemoryDbContextFactory();
+            var logger = new Logger<AdministrationInterfaceIMPL>(new LoggerFactory());
+            var priceInterface = _priceInterface; // Assume this is defined
+            var userManager = _userManager; // Implement a test UserManager if needed
+
+            var adminInterface = new AdministrationInterfaceIMPL(priceInterface, dbContextFactory, userManager);
+
+            using (var context = dbContextFactory.CreateDbContext())
+            {
+                context.airDropFaqs.AddRange(new List<AirDropFaq>
+            {
+                new AirDropFaq { AirDropFaqId = 1, Message = "What is an airdrop?", time = DateTime.Now },
+                new AirDropFaq { AirDropFaqId = 2, Message = "How do I participate?", time = DateTime.Now }
+            });
+                await context.SaveChangesAsync();
+            }
+        }
+        [Fact]
+        public async Task GetAllAirDropFaq_ShouldReturnAllFaqs_WhenDataExists()
+        {
+            // Arrange
+            var dbContextFactory = new InMemoryDbContextFactory();
+            var priceInterface = _priceInterface; // Assume this is defined
+            var userManager = _userManager; // Implement a test UserManager if needed
+
+            var adminInterface = new AdministrationInterfaceIMPL(priceInterface, dbContextFactory, userManager);
+
+            // Seed the in-memory database with sample data
+            using (var context = dbContextFactory.CreateDbContext())
+            {
+                context.airDropFaqs.AddRange(new List<AirDropFaq>
+            {
+                new AirDropFaq { AirDropFaqId = 1, Message = "What is an airdrop?", time = DateTime.Now },
+                new AirDropFaq { AirDropFaqId = 2, Message = "How do I participate?", time = DateTime.Now }
+            });
+                await context.SaveChangesAsync();
+            }
+
+            // Act
+            var result = await adminInterface.GetAllAirDropFaq();
+
+            // Assert
+            Assert.NotNull(result); // Ensure the result is not null
+            Assert.Equal(2, result.Count); // Ensure it returns the correct number of items
+            Assert.Equal("What is an airdrop?", result[0].Message); 
+            Assert.Equal("How do I participate?", result[1].Message); 
+        }
+
+
+
     }
+
 }
