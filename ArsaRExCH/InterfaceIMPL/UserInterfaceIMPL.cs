@@ -77,11 +77,6 @@ namespace ArsaRExCH.InterfaceIMPL
 
             return results;
         }
-
-
-
-
-
         public async Task<string> CheckIfIpIsBanned(string userIpAddress)
         {
             try

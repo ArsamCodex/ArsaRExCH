@@ -10,24 +10,20 @@ namespace ArsaRExCH.InterfaceIMPL
 {
     public class AdministrationInterfaceIMPL : AdministrationInterface
     {
-        private readonly IConfiguration _configuration;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<BetInterfaceIMPL> _logger;
+
+
+
         private readonly PriceInterface _priceInterface;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
-        private readonly RoleManager<IdentityRole> RoleManager;
         private readonly UserManager<ApplicationUser> UserManager;
-        public AdministrationInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetInterfaceIMPL> logger,
-                         SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContext, RoleManager<IdentityRole> _RoleManager, UserManager<ApplicationUser> _UserManager)
+        public AdministrationInterfaceIMPL(
+                         PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContext, UserManager<ApplicationUser> _UserManager)
         {
-            _logger = logger;
-            _context = context;
-            _configuration = configuration;
-            _signInManager = signInManager;
+
+
             _priceInterface = priceInterface;
             _dbContext = dbContext;
-            RoleManager = _RoleManager;
+
             UserManager = _UserManager;
         }
         public async Task AddBannCountries(BanedCountries banedCountries)
@@ -36,7 +32,6 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 // Create a new context from the factory
                 using var context = _dbContext.CreateDbContext();
-
                 await context.AddAsync(banedCountries);
                 await context.SaveChangesAsync();
             }
