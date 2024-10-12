@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArsaRExCH", "ArsaRExCH\Arsa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArsaRExCH.Client", "ArsaRExCH.Client\ArsaRExCH.Client.csproj", "{2E380C3B-B4A6-4F3C-A0DA-5C2660B64BD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArsarExTest", "ArsarExTest\ArsarExTest.csproj", "{C06E6308-4CD0-4A72-9CC3-9684A4F092CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArsarExTest", "ArsarExTest\ArsarExTest.csproj", "{C06E6308-4CD0-4A72-9CC3-9684A4F092CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{886F3E40-2B8B-45FB-9D75-1357FBF1DDC9}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
