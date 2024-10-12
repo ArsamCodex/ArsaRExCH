@@ -183,9 +183,55 @@ namespace ArsarExTest
             Assert.Equal("What is an airdrop?", result[0].Message); 
             Assert.Equal("How do I participate?", result[1].Message); 
         }
+        [Fact]
+        public async Task GetAllBannedCountriesInDatabase_ShouldReturnAllBannedCountries_WhenDataExists()
+        {
+            // Arrange
+            var dbContextFactory = new InMemoryDbContextFactory();
+            var priceInterface = _priceInterface; // Assume this is defined
+            var userManager = _userManager; // Implement a test UserManager if needed
 
+            var adminInterface = new AdministrationInterfaceIMPL(priceInterface, dbContextFactory, userManager);
 
+            // Seed the in-memory database with sample data
+            using (var context = dbContextFactory.CreateDbContext())
+            {
+                context.BanedCountris.AddRange(new List<BanedCountries>
+            {
+                new BanedCountries { BanedCountriesId = 1, CountryName = "Country A", IpAdressToBann = "123" },
+                new BanedCountries { BanedCountriesId = 2, CountryName = "Country B", IpAdressToBann = "456" }
+            });
+                await context.SaveChangesAsync();
+            }
+
+            // Act
+            var result = await adminInterface.GetAllBannedCountriesInDatabase();
+
+            // Assert
+            Assert.NotNull(result); // Ensure the result is not null
+            Assert.Equal(2, result.Count); // Ensure it returns the correct number of items
+            Assert.Equal("Country A", result[0].CountryName); // Validate first country's name
+            Assert.Equal("Country B", result[1].CountryName); // Validate second country's name
+        }
+
+        [Fact]
+        public async Task GetAllBannedCountriesInDatabase_ShouldThrowException_WhenDbContextIsNull()
+        {
+            // Arrange
+            IDbContextFactory<ApplicationDbContext> dbContextFactory = null; // Set the dbContextFactory to null
+            var priceInterface = _priceInterface; // Assume this is defined
+            var userManager = _userManager; // Implement a test UserManager if needed
+
+            var adminInterface = new AdministrationInterfaceIMPL(priceInterface, dbContextFactory, userManager);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => adminInterface.GetAllBannedCountriesInDatabase());
+            Assert.Equal("Value cannot be null. (Parameter '_dbContext')", exception.Message);
+
+        }
 
     }
 
+
 }
+
+

@@ -77,6 +77,8 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<List<BanedCountries>> GetAllBannedCountriesInDatabase()
         {
+            if (_dbContext == null)
+                throw new ArgumentNullException(nameof(_dbContext), "Value cannot be null.");
             try
             {
                 using var context = _dbContext.CreateDbContext();
@@ -84,9 +86,10 @@ namespace ArsaRExCH.InterfaceIMPL
             }
             catch (Exception ex)
             {
-                throw new Exception("Error to get List of Baanned countries", ex);
+                throw new Exception("Error to get List of Banned countries", ex);
             }
         }
+
 
         public async Task<List<UserDatesRecord>> GetAllUserDates(string userID)
         {
