@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@rendermode InteractiveServer
+@attribute [Authorize]
+@using ArsaRExCH.Model
+<p>@adminWarningMessage.Message</p>
+@code {
+    public AdminWarningMessage adminWarningMessage = new AdminWarningMessage();
+    protected override async Task OnInitializedAsync()
+    {
+        var datetoday = DateTime.Now.Date;
+        adminWarningMessage =await _adminInterface.GetAdminWarningMessage(datetoday);
+    }
+}
+
+

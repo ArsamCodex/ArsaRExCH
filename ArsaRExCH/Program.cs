@@ -32,6 +32,8 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 builder.Services.AddHostedService<BackgroundServiceForBetResault>();
+builder.Services.AddHostedService<DaailyMessageChedcker>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
 builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();

@@ -134,7 +134,7 @@ namespace ArsaRExCH.StaticsHelper
                 await Task.Delay(delay, stoppingToken);
 
                 // Perform your scheduled task here
-                await RunMyMethod();
+          
 
             }
         }
@@ -150,6 +150,14 @@ namespace ArsaRExCH.StaticsHelper
             }
             return next0000AM - now;
         }
+
+
+
+
+
+
+
+
 
         private class CryptoPriceResponse
         {

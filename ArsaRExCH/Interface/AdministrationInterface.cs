@@ -14,7 +14,9 @@ namespace ArsaRExCH.Interface
         Task<List<UserDatesRecord>> GetAllUserDates(string userID);
         Task<List<AirDropFaq>> GetAllAirDropFaq();
         Task<List<string>> GetUserRolesAsync(ClaimsPrincipal user);
-
+        Task AddAdminWarningMessage(AdminWarningMessage adminWarningMessage);
+        Task<AdminWarningMessage> GetAdminWarningMessage(DateTime date);
+        Task DeleteAdminWarning(string id);
 
     }
 }

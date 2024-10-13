@@ -4,6 +4,7 @@ using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using NBitcoin.Secp256k1;
 using System.Security.Claims;
 
 namespace ArsaRExCH.InterfaceIMPL
@@ -26,6 +27,30 @@ namespace ArsaRExCH.InterfaceIMPL
 
             UserManager = _UserManager;
         }
+
+        public async Task AddAdminWarningMessage(AdminWarningMessage adminWarningMessage)
+        {
+       
+            if (adminWarningMessage == null)
+            {
+                throw new ArgumentNullException(nameof(adminWarningMessage), "BanedCountries cannot be null.");
+            }
+            try
+            {
+                // Create a new context from the factory
+                using var _context = _dbContext.CreateDbContext();
+                await _context.AddAsync(adminWarningMessage);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (you can adjust this to your logging mechanism)
+                Console.WriteLine($"Error adding banned country: {ex.Message}");
+                throw new Exception("An unexpected error occurred while saving the Admin  Message.", ex);
+            }
+
+        }
+
         public async Task AddBannCountries(BanedCountries banedCountries)
         {
             // Check if banedCountries is null and throw ArgumentNullException
@@ -61,6 +86,35 @@ namespace ArsaRExCH.InterfaceIMPL
                 throw new Exception("Some Problem");
             }
         }
+        public async Task DeleteAdminWarning(string id)
+        {
+            using var _context = _dbContext.CreateDbContext();
+            // Find the AdminWarning entity by its ID
+            var warning = await _context.adminWarningMessages.FindAsync(id);
+
+            // If the warning is not found, throw an exception or handle it accordingly
+            if (warning == null)
+            {
+                throw new KeyNotFoundException($"Warning with ID '{id}' was not found.");
+            }
+
+            // Remove the warning from the database context
+            _context.adminWarningMessages.Remove(warning);
+
+            // Save the changes to the database
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<AdminWarningMessage> GetAdminWarningMessage(DateTime date)
+        {
+            using var _context = _dbContext.CreateDbContext();
+
+            // Fetch the message for the specified date
+            return await _context.adminWarningMessages
+                .Where(c => c.time.Date == date) // Assuming 'time' is a DateTime field
+                .FirstOrDefaultAsync();
+        }
+
 
         public async Task<List<AirDropFaq>> GetAllAirDropFaq()
         {
