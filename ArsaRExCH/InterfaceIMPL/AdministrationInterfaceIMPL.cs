@@ -30,7 +30,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task AddAdminWarningMessage(AdminWarningMessage adminWarningMessage)
         {
-       
+
             if (adminWarningMessage == null)
             {
                 throw new ArgumentNullException(nameof(adminWarningMessage), "BanedCountries cannot be null.");
@@ -99,8 +99,7 @@ namespace ArsaRExCH.InterfaceIMPL
             }
 
             // Remove the warning from the database context
-            _context.adminWarningMessages.Remove(warning);
-
+            warning.IsDeleted = true;
             // Save the changes to the database
             await _context.SaveChangesAsync();
         }
@@ -152,6 +151,17 @@ namespace ArsaRExCH.InterfaceIMPL
                   .Where(ud => ud.ApplicationUserId == userID) // Filter by userID
                   .ToListAsync();
             return userDates;
+        }
+
+        public async Task<string?> GetScheduledMessageAsync()
+        {
+            using var context = _dbContext.CreateDbContext();
+            var message = await context.adminWarningMessages
+                .Where(c => c.IsDeleted == false)
+                .OrderByDescending(m => m.time) // Adjust this as needed
+                .FirstOrDefaultAsync();
+
+            return message?.Message;
         }
 
         public async Task<ApplicationUser> GetUserById(string userId)

@@ -3,14 +3,48 @@
 @rendermode InteractiveServer
 @attribute [Authorize]
 @using ArsaRExCH.Model
-<p>@adminWarningMessage.Message</p>
+
 @code {
-    public AdminWarningMessage adminWarningMessage = new AdminWarningMessage();
+    private string? Message { get; set; }
+    private bool ShowMessage { get; set; }
+    private Timer? _timer;
+    private TimeSpan ShowTime { get; set; } = new TimeSpan(14, 0, 0); // 2:00 PM
+    private TimeSpan HideTime { get; set; } = new TimeSpan(20, 38, 0); // 4:00 PM
+
     protected override async Task OnInitializedAsync()
     {
-        var datetoday = DateTime.Now.Date;
-        adminWarningMessage =await _adminInterface.GetAdminWarningMessage(datetoday);
+        _timer = new Timer(CheckTime, null, 0, 1000); // Check every second
+        await FetchMessageAsync();
+    }
+
+    private async Task FetchMessageAsync()
+    {
+        Message = await _adminInterface.GetScheduledMessageAsync();
+    }
+
+    private void CheckTime(object? state)
+    {
+        var currentTime = DateTime.Now.TimeOfDay;
+        if (currentTime >= ShowTime && currentTime < HideTime)
+        {
+            ShowMessage = true;
+        }
+        else
+        {
+            ShowMessage = false;
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
     }
 }
 
-
+@if (ShowMessage && Message != null)
+{
+    <div class="alert alert-info">
+        @Message
+    </div>
+}
