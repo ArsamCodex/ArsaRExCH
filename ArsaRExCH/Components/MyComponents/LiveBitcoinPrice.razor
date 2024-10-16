@@ -1,0 +1,21 @@
+﻿@page "/BtcUsdt" 
+@using ArsaRExCH.StaticsHelper
+@rendermode InteractiveServer
+
+<ArsaRExCH.Components.Pages.BtcPrice>
+    <BitcoinUSDTTrade></BitcoinUSDTTrade>
+</ArsaRExCH.Components.Pages.BtcPrice>
+@code {
+    [CascadingParameter(Name = "BtcPrice")]
+    public string BtcPrice { get; set; }
+
+    [CascadingParameter(Name = "EthPrice")]
+    public string EthPrice { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // You can now use BtcPrice and EthPrice as strings in this page
+        Console.WriteLine($"BTC Price: {BtcPrice} USD");
+        Console.WriteLine($"ETH Price: {EthPrice} USD");
+    }
+}

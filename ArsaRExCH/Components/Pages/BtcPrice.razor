@@ -4,6 +4,7 @@
 @using System.Threading.Tasks
 @using System.Net.Http
 @rendermode InteractiveServer
+@inject HttpClient httpClient
 
 
 
@@ -12,13 +13,22 @@
         <p> ETH Price: <b>@ethPrice USD</b></p>
 
     </div>
-
+<CascadingValue Value="@btcPriceString" Name="BtcPrice">
+    <CascadingValue Value="@ethPriceString" Name="EthPrice">
+        @ChildContent
+    </CascadingValue>
+</CascadingValue>
 
 @code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
     private decimal btcPrice;
     private decimal ethPrice;
     private Timer timer;
-    private readonly HttpClient httpClient = new HttpClient();
+
+    private string btcPriceString => btcPrice.ToString("F2"); // Format as string with 2 decimal places
+    private string ethPriceString => ethPrice.ToString("F2"); // Format as string with 2 decimal places
 
     protected override void OnInitialized()
     {
@@ -40,7 +50,7 @@
             var ethPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(ethResponse);
             ethPrice = decimal.Parse(ethPriceData.Price);
 
-           await InvokeAsync(StateHasChanged); // Notify the UI to re-render
+            await InvokeAsync(StateHasChanged); // Notify the UI to re-render
         }
         catch (Exception ex)
         {

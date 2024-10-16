@@ -45,6 +45,12 @@ builder.Services.AddScoped<PostNadReplyInterface, PostNadReplyInterfaceIMPL>();
 builder.Services.AddScoped<IBitcoinPool, IBitcoinPoolIMPL>();
 builder.Services.AddScoped<ILiveChat, ILiveChatIMPL>();
 
+
+
+
+
+
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped(http => new HttpClient
 {
