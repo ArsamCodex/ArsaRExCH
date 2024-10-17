@@ -23,6 +23,7 @@ namespace ArsaRExCH.Data
         public DbSet<AirDrop> AirDrops { get; set; }
         public DbSet<Post> Post { get; set; }
         public DbSet<Reply> Reply { get; set; }
+        public DbSet<Trade> Trade { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Reply>()

@@ -10,8 +10,6 @@ namespace ArsaRExCH.Model
         public string TransactionType { get; set; } // e.g., Deposit, Withdrawal
         public string TxHash { get; set; }
         public string receiverAdress { get; set; }
-        public string UserId { get; set; }
-        public int BitcoinPoolId { get; set; }
-        public BitcoinPool bitcoinPool { get; set; }
+
     }
 }
