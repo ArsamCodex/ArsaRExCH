@@ -3,19 +3,18 @@
 @using System.Threading
 @using System.Threading.Tasks
 @using System.Net.Http
+@inject IHttpClientFactory httpClientFactory
 @rendermode InteractiveServer
-@inject HttpClient httpClient
-
-
 
 <div style="display: flex; gap: 20px;">
-   <p>BTC Price: <b>@btcPrice USD</b></p>
-        <p> ETH Price: <b>@ethPrice USD</b></p>
+    <p>BTC Price: <b>@btcPriceString USD</b></p>
+    <p>ETH Price: <b>@ethPriceString USD</b></p>
+</div>
 
-    </div>
 <CascadingValue Value="@btcPriceString" Name="BtcPrice">
     <CascadingValue Value="@ethPriceString" Name="EthPrice">
         @ChildContent
+
     </CascadingValue>
 </CascadingValue>
 
@@ -27,8 +26,8 @@
     private decimal ethPrice;
     private Timer timer;
 
-    private string btcPriceString => btcPrice.ToString("F2"); // Format as string with 2 decimal places
-    private string ethPriceString => ethPrice.ToString("F2"); // Format as string with 2 decimal places
+    private string btcPriceString => btcPrice.ToString("F2");
+    private string ethPriceString => ethPrice.ToString("F2");
 
     protected override void OnInitialized()
     {
@@ -40,6 +39,9 @@
     {
         try
         {
+            // Use IHttpClientFactory to create an HttpClient instance
+            var httpClient = httpClientFactory.CreateClient();
+
             // Fetch BTC price
             var btcResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
             var btcPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(btcResponse);
@@ -49,6 +51,9 @@
             var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
             var ethPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(ethResponse);
             ethPrice = decimal.Parse(ethPriceData.Price);
+
+            // Log to console for debugging
+            Console.WriteLine($"BTC Price: {btcPrice}, ETH Price: {ethPrice}");
 
             await InvokeAsync(StateHasChanged); // Notify the UI to re-render
         }

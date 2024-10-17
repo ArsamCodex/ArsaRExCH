@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Components
+
+
+@code {
+    [CascadingParameter(Name = "BtcPrice")]
+    public string BtcPrice { get; set; }
+
+    [CascadingParameter(Name = "EthPrice")]
+    public string EthPrice { get; set; }
+}
