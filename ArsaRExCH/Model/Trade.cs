@@ -9,6 +9,7 @@ namespace ArsaRExCH.Model
         public DateTime dateTime { get; set; }
         public double symbolI{ get; set; }
         public double SymbolII { get; set; }
+        /*Here trade fee administrator set fee we need other class and othercall to set this value*/
         public double TradeFee { get; set; }
         public bool IsMarketBuy { get; set; }
         public bool IsTradeDone { get; set; }
