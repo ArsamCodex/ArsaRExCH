@@ -1,40 +1,32 @@
-﻿window.initializeTradingViewChart = (dotNetHelper) => {
+﻿// wwwroot/tradingview.js
+function initializeTradingViewChart(symbol) {
+    if (typeof TradingView === "undefined") {
+        console.error("TradingView is not defined. Please ensure the library is loaded correctly.");
+        return;
+    }
+
     new TradingView.widget({
-        "width": 980,
-        "height": 610,
-        "symbol": "BINANCE:BTCUSDT",
-        "interval": "D",
+        "container_id": "chart-container", // Make sure this matches the div ID
+        "width": "100%",
+        "height": "600px",
+        "symbol": symbol,
+        "interval": "D", // Daily interval
         "timezone": "Etc/UTC",
-        "theme": "light",
+        "theme": "Light",
         "style": "1",
         "locale": "en",
         "toolbar_bg": "#f1f3f6",
         "enable_publishing": false,
         "allow_symbol_change": true,
-        "container_id": "tradingview-chart",
-        "datafeed": new Datafeed(dotNetHelper)
+        "autosize": true
     });
-};
+}
 
-class Datafeed {
-    constructor(dotNetHelper) {
-        this.dotNetHelper = dotNetHelper;
-        this.price = null;
-        this.startPriceTracking();
-    }
-
-    startPriceTracking() {
-        setInterval(() => {
-            // Fetch the current BTC price (you can use any price API)
-            fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")
-                .then(response => response.json())
-                .then(data => {
-                    const currentPrice = data.price;
-                    if (this.price !== currentPrice) {
-                        this.price = currentPrice;
-                        this.dotNetHelper.invokeMethodAsync('UpdatePrice', currentPrice);
-                    }
-                });
-        }, 5000); // Update every 5 seconds
-    }
+function waitForTradingViewAndInitialize(symbol) {
+    const checkLibraryLoaded = setInterval(() => {
+        if (typeof TradingView !== 'undefined') {
+            clearInterval(checkLibraryLoaded);
+            initializeTradingViewChart(symbol);
+        }
+    }, 100); // Check every 100ms
 }

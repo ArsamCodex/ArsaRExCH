@@ -1,31 +1,15 @@
-﻿@page "/BtcCHart"
+﻿
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
-
-<div id="tradingview-chart"></div>
-<p>Current BTC Price: @currentPrice</p>
+<div id="chart-container" style="width: 70%; height: 400px;"></div>
 
 @code {
-    private string currentPrice = "Loading...";
-
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            InitializeTradingViewChart();
+            string symbol = "BTCUSDT"; // Trading pair
+            await JSRuntime.InvokeVoidAsync("waitForTradingViewAndInitialize", symbol);
         }
-    }
-
-    private void InitializeTradingViewChart()
-    {
-        // JavaScript interop to initialize the TradingView chart
-        _ = JSRuntime.InvokeVoidAsync("initializeTradingViewChart", DotNetObjectReference.Create(this));
-    }
-
-    [JSInvokable]
-    public void UpdatePrice(string price)
-    {
-        currentPrice = price;
-        StateHasChanged(); // Refresh the UI
     }
 }
