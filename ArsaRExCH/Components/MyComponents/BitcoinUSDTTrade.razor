@@ -1,8 +1,42 @@
-﻿@using Microsoft.AspNetCore.Components
-<ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
+﻿@using ArsaRExCH.Model
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager Navigation
+
+
+<div style="display: flex; width: 100%;">
+    <!-- TradingViewChart component -->
+    <div style="flex: 0 0 70%; height: 400px;">
+        <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
+    </div>
+
+    <!-- Additional content div -->
+    <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: lightblue">
+        <h5>Orders shows here All</h5>
+    </div>
+</div>
+
+<EditForm Model="@trade" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="symbolI">Symbol I</label>
+        <InputNumber id="symbolI" class="form-control" @bind-Value="trade.symbolI" />
+    </div>
+
+    <div class="form-group">
+        <label for="symbolII">Symbol II</label>
+        <InputNumber id="symbolII" class="form-control" @bind-Value="trade.SymbolII" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+
 <p>@btcPriceVariable</p>
 
 @code {
+    private Trade trade = new Trade();
+
     [CascadingParameter(Name = "BtcPrice")]
     public string BtcPrice { get; set; }
 
@@ -11,6 +45,12 @@
 
     private string btcPriceVariable;
     private string ethPriceVariable;
+
+
+    private void HandleValidSubmit()
+    {
+        
+    }
 
     protected override void OnParametersSet()
     {
