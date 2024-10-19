@@ -7,6 +7,8 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+
+
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
@@ -17,22 +19,33 @@
     </div>
 </div>
 <h5><b>@tradeModel.TradePair</b></h5>
-<EditForm Model="@tradeModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="form-group">
-        <label for="symbolI">BTC Amount</label>
-        <InputNumber id="symbolI" class="form-control" @bind-Value="tradeModel.symbolI" />
+<div style="display: flex;">
+    <div style="width: 20%; margin-right: 10px;">
+        <EditForm Model="@tradeModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label for="symbolI">BTC Amount</label>
+                <InputNumber id="symbolI"
+                             class="form-control"
+                             @bind-Value="tradeModel.symbolI"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+
+
     </div>
 
-  
-
-    <button type="submit" class="btn btn-primary">Submit</button>
-</EditForm>
-
+    <div style="width: 20%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:80px">
+        <!-- Content for the white paper styled div goes here -->
+        <p>To Get :@EstimatedUsdtToGet USDT </p>
+        <p>Your content goes here...</p>
+    </div>
+</div>
+<button type="button" class="btn btn-primary" @onclick="CalcuateUsdtGet">Calculate</button>
 <p>@btcPriceVariable</p>
 <p>@message</p>
-
+<p>Usdt Back :@EstimatedUsdtToGet</p>
 @code {
     private Trade tradeModel = new Trade();
     public string message { get; set; }
@@ -40,25 +53,35 @@
     [CascadingParameter(Name = "BtcPrice")]
     public string BtcPrice { get; set; }
 
+    public double EstimatedUsdtToGet { get; set; }
+
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
 
     private string btcPriceVariable;
     private string ethPriceVariable;
 
+    private async Task CalcuateUsdtGet()
+    {
+        var tt = ConvertStringToDouble(BtcPrice);
+        var usdtBAck = tradeModel.symbolI * tt;
+        EstimatedUsdtToGet = usdtBAck;
+    }
+
     private async Task HandleValidSubmit()
     {
         Console.WriteLine("HandleValidSubmit called."); // Debugging output
 
         var feeFromDbCall = await _tradeInterface.GetTradeFee();
-
+     
+       
         var trade = new Trade
             {
                 TradeId = Guid.NewGuid().ToString(), // Generate a new TradeId
                 TradePair = PairNames.BTCUSDT, // Example value
                 dateTime = DateTime.Now, // Current date and time
                 symbolI = tradeModel.symbolI, // Bound model
-                SymbolII = 1200, // Bound model
+                SymbolII = EstimatedUsdtToGet, // Bound model
                 TradeFee = feeFromDbCall, //call db for dynamic trading fee
                 IsMarketBuy = true,
                 IsTradeDone = false,
@@ -110,4 +133,24 @@
         Console.WriteLine($"BTC Price received: {btcPriceVariable}");
         Console.WriteLine($"ETH Price received: {ethPriceVariable}");
     }
+    public double ConvertStringToDouble(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            Console.WriteLine("Input string is null or empty.");
+            return 0; // Or throw an exception based on your requirements
+        }
+
+        double result;
+        if (double.TryParse(input, out result))
+        {
+            return result; // Conversion successful
+        }
+        else
+        {
+            Console.WriteLine($"Invalid format for double conversion: '{input}'");
+            return 0; // Or throw an exception, or handle as needed
+        }
+    }
+
 }
