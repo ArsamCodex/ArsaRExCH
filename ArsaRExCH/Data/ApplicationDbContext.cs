@@ -19,6 +19,7 @@ namespace ArsaRExCH.Data
         public DbSet<AdminWarningMessage> adminWarningMessages { get; set; }
         public DbSet<Wallet> Wallet { get; set; }
         public DbSet<LiveChat> lifeChat { get; set; }
+        public DbSet<TradeFee> tradeFees { get; set; }
         public DbSet<Bet> Bet { get; set; }
         public DbSet<AirDrop> AirDrops { get; set; }
         public DbSet<Post> Post { get; set; }

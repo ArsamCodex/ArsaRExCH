@@ -6,5 +6,7 @@ namespace ArsaRExCH.Interface
 
     {
         Task SaveTrade(Trade trade);
+        Task SaveFeeTrade(TradeFee tradeFee);
+        Task<double> GetTradeFee();
     }
 }

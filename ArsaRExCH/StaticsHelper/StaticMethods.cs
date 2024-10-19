@@ -142,6 +142,20 @@ namespace ArsaRExCH.StaticsHelper
                 }
             }
         }
+        public static double CalculateFee(double totalBtcAmount, double feePercentage)
+        {
+            if (totalBtcAmount < 0)
+            {
+                throw new ArgumentException("Total BTC amount cannot be negative.");
+            }
 
+            if (feePercentage < 0)
+            {
+                throw new ArgumentException("Fee percentage cannot be negative.");
+            }
+
+            // Calculate the fee amount
+            return (totalBtcAmount * feePercentage) / 100;
+        }
     }
 }

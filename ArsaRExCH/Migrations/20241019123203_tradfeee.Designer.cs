@@ -4,6 +4,7 @@ using ArsaRExCH.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241019123203_tradfeee")]
+    partial class tradfeee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -401,7 +404,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 10, 19, 13, 46, 38, 746, DateTimeKind.Local).AddTicks(8258),
+                            ListedDate = new DateTime(2024, 10, 19, 13, 32, 2, 269, DateTimeKind.Local).AddTicks(9670),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -409,7 +412,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 10, 19, 13, 46, 38, 746, DateTimeKind.Local).AddTicks(8310),
+                            ListedDate = new DateTime(2024, 10, 19, 13, 32, 2, 269, DateTimeKind.Local).AddTicks(9719),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -417,7 +420,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 10, 19, 13, 46, 38, 746, DateTimeKind.Local).AddTicks(8314),
+                            ListedDate = new DateTime(2024, 10, 19, 13, 32, 2, 269, DateTimeKind.Local).AddTicks(9722),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -523,7 +526,8 @@ namespace ArsaRExCH.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("BitcoinPoolId");
+                    b.HasIndex("BitcoinPoolId")
+                        .IsUnique();
 
                     b.ToTable("Trade");
                 });
@@ -802,8 +806,8 @@ namespace ArsaRExCH.Migrations
                         .IsRequired();
 
                     b.HasOne("ArsaRExCH.Model.BitcoinPool", "BitcoinPool")
-                        .WithMany("Trades")
-                        .HasForeignKey("BitcoinPoolId")
+                        .WithOne("Trade")
+                        .HasForeignKey("ArsaRExCH.Model.Trade", "BitcoinPoolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -889,7 +893,8 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Model.BitcoinPool", b =>
                 {
-                    b.Navigation("Trades");
+                    b.Navigation("Trade")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Post", b =>

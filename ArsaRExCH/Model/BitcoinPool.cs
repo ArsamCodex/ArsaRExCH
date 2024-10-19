@@ -13,6 +13,6 @@
         /*track adminID*/
         public string AdminUserId { get; set; }
         public DateTime? PoolOpenedDate { get; set; }
-       public Trade Trade { get; set; }
+        public ICollection<Trade> Trades { get; set; }
     }
 }

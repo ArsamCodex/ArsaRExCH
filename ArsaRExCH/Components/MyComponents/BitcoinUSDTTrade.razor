@@ -4,7 +4,9 @@
 @inject NavigationManager Navigation
 @inject ArsaRExCH.Interface.ITrade _tradeInterface
 @rendermode InteractiveServer
-
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
@@ -34,7 +36,7 @@
 @code {
     private Trade tradeModel = new Trade();
     public string message { get; set; }
-
+    public string user2{ get; set; }
     [CascadingParameter(Name = "BtcPrice")]
     public string BtcPrice { get; set; }
 
@@ -48,19 +50,20 @@
     {
         Console.WriteLine("HandleValidSubmit called."); // Debugging output
 
-        // Create a new Trade object
+        var feeFromDbCall = await _tradeInterface.GetTradeFee();
+
         var trade = new Trade
             {
                 TradeId = Guid.NewGuid().ToString(), // Generate a new TradeId
                 TradePair = PairNames.BTCUSDT, // Example value
                 dateTime = DateTime.Now, // Current date and time
                 symbolI = tradeModel.symbolI, // Bound model
-                SymbolII = tradeModel.SymbolII, // Bound model
-                TradeFee = 0.01, //call db for dynamic trading fee
+                SymbolII = 1200, // Bound model
+                TradeFee = feeFromDbCall, //call db for dynamic trading fee
                 IsMarketBuy = true,
                 IsTradeDone = false,
                 MyProperty = "sdsdsd",
-                ApplicationUserId = "9607e7ba-b442-4253-b55c-c35661f48adc", // Example value
+                ApplicationUserId =user2, // Example value
                 BitcoinPoolId = 15 // Example value call db for real one
             };
 
@@ -69,6 +72,7 @@
         {
             await _tradeInterface.SaveTrade(trade);
             message = "Trade added successfully!";
+            trade = new Trade();
             Console.WriteLine(message); // Debugging output
         }
         catch (Exception ex)
@@ -78,11 +82,25 @@
             message = "An error occurred while saving the trade.";
         }
     }
-    protected override async Task OnInitializedAsync()
+ 
+     protected override async Task OnInitializedAsync()
     {
-        tradeModel.TradePair = PairNames.BTCUSDT;
+        // Check if the user is logged in and fetch their information
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            tradeModel.TradePair = PairNames.BTCUSDT;
+
+        }
 
     }
+
+        
+
+    
     protected override void OnParametersSet()
     {
         btcPriceVariable = BtcPrice;
