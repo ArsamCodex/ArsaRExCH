@@ -1,41 +1,39 @@
 ﻿@using ArsaRExCH.Model
 @using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
-
+@inject ArsaRExCH.Interface.ITrade _tradeInterface
+@rendermode InteractiveServer
 
 <div style="display: flex; width: 100%;">
-    <!-- TradingViewChart component -->
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
 
-    <!-- Additional content div -->
     <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: lightblue">
-        <h5>Orders shows here All</h5>
+        <h5>Orders show here All</h5>
     </div>
 </div>
-
-<EditForm Model="@trade" OnValidSubmit="HandleValidSubmit">
+<h5><b>@tradeModel.TradePair</b></h5>
+<EditForm Model="@tradeModel" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group">
-        <label for="symbolI">Symbol I</label>
-        <InputNumber id="symbolI" class="form-control" @bind-Value="trade.symbolI" />
+        <label for="symbolI">BTC Amount</label>
+        <InputNumber id="symbolI" class="form-control" @bind-Value="tradeModel.symbolI" />
     </div>
 
-    <div class="form-group">
-        <label for="symbolII">Symbol II</label>
-        <InputNumber id="symbolII" class="form-control" @bind-Value="trade.SymbolII" />
-    </div>
+  
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
 
-
 <p>@btcPriceVariable</p>
+<p>@message</p>
 
 @code {
-    private Trade trade = new Trade();
+    private Trade tradeModel = new Trade();
+    public string message { get; set; }
 
     [CascadingParameter(Name = "BtcPrice")]
     public string BtcPrice { get; set; }
@@ -46,12 +44,45 @@
     private string btcPriceVariable;
     private string ethPriceVariable;
 
-
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        
-    }
+        Console.WriteLine("HandleValidSubmit called."); // Debugging output
 
+        // Create a new Trade object
+        var trade = new Trade
+            {
+                TradeId = Guid.NewGuid().ToString(), // Generate a new TradeId
+                TradePair = PairNames.BTCUSDT, // Example value
+                dateTime = DateTime.Now, // Current date and time
+                symbolI = tradeModel.symbolI, // Bound model
+                SymbolII = tradeModel.SymbolII, // Bound model
+                TradeFee = 0.01, //call db for dynamic trading fee
+                IsMarketBuy = true,
+                IsTradeDone = false,
+                MyProperty = "sdsdsd",
+                ApplicationUserId = "9607e7ba-b442-4253-b55c-c35661f48adc", // Example value
+                BitcoinPoolId = 15 // Example value call db for real one
+            };
+
+        // Save the trade to the database
+        try
+        {
+            await _tradeInterface.SaveTrade(trade);
+            message = "Trade added successfully!";
+            Console.WriteLine(message); // Debugging output
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            Console.Error.WriteLine($"An error occurred while saving the trade: {ex.Message}");
+            message = "An error occurred while saving the trade.";
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        tradeModel.TradePair = PairNames.BTCUSDT;
+
+    }
     protected override void OnParametersSet()
     {
         btcPriceVariable = BtcPrice;
