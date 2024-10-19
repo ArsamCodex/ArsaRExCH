@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
 @inject ArsaRExCH.Interface.ITrade _tradeInterface
+@inject ArsaRExCH.Interface.WalletInterface<double> _walletInterface
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
@@ -30,58 +31,71 @@
                              class="form-control"
                              @bind-Value="tradeModel.symbolI"/>
             </div>
+            <p>Available Balance to swap : @AvailableBtcAmountToSwap</p>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
 
+        
 
     </div>
 
-    <div style="width: 20%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:80px">
+    <div style="width: 30%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:200px">
         <!-- Content for the white paper styled div goes here -->
-        <p>To Get :@EstimatedUsdtToGet USDT </p>
-        <p>Your content goes here...</p>
+        <p>You Pay:  @tradeModel.symbolI</p>
+        <p>To Get :@EstimatedUsdtToGetInCludeFee USDT </p>
+        <p>Fee : @feeFromDbCall.ToString("F9")</p>
     </div>
 </div>
 <button type="button" class="btn btn-primary" @onclick="CalcuateUsdtGet">Calculate</button>
 <p>@btcPriceVariable</p>
-<p>@message</p>
-<p>Usdt Back :@EstimatedUsdtToGet</p>
+<p>@ErrorMessage</p>
+@BtcToswapInclude
 @code {
     private Trade tradeModel = new Trade();
-    public string message { get; set; }
+    public string ErrorMessage { get; set; }
     public string user2{ get; set; }
     [CascadingParameter(Name = "BtcPrice")]
     public string BtcPrice { get; set; }
-
-    public double EstimatedUsdtToGet { get; set; }
+    public double feeFromDbCall{ get; set; }
+    public double EstimatedUsdtToGetInCludeFee { get; set; }
 
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
 
     private string btcPriceVariable;
     private string ethPriceVariable;
+    public double BtcToswapInclude { get; set; }
+    public double AvailableBtcAmountToSwap { get; set; }
+
+
+
 
     private async Task CalcuateUsdtGet()
     {
+
         var tt = ConvertStringToDouble(BtcPrice);
         var usdtBAck = tradeModel.symbolI * tt;
-        EstimatedUsdtToGet = usdtBAck;
+        EstimatedUsdtToGetInCludeFee = usdtBAck;
+
+        BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
+
     }
 
     private async Task HandleValidSubmit()
     {
-        Console.WriteLine("HandleValidSubmit called."); // Debugging output
+        if (tradeModel.symbolI > AvailableBtcAmountToSwap)
+        {
+            ErrorMessage = "Not Enough Balance Available";
+            return;
+        }
 
-        var feeFromDbCall = await _tradeInterface.GetTradeFee();
-     
-       
         var trade = new Trade
             {
                 TradeId = Guid.NewGuid().ToString(), // Generate a new TradeId
                 TradePair = PairNames.BTCUSDT, // Example value
                 dateTime = DateTime.Now, // Current date and time
                 symbolI = tradeModel.symbolI, // Bound model
-                SymbolII = EstimatedUsdtToGet, // Bound model
+                SymbolII = EstimatedUsdtToGetInCludeFee, // Bound model
                 TradeFee = feeFromDbCall, //call db for dynamic trading fee
                 IsMarketBuy = true,
                 IsTradeDone = false,
@@ -94,19 +108,18 @@
         try
         {
             await _tradeInterface.SaveTrade(trade);
-            message = "Trade added successfully!";
-            trade = new Trade();
-            Console.WriteLine(message); // Debugging output
+            ErrorMessage = "Trade added successfully!";
+            tradeModel = new Trade();
+
         }
         catch (Exception ex)
         {
             // Handle exceptions
-            Console.Error.WriteLine($"An error occurred while saving the trade: {ex.Message}");
-            message = "An error occurred while saving the trade.";
+            ErrorMessage = "An error occurred while saving the trade.";
         }
     }
- 
-     protected override async Task OnInitializedAsync()
+
+    protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -116,6 +129,8 @@
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
 
             tradeModel.TradePair = PairNames.BTCUSDT;
+            AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+            feeFromDbCall = await _tradeInterface.GetTradeFee();
 
         }
 

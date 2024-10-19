@@ -307,10 +307,35 @@ namespace ArsaRExCH.InterfaceIMPL
             return btcBalance;
         }
 
-        public Task<double> GetBTCBalanceOfWallet(string walletId)
+        public async Task<double> GetBTCBalanceOfWallet(string walletId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Use 'using' statement to ensure the context is disposed properly
+                await using var context = _dbContextFactory.CreateDbContext();
+
+                // Retrieve the wallet balance for the given walletId
+                var btcBalance = await context.Wallet
+                    .Where(c => c.UserIDSec == walletId)
+                    .Select(c => c.Amount)
+                    .FirstOrDefaultAsync();
+
+                return btcBalance;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                // Optionally, you could log the error message or rethrow the exception
+                // For now, let's return 0 and log the error
+                Console.WriteLine($"Error retrieving BTC balance: {ex.Message}");
+
+                // Optionally, rethrow the exception if you don't want to suppress it
+                // throw;
+
+                return 0; // Or any default value you consider appropriate
+            }
         }
+
 
         public async Task<List<WalletDTO>> GetWalletsListed(string id)
         {
