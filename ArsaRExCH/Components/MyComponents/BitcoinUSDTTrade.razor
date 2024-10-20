@@ -41,7 +41,9 @@
 
     <div style="width: 30%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:200px">
         <!-- Content for the white paper styled div goes here -->
-        <p>You Pay:  @tradeModel.symbolI</p>
+        <p>
+            Btc To swap :@BtcToswapInclude
+        </p>
         <p>To Get :@EstimatedUsdtToGetInCludeFee USDT </p>
         <p>Fee : @feeFromDbCall.ToString("F9")</p>
     </div>
@@ -49,23 +51,23 @@
 <button type="button" class="btn btn-primary" @onclick="CalcuateUsdtGet">Calculate</button>
 <p>@btcPriceVariable</p>
 <p>@ErrorMessage</p>
-@BtcToswapInclude
+
 @code {
     private Trade tradeModel = new Trade();
     public string ErrorMessage { get; set; }
     public string user2{ get; set; }
-    [CascadingParameter(Name = "BtcPrice")]
-    public string BtcPrice { get; set; }
     public double feeFromDbCall{ get; set; }
     public double EstimatedUsdtToGetInCludeFee { get; set; }
-
-    [CascadingParameter(Name = "EthPrice")]
-    public string EthPrice { get; set; }
-
     private string btcPriceVariable;
     private string ethPriceVariable;
     public double BtcToswapInclude { get; set; }
     public double AvailableBtcAmountToSwap { get; set; }
+
+    [CascadingParameter(Name = "EthPrice")]
+    public string EthPrice { get; set; }
+    [CascadingParameter(Name = "BtcPrice")]
+    public string BtcPrice { get; set; }
+
 
 
 
@@ -109,7 +111,10 @@
         {
             await _tradeInterface.SaveTrade(trade);
             ErrorMessage = "Trade added successfully!";
+            await _walletInterface.EditWalletAmountDecrease(user2, tradeModel.symbolI);
             tradeModel = new Trade();
+            AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+
 
         }
         catch (Exception ex)
