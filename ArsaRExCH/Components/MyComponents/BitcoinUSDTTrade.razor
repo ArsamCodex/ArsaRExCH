@@ -40,7 +40,8 @@
     </div>
 
     <div style="width: 30%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:200px">
-        <!-- Content for the white paper styled div goes here -->
+        <p>BTC Price :@btcPriceVariable</p>
+        <p>Last Updated: @lastUpdatedTime</p>
         <p>
             Btc To swap :@BtcToswapInclude
         </p>
@@ -49,7 +50,6 @@
     </div>
 </div>
 <button type="button" class="btn btn-primary" @onclick="CalcuateUsdtGet">Calculate</button>
-<p>@btcPriceVariable</p>
 <p>@ErrorMessage</p>
 
 @code {
@@ -66,9 +66,25 @@
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
     [CascadingParameter(Name = "BtcPrice")]
-    public string BtcPrice { get; set; }
-
-
+    public string BtcPrice
+    {
+        get => btcPriceVariable;
+        set
+        {
+            if (btcPriceVariable != value)
+            {
+                btcPriceVariable = value;
+                UpdateTimestamp();
+                //Here we can make setup for limit orders not market 
+            }
+        }
+    }
+    private string lastUpdatedTime;
+    private void UpdateTimestamp()
+    {
+        lastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        StateHasChanged(); // Trigger a UI update
+    }
 
 
 
@@ -82,7 +98,6 @@
         BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
 
     }
-
     private async Task HandleValidSubmit()
     {
         if (tradeModel.symbolI > AvailableBtcAmountToSwap)
@@ -106,7 +121,6 @@
                 BitcoinPoolId = 15 // Example value call db for real one
             };
 
-        // Save the trade to the database
         try
         {
             await _tradeInterface.SaveTrade(trade);
@@ -123,7 +137,6 @@
             ErrorMessage = "An error occurred while saving the trade.";
         }
     }
-
     protected override async Task OnInitializedAsync()
     {
         // Check if the user is logged in and fetch their information
@@ -140,10 +153,6 @@
         }
 
     }
-
-        
-
-    
     protected override void OnParametersSet()
     {
         btcPriceVariable = BtcPrice;
