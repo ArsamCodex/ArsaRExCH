@@ -127,7 +127,7 @@
             await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
             ErrorMessage = "Trade added successfully!";
 
-
+            //Here we need send fee to exchange wallet 
             tradeModel = new Trade();
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
 
