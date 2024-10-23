@@ -27,5 +27,7 @@ namespace ArsaRExCH.Interface
         Task<T> EditWalletAmountIncrease(string userID, double amount);
         Task <List<UserBetCount>> GetFIrstXwinners();
         Task<T> EditWalletAmountDecresETH(string userID, double amount);
-    }
+        Task UpdateWalletsAfterTradeAsync(string userId, double btcAmountToDecrease, double usdtAmountToIncrease);
+        
+        }
 }

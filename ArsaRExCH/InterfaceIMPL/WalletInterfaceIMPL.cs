@@ -14,6 +14,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Net.Sockets;
 using Microsoft.AspNetCore.Mvc;
+using Xunit.Sdk;
 
 
 namespace ArsaRExCH.InterfaceIMPL
@@ -561,7 +562,70 @@ namespace ArsaRExCH.InterfaceIMPL
             // Return the updated amount
             return wallet.Amount;
         }
+
+        public async Task UpdateWalletsAfterTradeAsync(string userId, double btcAmountToDecrease, double usdtAmountToIncrease)
+        {
+            try
+            {
+                using var context = _dbContextFactory.CreateDbContext(); // Create a new DbContext
+
+                // Retrieve the user's wallets for BTC and USDT
+                var btcWallet = await context.Wallet.FirstOrDefaultAsync(w => w.UserIDSec == userId && w.PairName == "BTC");
+                var usdtWallet = await context.Wallet.FirstOrDefaultAsync(w => w.UserIDSec == userId && w.PairName == "USDT");
+
+                if (btcWallet != null && usdtWallet != null)
+                {
+                    // Check if the user has enough BTC to decrease
+                    if (btcWallet.Amount < btcAmountToDecrease)
+                    {
+                        throw new InvalidOperationException("Insufficient BTC balance.");
+                    }
+
+                    // Decrease the BTC wallet amount
+                    btcWallet.Amount -= btcAmountToDecrease; // Reduce BTC amount
+
+                    // Increase the USDT wallet amount
+                    usdtWallet.Amount += usdtAmountToIncrease; // Add to USDT amount
+
+                    // Save the updated wallet information
+                    context.Wallet.Update(btcWallet);
+                    context.Wallet.Update(usdtWallet);
+
+                    // Commit changes to the database
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new KeyNotFoundException("BTC or USDT wallet could not be found for the specified user.");
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Handle cases where the wallet was not found
+                ErrorMessage = $"Wallet error: {ex.Message}";
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle cases where the operation is invalid, such as insufficient balance
+                ErrorMessage = $"Operation error: {ex.Message}";
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle database update exceptions, such as connection issues or concurrency conflicts
+                ErrorMessage = $"Database error: {ex.Message}";
+            }
+            catch (ArgumentNullException ex)
+            {
+                // Handle cases where a null argument was passed (unlikely here, but just in case)
+                ErrorMessage = $"Argument error: {ex.Message}";
+            }
+            catch (Exception ex)
+            {
+                // Handle any other unexpected exceptions
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+            }
+        }
+
+        public string ErrorMessage { get; private set; } // Property to hold error messages
     }
-
 }
-

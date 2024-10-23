@@ -124,8 +124,10 @@
         try
         {
             await _tradeInterface.SaveTrade(trade);
+            await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
             ErrorMessage = "Trade added successfully!";
-            await _walletInterface.EditWalletAmountDecrease(user2, tradeModel.symbolI);
+
+
             tradeModel = new Trade();
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
 
