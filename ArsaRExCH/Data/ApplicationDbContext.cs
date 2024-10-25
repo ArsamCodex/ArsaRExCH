@@ -2,11 +2,13 @@ using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore.Internal;
+using NBitcoin.Secp256k1;
 namespace ArsaRExCH.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
+
 
       //  public DbSet<Apllica> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -28,10 +30,10 @@ namespace ArsaRExCH.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Reply>()
-       .HasOne(r => r.Post)
-       .WithMany(p => p.Replies)
-       .HasForeignKey(r => r.PostId)
-       .OnDelete(DeleteBehavior.Restrict); // Disable cascade delete
+               .HasOne(r => r.Post)
+               .WithMany(p => p.Replies)
+               .HasForeignKey(r => r.PostId)
+               .OnDelete(DeleteBehavior.Restrict); // Disable cascade delete
 
             // Disable cascading delete for Post -> ApplicationUser (Admin)
             modelBuilder.Entity<Post>()
@@ -78,8 +80,8 @@ namespace ArsaRExCH.Data
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = "arminttwat@gmail.com",
-                NormalizedUserName = "arminttwat@gmail.com70",
-                Email = "arminttwat@gmail.com70",
+                NormalizedUserName = "arminttwat@gmail.com",
+                Email = "arminttwat@gmail.com",
                 NormalizedEmail = "NEWUSER@EXAMPLE.COM",
                 EmailConfirmed = true,
                 PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", // Replace this with the hashed password
@@ -93,8 +95,8 @@ namespace ArsaRExCH.Data
                 RoleId = role.Id,
                 UserId = newUser.Id
             });
+           
         }
- 
         private void SeedInitialWalletData(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Pair>().HasData(
@@ -124,5 +126,7 @@ namespace ArsaRExCH.Data
              }
          );
         }
+
+
     }
 }

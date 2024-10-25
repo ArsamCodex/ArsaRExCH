@@ -8,11 +8,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class addPostreply112 : Migration
+    public partial class iini : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "adminWarningMessages",
+                columns: table => new
+                {
+                    AdminWarningMessageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AdminUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_adminWarningMessages", x => x.AdminWarningMessageId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "airDropFaqs",
                 columns: table => new
@@ -110,6 +126,25 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BitcoinPools",
+                columns: table => new
+                {
+                    BitcoinPoolId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PoolName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PoolCurrentBalance = table.Column<double>(type: "float", nullable: false),
+                    IsPoolActive = table.Column<bool>(type: "bit", nullable: false),
+                    SuspendDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Daterefilled = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AdminUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PoolOpenedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BitcoinPools", x => x.BitcoinPoolId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -142,18 +177,33 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTradeActivities",
+                name: "poolTransactions",
                 columns: table => new
                 {
-                    UserTradeActivityID = table.Column<int>(type: "int", nullable: false)
+                    BitcoinPoolTransactionsId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<int>(type: "int", nullable: false),
-                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentBalance = table.Column<double>(type: "float", nullable: false)
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TransactionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TxHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    receiverAdress = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTradeActivities", x => x.UserTradeActivityID);
+                    table.PrimaryKey("PK_poolTransactions", x => x.BitcoinPoolTransactionsId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tradeFees",
+                columns: table => new
+                {
+                    TradeFeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FeeInBtc = table.Column<double>(type: "float", nullable: false),
+                    SetByAdminId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tradeFees", x => x.TradeFeeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -307,6 +357,27 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "lifeChat",
+                columns: table => new
+                {
+                    LiveChatId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeAndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_lifeChat", x => x.LiveChatId);
+                    table.ForeignKey(
+                        name: "FK_lifeChat_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Post",
                 columns: table => new
                 {
@@ -351,6 +422,39 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Trade",
+                columns: table => new
+                {
+                    TradeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TradePair = table.Column<int>(type: "int", nullable: false),
+                    dateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    symbolI = table.Column<double>(type: "float", nullable: false),
+                    SymbolII = table.Column<double>(type: "float", nullable: false),
+                    TradeFee = table.Column<double>(type: "float", nullable: false),
+                    IsMarketBuy = table.Column<bool>(type: "bit", nullable: false),
+                    IsTradeDone = table.Column<bool>(type: "bit", nullable: false),
+                    MyProperty = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BitcoinPoolId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Trade", x => x.TradeId);
+                    table.ForeignKey(
+                        name: "FK_Trade_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Trade_BitcoinPools_BitcoinPoolId",
+                        column: x => x.BitcoinPoolId,
+                        principalTable: "BitcoinPools",
+                        principalColumn: "BitcoinPoolId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reply",
                 columns: table => new
                 {
@@ -358,6 +462,7 @@ namespace ArsaRExCH.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RepliedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserIdRelied = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -376,9 +481,9 @@ namespace ArsaRExCH.Migrations
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5785), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5834), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 9, 29, 21, 7, 32, 732, DateTimeKind.Local).AddTicks(5837), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8724), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8771), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8775), "ETH", "ETH" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -426,6 +531,11 @@ namespace ArsaRExCH.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_lifeChat_ApplicationUserId",
+                table: "lifeChat",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Post_ApplicationUserId",
                 table: "Post",
                 column: "ApplicationUserId");
@@ -436,6 +546,16 @@ namespace ArsaRExCH.Migrations
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Trade_ApplicationUserId",
+                table: "Trade",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trade_BitcoinPoolId",
+                table: "Trade",
+                column: "BitcoinPoolId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserDatesRecords_ApplicationUserId",
                 table: "UserDatesRecords",
                 column: "ApplicationUserId");
@@ -444,6 +564,9 @@ namespace ArsaRExCH.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "adminWarningMessages");
+
             migrationBuilder.DropTable(
                 name: "airDropFaqs");
 
@@ -472,19 +595,28 @@ namespace ArsaRExCH.Migrations
                 name: "Bet");
 
             migrationBuilder.DropTable(
+                name: "lifeChat");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Pair");
 
             migrationBuilder.DropTable(
+                name: "poolTransactions");
+
+            migrationBuilder.DropTable(
                 name: "Reply");
 
             migrationBuilder.DropTable(
-                name: "UserDatesRecords");
+                name: "Trade");
 
             migrationBuilder.DropTable(
-                name: "UserTradeActivities");
+                name: "tradeFees");
+
+            migrationBuilder.DropTable(
+                name: "UserDatesRecords");
 
             migrationBuilder.DropTable(
                 name: "Wallet");
@@ -494,6 +626,9 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "Post");
+
+            migrationBuilder.DropTable(
+                name: "BitcoinPools");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241013190005_classupkj")]
-    partial class classupkj
+    [Migration("20241025200613_iini")]
+    partial class iini
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -301,9 +301,6 @@ namespace ArsaRExCH.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("BitcoinPoolId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("TransactionDate")
                         .HasColumnType("datetime2");
 
@@ -315,17 +312,11 @@ namespace ArsaRExCH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("receiverAdress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BitcoinPoolTransactionsId");
-
-                    b.HasIndex("BitcoinPoolId");
 
                     b.ToTable("poolTransactions");
                 });
@@ -413,7 +404,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 10, 13, 20, 0, 4, 492, DateTimeKind.Local).AddTicks(3678),
+                            ListedDate = new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8724),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -421,7 +412,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 10, 13, 20, 0, 4, 492, DateTimeKind.Local).AddTicks(3728),
+                            ListedDate = new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8771),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -429,7 +420,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 10, 13, 20, 0, 4, 492, DateTimeKind.Local).AddTicks(3732),
+                            ListedDate = new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8775),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -492,6 +483,69 @@ namespace ArsaRExCH.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Reply");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Trade", b =>
+                {
+                    b.Property<string>("TradeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("BitcoinPoolId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsMarketBuy")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTradeDone")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MyProperty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("SymbolII")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TradeFee")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TradePair")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("dateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("symbolI")
+                        .HasColumnType("float");
+
+                    b.HasKey("TradeId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("BitcoinPoolId");
+
+                    b.ToTable("Trade");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.TradeFee", b =>
+                {
+                    b.Property<string>("TradeFeeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("FeeInBtc")
+                        .HasColumnType("float");
+
+                    b.Property<string>("SetByAdminId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TradeFeeId");
+
+                    b.ToTable("tradeFees");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserDatesRecord", b =>
@@ -709,17 +763,6 @@ namespace ArsaRExCH.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("ArsaRExCH.Model.BitcoinPoolTransactions", b =>
-                {
-                    b.HasOne("ArsaRExCH.Model.BitcoinPool", "bitcoinPool")
-                        .WithMany("Transactions")
-                        .HasForeignKey("BitcoinPoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("bitcoinPool");
-                });
-
             modelBuilder.Entity("ArsaRExCH.Model.LiveChat", b =>
                 {
                     b.HasOne("ArsaRExCH.Data.ApplicationUser", "user")
@@ -751,6 +794,25 @@ namespace ArsaRExCH.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Trade", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "User")
+                        .WithMany("Trade")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ArsaRExCH.Model.BitcoinPool", "BitcoinPool")
+                        .WithMany("Trades")
+                        .HasForeignKey("BitcoinPoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BitcoinPool");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.UserDatesRecord", b =>
@@ -819,6 +881,8 @@ namespace ArsaRExCH.Migrations
                 {
                     b.Navigation("Posts");
 
+                    b.Navigation("Trade");
+
                     b.Navigation("UserAirdops");
 
                     b.Navigation("UserLoginDates");
@@ -828,7 +892,7 @@ namespace ArsaRExCH.Migrations
 
             modelBuilder.Entity("ArsaRExCH.Model.BitcoinPool", b =>
                 {
-                    b.Navigation("Transactions");
+                    b.Navigation("Trades");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Post", b =>

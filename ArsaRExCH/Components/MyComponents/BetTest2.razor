@@ -13,8 +13,6 @@
 @inject NavigationManager manager
 @inject ArsaRExCH.Interface.PriceInterface _priceInterface
 
-
-
 <B3 @ref="br"></B3>
 
 <div style="@divStyle">
@@ -34,128 +32,87 @@
     </select>
 </div>
 
-
 <p>Selected Pair: @pairName</p>
 <div>
     @if (pairName == "BTC/ETH")
     {
-        <EditForm Model="BetModel"  FormName="Name">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <EditForm EditContext="@editContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center;width:auto">
-        <div class="form-group" style="width: auto;">
-            <label for="btcPriceExpireBet">BTC Price Expire Bet</label>
-            <InputNumber @bind-Value="BetModel.BtcPriceExpireBet" id="btcPriceExpireBet" class="form-control form-control-sm" />
-        </div>
+            <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center;width:auto">
+                <div class="form-group" style="width: auto;">
+                    <label for="btcPriceExpireBet">BTC Price Expire Bet</label>
+                    <InputNumber @bind-Value="BetModel.BtcPriceExpireBet" id="btcPriceExpireBet" class="form-control form-control-sm" />
+                </div>
 
-        <div class="form-group" style="width: auto;">
-            <label for="hitDateBTC">Hit Date BTC</label>
-            <InputDate @bind-Value="BetModel.HitDateBTC" id="hitDateBTC" class="form-control form-control-sm"  />
-        </div>
+                <div class="form-group" style="width: auto;">
+                    <label for="hitDateBTC">Hit Date BTC</label>
+                    <InputDate @bind-Value="BetModel.HitDateBTC" id="hitDateBTC" class="form-control form-control-sm" />
+                </div>
 
-        <div class="form-group" style="width: auto">
-            <label for="betAmountBtc">Bet Amount BTC</label>
-            <InputNumber @bind-Value="BetModel.BetAmountBtc" id="betAmountBtc" class="form-control form-control-sm" />
-        </div>
-    </div>
+                <div class="form-group" style="width: auto">
+                    <label for="betAmountBtc">Bet Amount BTC</label>
+                    <InputNumber @bind-Value="BetModel.BetAmountBtc" id="betAmountBtc" class="form-control form-control-sm" />
+                </div>
+            </div>
 
-    <br />
-    <br />
+            <br />
+            <br />
 
-    <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center;width:auto">
-        <div class="form-group" style="width:auto;">
-            <label for="ethPriceExpireBet">ETH Price Expire Bet</label>
-            <InputNumber @bind-Value="BetModel.EthPriceExpireBet" id="ethPriceExpireBet" class="form-control form-control-sm" />
-        </div>
+            <div class="form-container" style="display: inline-flex; flex-wrap: wrap; gap: 10px; align-items: center;width:auto">
+                <div class="form-group" style="width:auto;">
+                    <label for="ethPriceExpireBet">ETH Price Expire Bet</label>
+                    <InputNumber @bind-Value="BetModel.EthPriceExpireBet" id="ethPriceExpireBet" class="form-control form-control-sm" />
+                </div>
 
-        <div class="form-group" style="width: auto;">
-            <label for="hitDateETH">Hit Date ETH</label>
-            <InputDate @bind-Value="BetModel.HitDateETH" id="hitDateETH" class="form-control form-control-sm" />
-        </div>
-        <div class="form-group" style="width: auto;">
-            <label for="betAmountETH">Bet Amount ETH</label>
-            <InputNumber @bind-Value="BetModel.BetAmountETH" id="betAmountETH" class="form-control form-control-sm" />
-        </div>
-    </div>
-    <br /><br />
+                <div class="form-group" style="width: auto;">
+                    <label for="hitDateETH">Hit Date ETH</label>
+                    <InputDate @bind-Value="BetModel.HitDateETH" id="hitDateETH" class="form-control form-control-sm" />
+                </div>
+                <div class="form-group" style="width: auto;">
+                    <label for="betAmountETH">Bet Amount ETH</label>
+                    <InputNumber @bind-Value="BetModel.BetAmountETH" id="betAmountETH" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <br /><br />
+        </EditForm>
 
-
-</EditForm>
-        <button class="btn btn-primary" @onclick="HandleValidSubmit">PlaceBet</button>
+        <button class="btn btn-primary" @onclick="HandleValidSubmit">Place Bet</button>
     }
-    @if(pairName == "BTC/BNB")
+    @if (pairName == "BTC/BNB")
     {
-        <p>bnb form </p>
+        <p>BNB form </p>
     }
- 
 </div>
-
-    
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <div class="alert alert-danger">@ErrorMessage</div>
 }
 <style>
-    .wallet-container {
-        display: flex; /* Use flexbox to arrange items horizontally */
-        gap: 20px; /* Space between the divs */
-        justify-content: space-around; /* Distribute space evenly around the divs */
-        margin-top: 20px;
-    }
-
-    .wallet {
-        border: 1px solid #ccc; /* Optional: border around each wallet section */
-        padding: 10px;
-        border-radius: 8px; /* Rounded corners */
-        width: 30%; /* Optional: controls width of each wallet section */
-    }
-
-        .wallet h3 {
-            margin-top: 0; /* Remove default margin from the heading */
-            font-size: 18px;
-            color: #333; /* Optional: set heading color */
-        }
-
-        .wallet ul {
-            list-style-type: none; /* Remove bullet points from the list */
-            padding: 0; /* Remove padding from the list */
-            margin: 0; /* Remove margin from the list */
-        }
-
-        .wallet li {
-            margin: 5px 0; /* Space between list items */
-            font-size: 16px; /* Font size for balance */
-            color: #555; /* Optional: set color for balances */
-        }
+    /* Styles omitted for brevity */
 </style>
-<p>@user2</p>
+
 @code {
     private List<string> availablepairs = new List<string> { "BTC/ETH", "BTC/BNB" };
     public string pairName { get; set; }
     private string ErrorMessage { get; set; }
     private Bet BetModel = new Bet();
+    private EditContext editContext;
     private string user2 { get; set; }
     private double BtcBetAmout { get; set; }
     private double EthBetAmout { get; set; }
     private string divText = "";
     private string divStyle = "";
     private string BetGeneratedHAsh { get; set; }
-    private List<double> btcBalances = new List<double>();
-    private List<double> ethBalances = new List<double>();
-    private List<double> bnbBalances = new List<double>();
     private ArsaRExCH.Components.MyComponents.B3 br;
-    private void ChangeColor()
-    {
-        divStyle = "background-color: green; color: white; padding: 20px; border: 1px solid #ccc;";
-        divText = "Order Created";
-
-    }
 
     protected override async Task OnInitializedAsync()
     {
-        // Check if the user is logged in and fetch their information
+        editContext = new EditContext(BetModel);
+        editContext.OnFieldChanged += OnFieldChanged;
+
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity?.IsAuthenticated ?? false)
@@ -163,94 +120,65 @@
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             BetModel.HitDateBTC = DateTime.Now;
             BetModel.HitDateETH = DateTime.Now;
-
-
         }
+    }
 
+    private void OnFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        // Example field change handling, such as validating a field.
+        if (e.FieldIdentifier.FieldName == nameof(BetModel.BtcPriceExpireBet))
+        {
+            // Perform additional logic if needed
+        }
     }
 
     public async Task HandleValidSubmit()
     {
+        if (!editContext.Validate())
+        {
+            ErrorMessage = "Please correct the validation errors.";
+            return;
+        }
+
         if (BetModel.HitDateETH.Date == BetModel.HitDateBTC.Date)
         {
-
-            // Initialize the bet model with necessary values
             BetModel.IsBetActive = true;
             BetModel.ISDeleted = false;
-            BetModel.UserIdSec = user2; // Example user ID
+            BetModel.UserIdSec = user2;
             BetModel.BtcPriceNow = await _priceInterface.GetBtcPriceFromBinance();
-            Console.WriteLine(BetModel.BtcPriceNow);
-            // Retrieve current BTC price from the database or API call
-            BetModel.EthPriceNow = await _priceInterface.GetEthPriceFromBinance(); // Retrieve current ETH price from the database or API call
-            /*this is shoow ase i just now work on btc*/
-            BetModel.OpendBetAtricle = DateTime.UtcNow; // Set the current time as the opening time of the bet
-            BetModel.WiningAmount = null; // To be calculated later
-
-            BtcBetAmout = BetModel.BetAmountBtc; // Set the bet amount in BTC
+            BetModel.EthPriceNow = await _priceInterface.GetEthPriceFromBinance();
+            BetModel.OpendBetAtricle = DateTime.UtcNow;
+            BtcBetAmout = BetModel.BetAmountBtc;
             EthBetAmout = BetModel.BetAmountETH;
+
             try
             {
-                // Generate a signature for the bet and save it to the database
                 BetModel.BetSignutare = await _interface.Generatesha256();
                 BetGeneratedHAsh = BetModel.BetSignutare;
                 await _interface.SaveBet(BetModel);
-                BetModel = new Bet(); // Reset the BetModel
-
-                // Try to edit the wallet amount for the user
+                BetModel = new Bet();
                 await _interface2.EditWalletAmountDecrease(user2, BtcBetAmout);
                 await _interface2.EditWalletAmountDecresETH(user2, EthBetAmout);
-
-                // Clear any error messages on successful wallet update
                 ErrorMessage = string.Empty;
             }
             catch (InvalidOperationException ex)
             {
-                // Display an error message if the wallet update fails due to insufficient funds
                 ErrorMessage = ex.Message;
-                return; // Stop further execution if there's an error
+                return;
             }
             catch (Exception ex)
             {
-                // Handle other exceptions
                 ErrorMessage = "An unexpected error occurred: " + ex.Message;
-                return; // Stop further execution if there's an error
+                return;
             }
 
-            // Additional actions after successfully handling the bet and updating the wallet
-            ChangeColor(); // Some method to change the color (ensure this method does not block the UI)
-            await br.FetchBalancesAsync(); // Fetch updated balances (ensure this does not block the UI)
-
-            // Navigate to the bet preview page if everything is successful
+         //   ChangeColor();
+            await br.FetchBalancesAsync();
             manager.NavigateTo($"/BetPreview/{BetGeneratedHAsh}", true);
         }
         else
         {
-            ErrorMessage = "Dates SHould be same ";
-        }
-    }
-
-    private async Task OnHitDateBTCChanged(DateTime? newDate)
-    {
-        if (newDate.HasValue)
-        {
-            // Synchronize ETH date when BTC date changes
-            BetModel.HitDateETH = newDate.Value;
-
-            // If you have any additional async operations, await them here
-            await Task.CompletedTask; // Placeholder if you need to await something
-        }
-    }
-
-    private async Task OnHitDateETHChanged(DateTime? newDate)
-    {
-        if (newDate.HasValue)
-        {
-            // Synchronize BTC date when ETH date changes
-            BetModel.HitDateBTC = newDate.Value;
-
-            // If you have any additional async operations, await them here
-            await Task.CompletedTask; // Placeholder if you need to await something
+            ErrorMessage = "Dates should be the same.";
         }
     }
 }
-

@@ -9,7 +9,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 
-
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
@@ -22,29 +21,24 @@
 <h5><b>@tradeModel.TradePair</b></h5>
 <div style="display: flex;">
     <div style="width: 20%; margin-right: 10px;">
-        <EditForm Model="@tradeModel" OnValidSubmit="HandleValidSubmit">
+        <EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group">
                 <label for="symbolI">BTC Amount</label>
                 <InputNumber id="symbolI"
                              class="form-control"
-                             @bind-Value="tradeModel.symbolI"/>
+                             @bind-Value="tradeModel.symbolI" />
             </div>
             <p>Available Balance to swap : @AvailableBtcAmountToSwap</p>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
-
-        
-
     </div>
 
     <div style="width: 30%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:200px">
         <p>BTC Price :@btcPriceVariable</p>
         <p>Last Updated: @lastUpdatedTime</p>
-        <p>
-            Btc To swap :@BtcToswapInclude
-        </p>
+        <p>Btc To swap :@BtcToswapInclude</p>
         <p>To Get :@EstimatedUsdtToGetInCludeFee USDT </p>
         <p>Fee : @feeFromDbCall.ToString("F9")</p>
     </div>
@@ -54,9 +48,10 @@
 
 @code {
     private Trade tradeModel = new Trade();
+    private EditContext editContext;
     public string ErrorMessage { get; set; }
-    public string user2{ get; set; }
-    public double feeFromDbCall{ get; set; }
+    public string user2 { get; set; }
+    public double feeFromDbCall { get; set; }
     public double EstimatedUsdtToGetInCludeFee { get; set; }
     private string btcPriceVariable;
     private string ethPriceVariable;
@@ -65,6 +60,7 @@
 
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
+
     [CascadingParameter(Name = "BtcPrice")]
     public string BtcPrice
     {
@@ -75,29 +71,51 @@
             {
                 btcPriceVariable = value;
                 UpdateTimestamp();
-                //Here we can make setup for limit orders not market 
             }
         }
     }
+
     private string lastUpdatedTime;
+
     private void UpdateTimestamp()
     {
         lastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         StateHasChanged(); // Trigger a UI update
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(tradeModel);
+        editContext.OnFieldChanged += HandleFieldChanged;
 
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            tradeModel.TradePair = PairNames.BTCUSDT;
+            AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+            feeFromDbCall = await _tradeInterface.GetTradeFee();
+        }
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName == nameof(tradeModel.symbolI))
+        {
+            // Update calculations or other logic based on the changed field
+            BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
+        }
+    }
 
     private async Task CalcuateUsdtGet()
     {
-
         var tt = ConvertStringToDouble(BtcPrice);
         var usdtBAck = tradeModel.symbolI * tt;
         EstimatedUsdtToGetInCludeFee = usdtBAck;
-
         BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
-
     }
+
     private async Task HandleValidSubmit()
     {
         if (tradeModel.symbolI > AvailableBtcAmountToSwap)
@@ -108,17 +126,17 @@
 
         var trade = new Trade
             {
-                TradeId = Guid.NewGuid().ToString(), // Generate a new TradeId
-                TradePair = PairNames.BTCUSDT, // Example value
-                dateTime = DateTime.Now, // Current date and time
-                symbolI = tradeModel.symbolI, // Bound model
-                SymbolII = EstimatedUsdtToGetInCludeFee, // Bound model
-                TradeFee = feeFromDbCall, //call db for dynamic trading fee
+                TradeId = Guid.NewGuid().ToString(),
+                TradePair = PairNames.BTCUSDT,
+                dateTime = DateTime.Now,
+                symbolI = tradeModel.symbolI,
+                SymbolII = EstimatedUsdtToGetInCludeFee,
+                TradeFee = feeFromDbCall,
                 IsMarketBuy = true,
                 IsTradeDone = false,
                 MyProperty = "sdsdsd",
-                ApplicationUserId =user2, // Example value
-                BitcoinPoolId = 15 // Example value call db for real one
+                ApplicationUserId = user2,
+                BitcoinPoolId = 1
             };
 
         try
@@ -126,62 +144,38 @@
             await _tradeInterface.SaveTrade(trade);
             await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
             ErrorMessage = "Trade added successfully!";
-
-            //Here we need send fee to exchange wallet 
             tradeModel = new Trade();
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
-
-
         }
         catch (Exception ex)
         {
-            // Handle exceptions
             ErrorMessage = "An error occurred while saving the trade.";
         }
     }
-    protected override async Task OnInitializedAsync()
-    {
-        // Check if the user is logged in and fetch their information
-        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        if (user.Identity?.IsAuthenticated ?? false)
-        {
-            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
 
-            tradeModel.TradePair = PairNames.BTCUSDT;
-            AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
-            feeFromDbCall = await _tradeInterface.GetTradeFee();
-
-        }
-
-    }
     protected override void OnParametersSet()
     {
         btcPriceVariable = BtcPrice;
         ethPriceVariable = EthPrice;
-
-        // Debugging output
-        Console.WriteLine($"BTC Price received: {btcPriceVariable}");
-        Console.WriteLine($"ETH Price received: {ethPriceVariable}");
     }
+
     public double ConvertStringToDouble(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
             Console.WriteLine("Input string is null or empty.");
-            return 0; // Or throw an exception based on your requirements
+            return 0;
         }
 
         double result;
         if (double.TryParse(input, out result))
         {
-            return result; // Conversion successful
+            return result;
         }
         else
         {
             Console.WriteLine($"Invalid format for double conversion: '{input}'");
-            return 0; // Or throw an exception, or handle as needed
+            return 0;
         }
     }
-
 }

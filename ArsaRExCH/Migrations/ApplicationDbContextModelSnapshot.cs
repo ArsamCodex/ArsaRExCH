@@ -401,7 +401,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 10, 19, 13, 46, 38, 746, DateTimeKind.Local).AddTicks(8258),
+                            ListedDate = new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8724),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -409,7 +409,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 10, 19, 13, 46, 38, 746, DateTimeKind.Local).AddTicks(8310),
+                            ListedDate = new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8771),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -417,7 +417,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 10, 19, 13, 46, 38, 746, DateTimeKind.Local).AddTicks(8314),
+                            ListedDate = new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8775),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
