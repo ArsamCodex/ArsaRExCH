@@ -1,4 +1,5 @@
 ﻿@page "/Bet1"
+@using ArsaRExCH.Components.Account
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @inject AuthenticationStateProvider _AuthenticationStateProvider
@@ -12,6 +13,11 @@
 @using ArsaRExCH.Components.MyComponents
 @inject NavigationManager manager
 @inject ArsaRExCH.Interface.PriceInterface _priceInterface
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using ArsaRExCH.Data
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
 
 <B3 @ref="br"></B3>
 
@@ -93,7 +99,7 @@
 <style>
     /* Styles omitted for brevity */
 </style>
-
+<p>@user2</p>
 @code {
     private List<string> availablepairs = new List<string> { "BTC/ETH", "BTC/BNB" };
     public string pairName { get; set; }
@@ -101,26 +107,55 @@
     private Bet BetModel = new Bet();
     private EditContext editContext;
     private string user2 { get; set; }
+
+    private ApplicationUser user5 = default!;
+
+    [SupplyParameterFromForm]
     private double BtcBetAmout { get; set; }
+    [SupplyParameterFromForm]
     private double EthBetAmout { get; set; }
     private string divText = "";
     private string divStyle = "";
     private string BetGeneratedHAsh { get; set; }
     private ArsaRExCH.Components.MyComponents.B3 br;
 
+
     protected override async Task OnInitializedAsync()
     {
-        editContext = new EditContext(BetModel);
-        editContext.OnFieldChanged += OnFieldChanged;
 
+
+        /*
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity?.IsAuthenticated ?? false)
-        {
+            {
             user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             BetModel.HitDateBTC = DateTime.Now;
             BetModel.HitDateETH = DateTime.Now;
+        }*/
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+                user2 = user5.Id; // Get the user ID here
+                Console.WriteLine(user5.Id);
+                BetModel.HitDateBTC = DateTime.Now;
+                BetModel.HitDateETH = DateTime.Now;
+            }
+            else
+            {
+                ErrorMessage = "Unable to retrieve user.";
+            }
         }
+        else
+        {
+            ErrorMessage = "HttpContext is not available.";
+        }
+        editContext = new EditContext(BetModel);
+        editContext.OnFieldChanged += OnFieldChanged;
+
     }
 
     private void OnFieldChanged(object sender, FieldChangedEventArgs e)

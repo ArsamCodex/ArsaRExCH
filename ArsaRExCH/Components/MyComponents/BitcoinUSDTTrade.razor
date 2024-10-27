@@ -15,7 +15,7 @@
     </div>
 
     <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: lightblue">
-        <h5>Orders show here All</h5>
+        <AllTradesHere></AllTradesHere>
     </div>
 </div>
 <h5><b>@tradeModel.TradePair</b></h5>
@@ -43,7 +43,6 @@
         <p>Fee : @feeFromDbCall.ToString("F9")</p>
     </div>
 </div>
-<button type="button" class="btn btn-primary" @onclick="CalcuateUsdtGet">Calculate</button>
 <p>@ErrorMessage</p>
 
 @code {
@@ -99,12 +98,13 @@
         }
     }
 
-    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
         if (e.FieldIdentifier.FieldName == nameof(tradeModel.symbolI))
         {
             // Update calculations or other logic based on the changed field
-            BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
+          //  BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
+            await CalcuateUsdtGet();
         }
     }
 
@@ -136,6 +136,7 @@
                 IsTradeDone = false,
                 MyProperty = "sdsdsd",
                 ApplicationUserId = user2,
+                /*hardcode pool - A CALL TO DB NEED*/
                 BitcoinPoolId = 1
             };
 

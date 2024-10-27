@@ -1,0 +1,86 @@
+﻿@using ArsaRExCH.Components.Account
+@using ArsaRExCH.Data
+@using ArsaRExCH.Model
+@using Microsoft.AspNetCore.Authorization
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+@inject ArsaRExCH.Interface.ITrade _tradeInterface
+@attribute [Authorize]
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Symbol</th>
+            <th>SymbolII</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var trade in TradeListLast50)
+            {
+                <tr>
+                <td>@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5)) </td>
+                <td>@trade.symbolI.ToString("F4")</td>
+                <td>@trade.SymbolII.ToString("F4")</td>
+                <td>@trade.dateTime</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@code {
+    private string user2 { get; set; }
+    private string ErrorMessage { get; set; }
+    private ApplicationUser user5 = default!;
+    private List<Trade> TradeListLast50 { get; set; } = new List<Trade>();
+    private Timer timer;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+                user2 = user5.Id; // Get the user ID here
+                try
+                {
+                    timer = new Timer(async _ => await FetchTradesAsync(), null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = $"An error occurred while retrieving trades: {ex.Message}";
+                }
+            }
+            else
+            {
+                ErrorMessage = "Unable to retrieve user.";
+            }
+        }
+        else
+        {
+            ErrorMessage = "HttpContext is not available.";
+        }
+
+
+    }
+    private async Task FetchTradesAsync()
+    {
+        try
+        {
+            TradeListLast50 = await _tradeInterface.GetAllTrades();
+            await InvokeAsync(StateHasChanged); // Use InvokeAsync to ensure UI updates are on the correct thread
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred while retrieving trades: {ex.Message}";
+            await InvokeAsync(StateHasChanged); // Use InvokeAsync here as well
+        }
+    }
+}

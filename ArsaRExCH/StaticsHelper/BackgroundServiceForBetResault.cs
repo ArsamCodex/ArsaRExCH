@@ -132,9 +132,9 @@ namespace ArsaRExCH.StaticsHelper
 
                 // Schedule the task to run at 00:01 every day
                 await Task.Delay(delay, stoppingToken);
-
+                await RunMyMethod();
                 // Perform your scheduled task here
-          
+
 
             }
         }
@@ -142,7 +142,7 @@ namespace ArsaRExCH.StaticsHelper
         private TimeSpan CalculateDelayUntilNextDay00()
         {
             DateTime now = DateTime.Now;
-            DateTime next0000AM = now.Date.AddHours(00).AddMinutes(59);
+            DateTime next0000AM = now.Date.AddHours(06).AddMinutes(21);
 
             if (now > next0000AM)
             {

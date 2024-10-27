@@ -1,0 +1,52 @@
+﻿@page "/tt"
+@using ArsaRExCH.Components.Account
+@using ArsaRExCH.Model
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+
+
+<p>@user2</p>
+
+@code {
+    private string ErrorMessage { get; set; }
+    private Bet BetModel = new Bet();
+    private EditContext editContext;
+    private string user2 { get; set; } = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+                user2 = user5.Id; // Get the user ID here
+                BetModel.HitDateBTC = DateTime.Now;
+                BetModel.HitDateETH = DateTime.Now;
+            }
+            else
+            {
+                ErrorMessage = "Unable to retrieve user.";
+            }
+        }
+        else
+        {
+            ErrorMessage = "HttpContext is not available.";
+        }
+
+        editContext = new EditContext(BetModel);
+        editContext.OnFieldChanged += OnFieldChanged;
+    }
+
+    private void OnFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName == nameof(BetModel.BtcPriceExpireBet))
+        {
+            // Perform additional logic if needed
+        }
+    }
+}

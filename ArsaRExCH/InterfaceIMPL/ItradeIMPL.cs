@@ -13,6 +13,37 @@ namespace ArsaRExCH.InterfaceIMPL
             dbContextFactory = _dbContextFactory;
         }
 
+        public async Task<List<Trade>> GetAllTrades()
+        {
+            try
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return await context.Trade
+                     .Include(t => t.User) // Load User
+                     .Include(t => t.BitcoinPool) // Load BitcoinPool
+                     .ToListAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Handle database update related exceptions
+                Console.WriteLine($"Database update error: {dbEx.Message}");
+                throw;
+            }
+            catch (InvalidOperationException invalidOpEx)
+            {
+                // Handle invalid operations, such as an issue with the DbContext
+                Console.WriteLine($"Invalid operation: {invalidOpEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Handle other types of exceptions
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public async Task<double> GetTradeFee()
         {
             using var context = dbContextFactory.CreateDbContext();
