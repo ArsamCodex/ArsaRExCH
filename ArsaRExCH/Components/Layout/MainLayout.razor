@@ -1,24 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
-
 <style>
+    /* Your existing styles */
     .top-row {
         display: flex;
-        align-items: center; /* Centers items vertically */
-        gap: 20px; /* Adds spacing between elements */
+        align-items: center;
+        gap: 20px;
     }
-
     .component-wrapper {
-        margin-left: auto; /* Pushes the component more to the right */
-        padding-right: 20px; /* Optional: Adds space between the component and the right side */
-        display: flex; /* Allows flex properties to work on the component */
-        justify-content: center; /* Centers the component within the wrapper */
+        margin-left: auto;
+        padding-right: 20px;
+        display: flex;
+        justify-content: center;
     }
-
     .tab-container {
-        position: relative; /* Positions the sub-tabs relative to the main tab */
+        position: relative;
     }
-
     .main-tab {
         text-decoration: none;
         padding: 10px;
@@ -27,37 +24,55 @@
         border-radius: 4px;
         cursor: pointer;
     }
-
     .sub-tabs {
-        display: none; /* Hide sub-tabs initially */
+        display: none;
         position: absolute;
-        top: 100%; /* Positions the sub-tabs below the main tab */
+        top: 100%;
         left: 0;
         background-color: white;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        z-index: 10; /* Ensures sub-tabs are on top */
+        z-index: 10;
         min-width: 100px;
     }
-
-        .sub-tabs a {
-            display: block;
-            padding: 8px;
-            text-decoration: none;
-            color: black;
-            border-bottom: 1px solid #ddd;
-        }
-
-            .sub-tabs a:hover {
-                background-color: #f0f0f0;
-            }
-
-    /* Show sub-tabs on hover */
+    .sub-tabs a {
+        display: block;
+        padding: 8px;
+        text-decoration: none;
+        color: black;
+        border-bottom: 1px solid #ddd;
+    }
+    .sub-tabs a:hover {
+        background-color: #f0f0f0;
+    }
     .tab-container:hover .sub-tabs {
         display: block;
     }
+
+    /* Styles for the admin setup pop-up modal */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        width: 300px;
+        text-align: center;
+    }
 </style>
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -71,10 +86,10 @@
             <a href="AdminPanel">Admin Panel</a>
             <a href="AirDrop">AirDrop</a>
             <a href="BTCusdt">Trade</a>
-            
-            <!-- Tab 4 with hover effect to show more tabs -->
+
+            <!-- Tab with sub-tabs -->
             <div class="tab-container">
-                <a  class="main-tab">User Information</a>
+                <a class="main-tab">User Information</a>
                 <div class="sub-tabs">
                     <a href="BetHistory">Bet History</a>
                     <a href="BitcoinPoolOneUsers">Pools</a>
@@ -82,25 +97,48 @@
                     <a href="#tab8">Tab 8</a>
                 </div>
             </div>
-            <!-- Wrapper div to style the component positioning -->
-          
-            <div class="component-wrapper">
-            </div>
-         <ArsaRExCH.Components.Pages.BtcPrice></ArsaRExCH.Components.Pages.BtcPrice>
 
+            <div class="component-wrapper">
+                <!-- Additional components can be added here -->
+            </div>
+            <ArsaRExCH.Components.Pages.BtcPrice></ArsaRExCH.Components.Pages.BtcPrice>
         </div>
-     
+
         <ArsaRExCH.Components.AdminComponents.MessageAdmin></ArsaRExCH.Components.AdminComponents.MessageAdmin>
 
         <article class="content px-4">
-     
             @Body
         </article>
     </main>
 </div>
+
+@if (showAdminSetup)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <ArsaRExCH.Components.AdminComponents.AdminSetup OnSetupComplete="HandleSetupComplete" />
+        </div>
+    </div>
+}
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private bool showAdminSetup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the admin setup is required
+        showAdminSetup = true;
+    }
+
+    private void HandleSetupComplete(bool isComplete)
+    {
+        // Hide the setup modal once setup is complete
+        showAdminSetup = !isComplete;
+    }
+}
