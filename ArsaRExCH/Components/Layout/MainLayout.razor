@@ -1,29 +1,45 @@
 ﻿@inherits LayoutComponentBase
-
+@using ArsaRExCH.Components.Account
+@using ArsaRExCH.Data
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 <style>
-    /* Your existing styles */
+    /* General Layout Styling */
     .top-row {
         display: flex;
         align-items: center;
         gap: 20px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #ddd;
     }
+
     .component-wrapper {
         margin-left: auto;
         padding-right: 20px;
         display: flex;
         justify-content: center;
     }
+
+    /* Tab Container Styling */
     .tab-container {
         position: relative;
     }
+
     .main-tab {
         text-decoration: none;
-        padding: 10px;
+        padding: 10px 15px;
         background-color: #e7e7e7;
         border: 1px solid #ccc;
         border-radius: 4px;
         cursor: pointer;
     }
+
     .sub-tabs {
         display: none;
         position: absolute;
@@ -34,23 +50,26 @@
         border-radius: 4px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         z-index: 10;
-        min-width: 100px;
+        min-width: 150px;
     }
-    .sub-tabs a {
-        display: block;
-        padding: 8px;
-        text-decoration: none;
-        color: black;
-        border-bottom: 1px solid #ddd;
-    }
-    .sub-tabs a:hover {
-        background-color: #f0f0f0;
-    }
+
+        .sub-tabs a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            color: black;
+            border-bottom: 1px solid #ddd;
+        }
+
+            .sub-tabs a:hover {
+                background-color: #f0f0f0;
+            }
+
     .tab-container:hover .sub-tabs {
         display: block;
     }
 
-    /* Styles for the admin setup pop-up modal */
+    /* Modal Styling */
     .modal {
         position: fixed;
         top: 0;
@@ -63,15 +82,32 @@
         align-items: center;
         z-index: 1000;
     }
+
+    button {
+        background-color: #007bff; /* Blue background */
+        color: white; /* White text */
+        border: none; /* No border */
+        padding: 10px 15px; /* Padding */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+    }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
     .modal-content {
         background-color: white;
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         width: 300px;
-        text-align: center;
+        % text-align: center;
     }
 </style>
+
+
+
 
 <div class="page">
     <div class="sidebar">
@@ -79,7 +115,7 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row">
             <a href="wallets">Wallet</a>
             <a href="AddMoneyBank">Deposit Money</a>
             <a href="Bet1">Bet</a>
@@ -87,24 +123,21 @@
             <a href="AirDrop">AirDrop</a>
             <a href="BTCusdt">Trade</a>
 
-            <!-- Tab with sub-tabs -->
             <div class="tab-container">
                 <a class="main-tab">User Information</a>
                 <div class="sub-tabs">
                     <a href="BetHistory">Bet History</a>
                     <a href="BitcoinPoolOneUsers">Pools</a>
                     <a href="Forum">Forum</a>
-                    <a href="#tab8">Tab 8</a>
                 </div>
             </div>
 
             <div class="component-wrapper">
-                <!-- Additional components can be added here -->
+                <ArsaRExCH.Components.Pages.BtcPrice />
             </div>
-            <ArsaRExCH.Components.Pages.BtcPrice></ArsaRExCH.Components.Pages.BtcPrice>
         </div>
 
-        <ArsaRExCH.Components.AdminComponents.MessageAdmin></ArsaRExCH.Components.AdminComponents.MessageAdmin>
+        <ArsaRExCH.Components.AdminComponents.MessageAdmin />
 
         <article class="content px-4">
             @Body
@@ -112,33 +145,59 @@
     </main>
 </div>
 
-@if (showAdminSetup)
-{
-    <div class="modal">
-        <div class="modal-content">
-            <ArsaRExCH.Components.AdminComponents.AdminSetup OnSetupComplete="HandleSetupComplete" />
-        </div>
-    </div>
-}
-
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-
+<p>@ErrorMessage</p>
 @code {
-    private bool showAdminSetup = false;
+    public string user2 { get; set; }
+    private bool isAdminSetupComplete = false;
+    public string ErrorMessage { get; set; } = string.Empty;
+    protected string currentUserRole { get; set; }
+    private bool isAdmin;
+    private ApplicationUser user5 = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        // Check if the admin setup is required
-        showAdminSetup = true;
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+                user2 = user5.Id; // Get the user ID here
+                Console.WriteLine(user5.Id);
+
+                // Retrieve ClaimsPrincipal directly from HttpContext
+                var userClaimsPrincipal = context.User;
+
+                // Assuming you want to check for admin setup
+                isAdminSetupComplete = await _adminInterface.CheckAdminSetupStatusAsync();
+
+                // Get roles and check if "Admin" is among them
+                var userRoles = await _adminInterface.GetUserRolesAsync(userClaimsPrincipal);
+                isAdmin = userRoles.Contains("Admin");
+
+                if (isAdminSetupComplete && isAdmin==true)
+                {
+                    Console.WriteLine($"mainlayout{user2}");
+                    NavigationManager.NavigateTo($"/AdminSet/{user2}");
+                }
+            }
+            else
+            {
+                ErrorMessage = "Unable to retrieve user.";
+            }
+        }
+        else
+        {
+            ErrorMessage = "HttpContext is not available.";
+        }
     }
 
-    private void HandleSetupComplete(bool isComplete)
-    {
-        // Hide the setup modal once setup is complete
-        showAdminSetup = !isComplete;
-    }
+
+
+
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241028112413_walletbtcexchangeaded")]
-    partial class walletbtcexchangeaded
+    [Migration("20241028214559_ininy")]
+    partial class ininy
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,6 +91,42 @@ namespace ArsaRExCH.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "fc905e4c-a89a-46e4-90fa-a993fab9eee0",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "674332ef-a8f4-413e-9411-a6e78c134466",
+                            Email = "ARMINTTWAT@GMAIL.COM",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ARMINTTWAT@GMAIL.COM",
+                            NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "760c9be1-97ad-4dfa-8a43-80710e30e7e3",
+                            TwoFactorEnabled = false,
+                            UserName = "arminttwat@gmail.com"
+                        });
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.AdminSetupInit", b =>
+                {
+                    b.Property<int>("AdminSetupInitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminSetupInitId"));
+
+                    b.Property<bool>("ShowAdminSetupPopUp")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("AdminSetupInitId");
+
+                    b.ToTable("adminSetupInits");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.AdminWarningMessage", b =>
@@ -404,7 +440,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 10, 28, 11, 24, 12, 651, DateTimeKind.Local).AddTicks(6922),
+                            ListedDate = new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9418),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -412,7 +448,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 10, 28, 11, 24, 12, 651, DateTimeKind.Local).AddTicks(7005),
+                            ListedDate = new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9503),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -420,7 +456,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 10, 28, 11, 24, 12, 651, DateTimeKind.Local).AddTicks(7011),
+                            ListedDate = new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9509),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -648,6 +684,14 @@ namespace ArsaRExCH.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "9537d378-9c80-4f17-b3d9-82d536b5d93f",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -735,6 +779,13 @@ namespace ArsaRExCH.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "fc905e4c-a89a-46e4-90fa-a993fab9eee0",
+                            RoleId = "9537d378-9c80-4f17-b3d9-82d536b5d93f"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

@@ -1,0 +1,42 @@
+﻿@page "/AdminSet/{userId}"
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+<p>@ErrorMessage</p>
+
+@code {
+    [Parameter]
+    public string userId { get; set; }
+    public string user2 { get; set; }
+    public string ErrorMessage { get; set; } = string.Empty;
+    private bool isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            ErrorMessage = "Admin Wallets has been set up";
+            if (userId == user2)
+            {
+                await Task.Delay(1000);
+                await _adminInterface.EditAdminInit();
+                Console.WriteLine($"ActivatepageII{userId}");
+                Console.WriteLine($"ActivatepageII{user2}");
+                NavigationManager.NavigateTo($"/AdminInformation/{userId}");
+
+                }
+            
+
+        }
+
+
+    }
+}

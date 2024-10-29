@@ -1,0 +1,31 @@
+﻿@code {
+
+    [Parameter] public string ButtonText { get; set; } = "Click Me!";
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private async Task HandleClick()
+    {
+        // Trigger the event when the button is clicked
+        await OnClick.InvokeAsync();
+    }
+}
+
+<button class="custom-button" @onclick="HandleClick">
+    @ButtonText
+</button>
+
+<style>
+    .custom-button {
+        background-color: #007bff; /* Blue background */
+        color: white; /* White text */
+        border: none; /* No border */
+        padding: 10px 15px; /* Padding */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s; /* Smooth transition */
+    }
+
+        .custom-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+</style>

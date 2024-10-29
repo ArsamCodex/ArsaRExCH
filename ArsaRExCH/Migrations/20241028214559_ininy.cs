@@ -8,11 +8,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class iini : Migration
+    public partial class ininy : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "adminSetupInits",
+                columns: table => new
+                {
+                    AdminSetupInitId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShowAdminSetupPopUp = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_adminSetupInits", x => x.AdminSetupInitId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "adminWarningMessages",
                 columns: table => new
@@ -199,7 +212,8 @@ namespace ArsaRExCH.Migrations
                 {
                     TradeFeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FeeInBtc = table.Column<double>(type: "float", nullable: false),
-                    SetByAdminId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    SetByAdminId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BitcoinWalletExchange = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -477,14 +491,29 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "9537d378-9c80-4f17-b3d9-82d536b5d93f", null, "Admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "fc905e4c-a89a-46e4-90fa-a993fab9eee0", 0, "674332ef-a8f4-413e-9411-a6e78c134466", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "760c9be1-97ad-4dfa-8a43-80710e30e7e3", false, "arminttwat@gmail.com" });
+
+            migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8724), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8771), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 10, 25, 21, 6, 12, 929, DateTimeKind.Local).AddTicks(8775), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9418), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9503), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9509), "ETH", "ETH" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "9537d378-9c80-4f17-b3d9-82d536b5d93f", "fc905e4c-a89a-46e4-90fa-a993fab9eee0" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AirDrops_ApplicationUserId",
@@ -564,6 +593,9 @@ namespace ArsaRExCH.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "adminSetupInits");
+
             migrationBuilder.DropTable(
                 name: "adminWarningMessages");
 

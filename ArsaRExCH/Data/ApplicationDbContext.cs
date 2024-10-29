@@ -27,6 +27,7 @@ namespace ArsaRExCH.Data
         public DbSet<Post> Post { get; set; }
         public DbSet<Reply> Reply { get; set; }
         public DbSet<Trade> Trade { get; set; }
+        public DbSet<AdminSetupInit> adminSetupInits { get;set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Reply>()
@@ -41,6 +42,9 @@ namespace ArsaRExCH.Data
                 .WithMany(a => a.Posts)
                 .HasForeignKey(p => p.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Restrict); // Or use DeleteBehavior.NoAction
+            modelBuilder.Entity<AdminSetupInit>()
+            .Property(a => a.ShowAdminSetupPopUp)
+            .HasDefaultValue(true);
 
             base.OnModelCreating(modelBuilder);
        
@@ -60,7 +64,7 @@ namespace ArsaRExCH.Data
             */
 
 
-            // SeedInitialData(modelBuilder);
+             SeedInitialData(modelBuilder);
             SeedInitialWalletData(modelBuilder);
 
 
@@ -80,9 +84,9 @@ namespace ArsaRExCH.Data
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = "arminttwat@gmail.com",
-                NormalizedUserName = "arminttwat@gmail.com",
-                Email = "arminttwat@gmail.com",
-                NormalizedEmail = "NEWUSER@EXAMPLE.COM",
+                NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
+                Email = "ARMINTTWAT@GMAIL.COM",
+                NormalizedEmail = "ARMINTTWAT@GMAIL.COM",
                 EmailConfirmed = true,
                 PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", // Replace this with the hashed password
                 SecurityStamp = Guid.NewGuid().ToString()

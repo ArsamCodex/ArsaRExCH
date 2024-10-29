@@ -86,6 +86,18 @@ namespace ArsaRExCH.InterfaceIMPL
                 throw new Exception("Some Problem");
             }
         }
+
+        public async Task<bool> CheckAdminSetupStatusAsync()
+        {
+            // Get the single AdminSetupInit record from the database
+            using var context = _dbContext.CreateDbContext();
+            var setupInit = await context.adminSetupInits.FirstOrDefaultAsync();
+
+            // Return the ShowAdminSetupPopUp value, or false if not found
+            return setupInit?.ShowAdminSetupPopUp ?? false;
+        }
+
+
         public async Task DeleteAdminWarning(string id)
         {
             using var _context = _dbContext.CreateDbContext();
@@ -102,6 +114,28 @@ namespace ArsaRExCH.InterfaceIMPL
             warning.IsDeleted = true;
             // Save the changes to the database
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<AdminSetupInit> EditAdminInit()
+        {
+            // Retrieve the existing AdminSetupInit record (assuming you know its ID)
+            using var _context = _dbContext.CreateDbContext();
+
+            var setupInit = await _context.adminSetupInits.FirstOrDefaultAsync();
+
+            if (setupInit != null)
+            {
+                // Modify the properties you need to update
+                setupInit.ShowAdminSetupPopUp = false; // Set this to the desired value
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                return setupInit; // Return the updated record
+            }
+
+            // Optionally handle the case where the record is not found
+            throw new InvalidOperationException("Admin setup initialization record not found.");
         }
 
         public async Task<AdminWarningMessage> GetAdminWarningMessage(DateTime date)

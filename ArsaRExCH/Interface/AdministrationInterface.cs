@@ -18,6 +18,7 @@ namespace ArsaRExCH.Interface
         Task<AdminWarningMessage> GetAdminWarningMessage(DateTime date);
         Task DeleteAdminWarning(string id);
         Task<string?> GetScheduledMessageAsync();
-
+        Task<bool> CheckAdminSetupStatusAsync();
+        Task<AdminSetupInit> EditAdminInit();
     }
 }
