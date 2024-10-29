@@ -27,6 +27,7 @@
 
         try
         {
+
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
             Console.WriteLine("Authentication state retrieved");
@@ -35,7 +36,13 @@
             {
                 user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
                 Console.WriteLine($"User authenticated: {user2}");
-
+                bool walletExists2 = await _face.CheckAndCreateWallets(user2);
+                if (!walletExists2)
+                {
+                    ErrorMessage = "Admin Is Already Initialized";
+                    await Task.Delay(1000);
+                    return;
+                }
                 await Task.Delay(1000);
                 await _adminInterface.EditAdminInit();
                 Console.WriteLine("Admin init edited");
