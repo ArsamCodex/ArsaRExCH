@@ -175,22 +175,33 @@ namespace ArsaRExCH.InterfaceIMPL
         /*
          * use this 3 wallet as default for every user when registered
          * */
-        public async Task CheckAndCreateWallets(string userID)
+        public async Task<bool> CheckAndCreateWallets(string userID)
         {
             try
             {
-                var context = _dbContextFactory.CreateDbContext();
+                using var context = _dbContextFactory.CreateDbContext();
                 var pairs = await context.Pair
-                      .Select(p => new { p.PaiName, p.NetworkName })
-                      .ToListAsync();
+                    .Select(p => new { p.PaiName, p.NetworkName })
+                    .ToListAsync();
+
+                bool walletAlreadyExists = false;
 
                 foreach (var pair in pairs)
                 {
+                    bool walletExists = await context.Wallet
+                        .AnyAsync(w => w.UserIDSec == userID && w.PairName == pair.PaiName);
+
+                    if (walletExists)
+                    {
+                        walletAlreadyExists = true;
+                        continue; // Skip creation if wallet already exists
+                    }
+
                     if (pair.NetworkName == "BTC")
                     {
                         await CreateBTCWallet(userID, pair.PaiName);
                     }
-                    if (pair.NetworkName == "ETH")
+                    else if (pair.NetworkName == "ETH")
                     {
                         if (pair.PaiName == "ETH")
                         {
@@ -198,38 +209,43 @@ namespace ArsaRExCH.InterfaceIMPL
                         }
                         else
                         {
-                            var x = await _context.Wallet.FirstOrDefaultAsync(c => c.UserIDSec == userID && c.PairName == "ETH");
-                            var ad = x.Adress;
-                            var seed = x.SeedPhrase;
-                            var privateKey = x.PrivateKey;
-                            var walletEntity = new Model.Wallet
-                            {
-                                UserIDSec = userID, // Replace with actual user ID retrieval logic
-                                PairName = pair.PaiName,
-                                Adress = ad,
-                                Amount = 0,
-                                SeedPhrase = seed,
-                                CurrentPrice = 0,
-                                PrivateKey = privateKey,
-                                Network = "ETH"
-                            };
+                            var existingWallet = await context.Wallet
+                                .FirstOrDefaultAsync(c => c.UserIDSec == userID && c.PairName == "ETH");
 
-                            // Save the wallet entity to the database
-                            await context.Wallet.AddAsync(walletEntity);
-                            await context.SaveChangesAsync();
+                            if (existingWallet != null)
+                            {
+                                var walletEntity = new Model.Wallet
+                                {
+                                    UserIDSec = userID,
+                                    PairName = pair.PaiName,
+                                    Adress = existingWallet.Adress,
+                                    Amount = 0,
+                                    SeedPhrase = existingWallet.SeedPhrase,
+                                    CurrentPrice = 0,
+                                    PrivateKey = existingWallet.PrivateKey,
+                                    Network = "ETH"
+                                };
+                                await context.Wallet.AddAsync(walletEntity);
+                                await context.SaveChangesAsync();
+                            }
                         }
                     }
-                    if (pair.NetworkName == "BNB")
+                    else if (pair.NetworkName == "BNB")
                     {
                         await CreateBNBWallet(userID, pair.PaiName);
                     }
                 }
+
+                return walletAlreadyExists; // Return true if any wallets already existed
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                return false;
             }
         }
+
+
         private class BlockCypherBalanceResponse
         {
             public long balance { get; set; }

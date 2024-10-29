@@ -1,12 +1,5 @@
 ﻿@inherits LayoutComponentBase
-@using ArsaRExCH.Components.Account
-@using ArsaRExCH.Data
-@using Microsoft.AspNetCore.Authorization
-@using System.Security.Claims
-@inject IHttpContextAccessor HttpContextAccessor
-@inject IdentityUserAccessor UserAccessor
-@inject NavigationManager NavigationManager
-@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+
 <style>
     /* General Layout Styling */
     .top-row {
@@ -149,56 +142,4 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-<p>@ErrorMessage</p>
-@code {
-    public string user2 { get; set; }
-    private bool isAdminSetupComplete = false;
-    public string ErrorMessage { get; set; } = string.Empty;
-    protected string currentUserRole { get; set; }
-    private bool isAdmin;
-    private ApplicationUser user5 = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-        /*
-        var context = HttpContextAccessor.HttpContext;
-        if (context != null)
-        {
-            var user5 = await UserAccessor.GetRequiredUserAsync(context);
-            if (user5 != null)
-            {
-                user2 = user5.Id; // Get the user ID here
-                Console.WriteLine(user5.Id);
-
-                // Retrieve ClaimsPrincipal directly from HttpContext
-                var userClaimsPrincipal = context.User;
-
-                // Assuming you want to check for admin setup
-                isAdminSetupComplete = await _adminInterface.CheckAdminSetupStatusAsync();
-
-                // Get roles and check if "Admin" is among them
-                var userRoles = await _adminInterface.GetUserRolesAsync(userClaimsPrincipal);
-                isAdmin = userRoles.Contains("Admin");
-
-                if (isAdminSetupComplete && isAdmin==true)
-                {
-                    Console.WriteLine($"mainlayout{user2}");
-                    NavigationManager.NavigateTo($"/AdminSet/{user2}");
-                }
-            }
-            else
-            {
-                ErrorMessage = "Unable to retrieve user.";
-            }
-        }
-        else
-        {
-            ErrorMessage = "HttpContext is not available.";
-        }
-    }
-        */
-
-
-
-}
-}

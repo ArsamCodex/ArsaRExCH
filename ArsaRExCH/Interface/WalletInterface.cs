@@ -12,7 +12,7 @@ namespace ArsaRExCH.Interface
         public Task<string> CreateETHWallet(string id,string PairName);
         public Task<string> CreateBNBWallet(string id, string PairName);
         public Task<decimal> GetBalanceFromBlockCypherAsync(string bitcoinAddress);
-        public Task CheckAndCreateWallets(string userID);
+        public Task<bool> CheckAndCreateWallets(string userID);
         Task<string> CreateETHNetworksWallet(string id, string PairName);
         public Task SendEmailAsync(EmailRequest emailreqquest);
         Task<double> GetBTCBalanceOfWallet(string walletId);

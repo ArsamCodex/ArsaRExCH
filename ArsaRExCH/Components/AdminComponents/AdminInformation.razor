@@ -6,38 +6,66 @@
 @attribute [Authorize]
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 @inject ArsaRExCH.Interface.WalletInterface<double> _face
-
+@rendermode InteractiveServer
 
 <h5>First Init Administration / Exchange</h5>
 <h6>Onlly User Whit Role "Exchange " or Admin At the time can Initialized The Application for first </h6>
 <p>3 wallet has been made for administration</p>
 <p>@userId From LayoutBase</p>
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p>@ErrorMessage</p>
+}
 @code {
     [Parameter]
     public string userId { get; set; }
     public string user2 { get; set; }
+    public string ErrorMessage { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        Console.WriteLine("OnInitializedAsync started");
 
-        if (user.Identity?.IsAuthenticated == true)
+        try
         {
-            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            Console.WriteLine("Authentication state retrieved");
 
-          //  ErrorMessage = "Admin Wallets has been set up";
-       
-            await Task.Delay(1000);
-            await _adminInterface.EditAdminInit();
-            Console.WriteLine($"ActivatepageII{userId}");
-            Console.WriteLine($"ActivatepageII{user2}");
-            await _face.CheckAndCreateWallets(userId);
-          
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                Console.WriteLine($"User authenticated: {user2}");
 
+                await Task.Delay(1000);
+                await _adminInterface.EditAdminInit();
+                Console.WriteLine("Admin init edited");
 
+                bool walletExists = await _face.CheckAndCreateWallets(user2);
+                Console.WriteLine($"Wallet exists check complete: {walletExists}");
 
+                if (walletExists)
+                {
+                    ErrorMessage = "Some wallets already exist for this user.";
+                    Console.WriteLine(ErrorMessage);
+                }
+                else
+                {
+                    ErrorMessage = "No existing wallets found; new wallets have been created.";
+                    Console.WriteLine(ErrorMessage);
+                }
+            }
+            else
+            {
+                ErrorMessage = "User is not authenticated.";
+                Console.WriteLine(ErrorMessage);
+            }
         }
-
-
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred: {ex.Message}";
+            Console.WriteLine($"Exception: {ex}");
+        }
     }
+
+
 }
