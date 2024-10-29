@@ -138,6 +138,60 @@ namespace ArsaRExCH.InterfaceIMPL
             throw new InvalidOperationException("Admin setup initialization record not found.");
         }
 
+        public async Task EditBTCWalletExchangeAmountDecrease(string userID, double amount)
+        {
+
+            var context = _dbContext.CreateDbContext();
+            // Retrieve the wallet entry for the specified user and currency pair
+            var wallet = await context.Wallet
+                .Where(c => c.UserIDSec == userID && c.PairName == "BTC")
+                .FirstOrDefaultAsync(); // Execute the query and get the first result
+
+            // Check if the wallet entry exists
+            if (wallet == null || amount < 0)
+            {
+                throw new InvalidOperationException("Wallet not found for the specified user.");
+            }
+            // Update the wallet amount
+            //USE THIS METHOD TO EDIT WALLET WHEN BET PLACED
+            wallet.Amount -= amount;
+            if (wallet.Amount < 0)
+            {
+                throw new InvalidOperationException("Invalid Bet: Wallet balance cannot be negative.");
+            }
+
+            // Save the updated wallet entry to the database
+            context.Wallet.Update(wallet);
+            await context.SaveChangesAsync();
+
+        }
+
+
+        public async Task EditBTCWalletExchangeAmountIncrease(string userID, double amount)
+        {
+            // Create a new DbContext instance and ensure it is disposed of correctly
+            using var context = _dbContext.CreateDbContext();
+
+            // Fetch the wallet for the specified user and BTC pair
+            var wallet = await context.Wallet
+                .Where(c => c.UserIDSec == userID && c.PairName == "BTC")
+                .FirstOrDefaultAsync();
+
+            // Check if the wallet exists and if the amount to increase is valid
+            if (wallet == null || amount < 0)
+            {
+                throw new InvalidOperationException("Wallet not found for the specified user, or amount is invalid.");
+            }
+
+            // Update the wallet amount by increasing it
+            wallet.Amount += amount;
+
+            // Save the changes to the database
+            context.Wallet.Update(wallet);
+            await context.SaveChangesAsync();
+        }
+
+
         public async Task<AdminWarningMessage> GetAdminWarningMessage(DateTime date)
         {
             using var _context = _dbContext.CreateDbContext();
@@ -239,6 +293,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<List<string>> GetUserRolesAsync(ClaimsPrincipal user)
         {
+            // Get the user ID from claims
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userId == null)
@@ -246,17 +301,21 @@ namespace ArsaRExCH.InterfaceIMPL
                 return new List<string>(); // User is not authenticated
             }
 
-            // Find the user using UserManager
-            var appUser = await UserManager.FindByIdAsync(userId);
+            // Create a new DbContext instance
+            using var context = _dbContext.CreateDbContext();
+
+            // Find the user using UserManager with the new context
+            var appUser = await context.Users.FindAsync(userId);
             if (appUser == null)
             {
                 return new List<string>(); // User not found
             }
 
-            // Get roles for the user
+            // Get roles for the user using the UserManager associated with the new context
             var roles = await UserManager.GetRolesAsync(appUser);
             return roles.ToList();
         }
+
 
 
         public async Task<bool> RemoveBannedCuntries(int banbId)

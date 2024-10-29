@@ -20,5 +20,7 @@ namespace ArsaRExCH.Interface
         Task<string?> GetScheduledMessageAsync();
         Task<bool> CheckAdminSetupStatusAsync();
         Task<AdminSetupInit> EditAdminInit();
+        Task EditBTCWalletExchangeAmountDecrease(string userID, double amount);
+        Task EditBTCWalletExchangeAmountIncrease(string userID, double amount);
     }
 }

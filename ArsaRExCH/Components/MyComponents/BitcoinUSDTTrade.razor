@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
 @inject ArsaRExCH.Interface.ITrade _tradeInterface
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
 @inject ArsaRExCH.Interface.WalletInterface<double> _walletInterface
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider _AuthenticationStateProvider
@@ -103,7 +104,7 @@
         if (e.FieldIdentifier.FieldName == nameof(tradeModel.symbolI))
         {
             // Update calculations or other logic based on the changed field
-          //  BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
+            //  BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
             await CalcuateUsdtGet();
         }
     }
@@ -144,6 +145,8 @@
         {
             await _tradeInterface.SaveTrade(trade);
             await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
+            string ExchangeUserid = "45dd7981-10da-437b-926a-65071f4da71b";
+            await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
             ErrorMessage = "Trade added successfully!";
             tradeModel = new Trade();
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
