@@ -11,7 +11,7 @@
 <h5>First Init Administration / Exchange</h5>
 <h6>Onlly User Whit Role "Exchange " or Admin At the time can Initialized The Application for first </h6>
 <p>3 wallet has been made for administration</p>
-<p>@userId From LayoutBase</p>
+<p>@userId </p>
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <p>@ErrorMessage</p>
@@ -37,7 +37,7 @@
                 user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
                 Console.WriteLine($"User authenticated: {user2}");
                 bool walletExists2 = await _face.CheckAndCreateWallets(user2);
-                if (!walletExists2)
+                if (walletExists2)
                 {
                     ErrorMessage = "Admin Is Already Initialized";
                     await Task.Delay(1000);
@@ -50,16 +50,8 @@
                 bool walletExists = await _face.CheckAndCreateWallets(user2);
                 Console.WriteLine($"Wallet exists check complete: {walletExists}");
 
-                if (walletExists)
-                {
-                    ErrorMessage = "Some wallets already exist for this user.";
-                    Console.WriteLine(ErrorMessage);
-                }
-                else
-                {
-                    ErrorMessage = "No existing wallets found; new wallets have been created.";
-                    Console.WriteLine(ErrorMessage);
-                }
+               
+              
             }
             else
             {

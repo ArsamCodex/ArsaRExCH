@@ -55,8 +55,9 @@ builder.Services.AddScoped<ITrade, ItradeIMPL>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped(http => new HttpClient
+builder.Services.AddHttpClient("BinanceClient", client =>
 {
+    client.BaseAddress = new Uri("https://api.binance.com/");
 });
 builder.Services.AddAuthentication(options =>
 {

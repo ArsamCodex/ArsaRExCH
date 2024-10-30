@@ -74,7 +74,9 @@
     {
         try
         {
-            TradeListLast50 = await _tradeInterface.GetAllTrades();
+            var allTrades = await _tradeInterface.GetAllTrades();
+            TradeListLast50 = allTrades.OrderByDescending(trade => trade.dateTime).ToList();
+
             await InvokeAsync(StateHasChanged); // Use InvokeAsync to ensure UI updates are on the correct thread
         }
         catch (Exception ex)

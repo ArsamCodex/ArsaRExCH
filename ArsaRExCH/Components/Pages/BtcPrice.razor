@@ -39,16 +39,16 @@
     {
         try
         {
-            // Use IHttpClientFactory to create an HttpClient instance
-            var httpClient = httpClientFactory.CreateClient();
+            // Use IHttpClientFactory to create an HttpClient instance with a pre-configured base address
+            var httpClient = httpClientFactory.CreateClient("BinanceClient");
 
             // Fetch BTC price
-            var btcResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+            var btcResponse = await httpClient.GetStringAsync("api/v3/ticker/price?symbol=BTCUSDT");
             var btcPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(btcResponse);
             btcPrice = decimal.Parse(btcPriceData.Price);
 
             // Fetch ETH price
-            var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+            var ethResponse = await httpClient.GetStringAsync("api/v3/ticker/price?symbol=ETHUSDT");
             var ethPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(ethResponse);
             ethPrice = decimal.Parse(ethPriceData.Price);
 
@@ -62,6 +62,7 @@
             Console.WriteLine($"Error fetching prices: {ex.Message}");
         }
     }
+
 
     public void Dispose()
     {
