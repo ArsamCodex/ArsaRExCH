@@ -31,13 +31,13 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-builder.Services.AddHostedService<BackgroundServiceForBetResault>();
-builder.Services.AddHostedService<DaailyMessageChedcker>();
+//builder.Services.AddHostedService<BackgroundServiceForBetResault>();
+//builder.Services.AddHostedService<DaailyMessageChedcker>();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<WalletInterface<double>, WalletInterfaceIMPL>();
-builder.Services.AddScoped<BetInterface, BetInterfaceIMPL>();
-builder.Services.AddScoped<PriceInterface, PrriceInterfaceIMPL>();
+builder.Services.AddTransient<WalletInterface<double>, WalletInterfaceIMPL>();
+builder.Services.AddTransient<BetInterface, BetInterfaceIMPL>();
+builder.Services.AddTransient<PriceInterface, PrriceInterfaceIMPL>();
 builder.Services.AddScoped<UserIpInterface, UserInterfaceIMPL>();
 builder.Services.AddScoped<AdministrationInterface, AdministrationInterfaceIMPL>();
 builder.Services.AddScoped<AirDropInterface, AirDropInterfaceIMP>();
@@ -53,7 +53,7 @@ builder.Services.AddScoped<ITrade, ItradeIMPL>();
 
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
+//builder.Services.AddHttpClient();
 
 builder.Services.AddHttpClient("BinanceClient", client =>
 {
@@ -94,7 +94,17 @@ builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddSingleton<DbContextFactory>();
 builder.Services.AddMudServices();
-
+builder.Services.AddHttpClient();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("https://localhost:7258/") // Change to your frontend's URL
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 
 
 
@@ -145,6 +155,7 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+builder.Logging.AddConsole();
 
 
 
@@ -152,7 +163,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
- //   await InitializeRolesAndAssignAdmin(services);
+    //   await InitializeRolesAndAssignAdmin(services);
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     // Ensure roles exist
@@ -164,66 +175,72 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseWebAssemblyDebugging();
-        app.UseMigrationsEndPoint();
-    }
-    else
-    {
-        app.UseExceptionHandler("/Error", createScopeForErrors: true);
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
-    }
-
-    app.UseHttpsRedirection();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ARsarExCH Public API");
-    }); app.UseStaticFiles();
-    app.UseAntiforgery();
-
-    app.MapRazorComponents<App>()
-        .AddInteractiveServerRenderMode()
-        .AddInteractiveWebAssemblyRenderMode()
-        .AddAdditionalAssemblies(typeof(ArsaRExCH.Client._Imports).Assembly);
-
-    // Add additional endpoints required by the Identity /Account Razor components.
-    app.MapAdditionalIdentityEndpoints();
-    app.MapControllers();
-    app.UseRouting();
-
-    app.UseAuthentication();  // Ensure this is called before UseAuthorization
-    app.UseAuthorization();
-    app.UseAntiforgery();
-    app.Run();
-
-
-    /*
-    async Task InitializeRolesAndAssignAdmin(IServiceProvider serviceProvider)
-    {
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        // Ensure "Admin" role exists
-        if (!await roleManager.RoleExistsAsync("Admin"))
-        {
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
-        }
-
-        // Find a user to assign the Admin role to
-        var user = await userManager.FindByEmailAsync("admin@example.com");
-        if (user != null && !(await userManager.IsInRoleAsync(user, "Admin")))
-        {
-            await userManager.AddToRoleAsync(user, "Admin");
-        }
-    }*/
-
-
 }
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+
+    app.UseWebAssemblyDebugging();
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+app.UseCors("AllowSpecificOrigin");
+app.UseHttpsRedirection();
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ARsarExCH Public API");
+}); 
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(ArsaRExCH.Client._Imports).Assembly);
+
+// Add additional endpoints required by the Identity /Account Razor components.
+app.MapAdditionalIdentityEndpoints();
+app.MapControllers();
+app.UseRouting();
+app.UseAuthentication();  // Ensure this is called before UseAuthorization
+app.UseAuthorization();
+app.UseAntiforgery();
+
+
+
+app.Run();
+
+
+/*
+async Task InitializeRolesAndAssignAdmin(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Ensure "Admin" role exists
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    // Find a user to assign the Admin role to
+    var user = await userManager.FindByEmailAsync("admin@example.com");
+    if (user != null && !(await userManager.IsInRoleAsync(user, "Admin")))
+    {
+        await userManager.AddToRoleAsync(user, "Admin");
+    }
+}*/
+
+
+
 
 
 

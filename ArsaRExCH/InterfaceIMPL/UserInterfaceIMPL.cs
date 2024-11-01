@@ -14,9 +14,11 @@ namespace ArsaRExCH.InterfaceIMPL
     public class UserInterfaceIMPL : UserIpInterface
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
-        public UserInterfaceIMPL( IDbContextFactory<ApplicationDbContext> dbContext)
+        private readonly HttpClient httpClient1;
+        public UserInterfaceIMPL( IDbContextFactory<ApplicationDbContext> dbContext, HttpClient httpClient1)
         {
             _dbContext = dbContext;
+            this.httpClient1 = httpClient1;
         }
 
         public async Task<List<MaxInzetResultDTO>> CalculateMaxInzetAsync()
@@ -159,18 +161,18 @@ namespace ArsaRExCH.InterfaceIMPL
         
         {
             // Create a new instance of HttpClient
-            using (var httpClient = new HttpClient())
-            {
+         
                 try
                 {
+
                     // Fetch the external IP address
-                    string externalIpString = (await httpClient.GetStringAsync("http://icanhazip.com")).Trim();
+                    string externalIpString = (await httpClient1.GetStringAsync("http://icanhazip.com")).Trim();
 
                     // Parse the string into an IPAddress object
                     var externalIp = IPAddress.Parse(externalIpString);
 
                     // Fetch country information using a geolocation service
-                    var geoInfo = await httpClient.GetStringAsync($"http://ip-api.com/json/{externalIpString}");
+                    var geoInfo = await httpClient1.GetStringAsync($"http://ip-api.com/json/{externalIpString}");
                     dynamic geoData = JsonConvert.DeserializeObject(geoInfo);
 
                     // Extract the country code and get the first three characters
@@ -187,6 +189,6 @@ namespace ArsaRExCH.InterfaceIMPL
                     return "Unknown"; // Return "Unknown" if there's an error
                 }
             } // The HttpClient instance is disposed of here
-        }
+        
     }
 }

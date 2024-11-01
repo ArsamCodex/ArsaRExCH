@@ -5,6 +5,8 @@
 @inject HttpClient Http
 @inject ArsaRExCH.Interface.ILiveChat _liveCHatInterface
 @rendermode InteractiveServer
+@using  System.Text
+
 @attribute [Authorize]
 
 <div class="form-group mt-3">
@@ -50,46 +52,54 @@
         _ = RefreshMessagesAsync(_cancellationTokenSource.Token);
     }
 
-    private async Task RefreshMessagesAsync(CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); // Wait for 5 seconds
-            await LoadMessages();
-            Console.WriteLine("refreshd DOne");
-            messagetoshow = "Refreshed"; // Update message
-            StateHasChanged(); // Ensure UI refreshes after each API call
-        }
-    }
-
+  
     private async Task SaveMessage()
     {
         lifeChat.TimeAndDate = DateTime.Now;
         lifeChat.ApplicationUserId = user2;
         await _liveCHatInterface.SaveMessage(lifeChat);
         await LoadMessages();
+        StateHasChanged();
         lifeChat = new LiveChat();
     }
 
     private async Task LoadMessages()
     {
-        // Retrieve all messages from the database
-        liveChats = await _liveCHatInterface.GetAllMessages();
-
-        // Clear the existing content
-        Messages = "";
-
-        // Append each message to the text area
-        foreach (var chat in liveChats.OrderByDescending(x => x.TimeAndDate))
+        try
         {
-            // Take the last 6 characters of the ApplicationUserId string
-            string userIdLastSix = chat.ApplicationUserId.Length > 6
-                                   ? chat.ApplicationUserId.Substring(chat.ApplicationUserId.Length - 6)
-                                   : chat.ApplicationUserId;
+            liveChats = await _liveCHatInterface.GetAllMessages();
+            var messageBuilder = new StringBuilder();
 
-            Messages += $"{userIdLastSix}:({chat.TimeAndDate}) : {chat.Message} \n";
+            foreach (var chat in liveChats.OrderByDescending(x => x.TimeAndDate))
+            {
+                string userIdLastSix = chat.ApplicationUserId.Length > 6
+                                       ? chat.ApplicationUserId.Substring(chat.ApplicationUserId.Length - 6)
+                                       : chat.ApplicationUserId;
+                messageBuilder.AppendLine($"{userIdLastSix}: ({chat.TimeAndDate}) : {chat.Message}");
+            }
+
+            Messages = messageBuilder.ToString();
+        }
+        catch (ObjectDisposedException ex)
+        {
+            Console.WriteLine("Service was disposed prematurely: " + ex.Message);
+            // Consider re-throwing or handling based on your needs
         }
     }
+
+    private async Task RefreshMessagesAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            await LoadMessages();
+
+            Console.WriteLine("Refreshed");
+            messagetoshow = "Refreshed"; // For UI update
+            StateHasChanged();
+        }
+    }
+
 
     public void Dispose()
     {

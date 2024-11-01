@@ -20,3 +20,10 @@ Contact
 If you have any questions or suggestions, feel free to reach out:
 
 Email: arminttwat@gmail.com
+
+
+
+
+Setup First Init: 
+Exchange user should login 1 time to app and goes to SetUpAdmin/Exchange page in Admin page
+Admin should set Trading fee , Add USDT pair , Trading Pool,

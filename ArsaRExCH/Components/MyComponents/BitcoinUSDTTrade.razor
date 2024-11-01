@@ -9,16 +9,18 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
-
+@attribute [Authorize]
+@implements IDisposable
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
-
+    <!---
     <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: white">
         <AllTradesHere></AllTradesHere>
-    </div>
+    </div>-->
 </div>
+
 <h5><b>@tradeModel.TradePair</b></h5>
 <div style="display: flex;">
     <div style="width: 20%; margin-right: 10px;">
@@ -180,6 +182,14 @@
         {
             Console.WriteLine($"Invalid format for double conversion: '{input}'");
             return 0;
+        }
+    }
+    public void Dispose()
+    {
+        // Unsubscribe from the OnFieldChanged event
+        if (editContext != null)
+        {
+            editContext.OnFieldChanged -= HandleFieldChanged;
         }
     }
 }

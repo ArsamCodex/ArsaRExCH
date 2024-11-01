@@ -53,7 +53,7 @@
             ethPrice = decimal.Parse(ethPriceData.Price);
 
             // Log to console for debugging
-            Console.WriteLine($"BTC Price: {btcPrice}, ETH Price: {ethPrice}");
+            Console.WriteLine($"BTC Price from btcprice component: {btcPrice}, ETH Price: {ethPrice}");
 
             await InvokeAsync(StateHasChanged); // Notify the UI to re-render
         }
@@ -62,7 +62,11 @@
             Console.WriteLine($"Error fetching prices: {ex.Message}");
         }
     }
-
+    private class CryptoPriceResponse
+    {
+        [JsonPropertyName("price")]
+        public string Price { get; set; }
+    }
 
     public void Dispose()
     {
@@ -70,9 +74,5 @@
         timer?.Dispose();
     }
 
-    private class CryptoPriceResponse
-    {
-        [JsonPropertyName("price")]
-        public string Price { get; set; }
-    }
+  
 }

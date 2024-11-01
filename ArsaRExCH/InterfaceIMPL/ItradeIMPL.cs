@@ -17,7 +17,7 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                using var context = dbContextFactory.CreateDbContext();
+                await using var context = dbContextFactory.CreateDbContext();
                 return await context.Trade
                      .Include(t => t.User) // Load User
                      .Include(t => t.BitcoinPool) // Load BitcoinPool
@@ -46,7 +46,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<double> GetTradeFee()
         {
-            using var context = dbContextFactory.CreateDbContext();
+           await using var context = dbContextFactory.CreateDbContext();
 
             try
             {

@@ -170,7 +170,7 @@ namespace ArsaRExCH.InterfaceIMPL
         public async Task EditBTCWalletExchangeAmountIncrease(string userID, double amount)
         {
             // Create a new DbContext instance and ensure it is disposed of correctly
-            using var context = _dbContext.CreateDbContext();
+           await using var context = _dbContext.CreateDbContext();
 
             // Fetch the wallet for the specified user and BTC pair
             var wallet = await context.Wallet

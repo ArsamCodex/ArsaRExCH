@@ -4,12 +4,22 @@
 <div id="chart-container" style="width: 96%; height: 400px;"></div>
 
 @code {
+    private bool _isDisposed;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !_isDisposed)
         {
-            string symbol = "BTCUSDT"; // Trading pair
+            string symbol = "BTCUSDT";
             await JSRuntime.InvokeVoidAsync("waitForTradingViewAndInitialize", symbol);
         }
     }
+
+    // Implement IDisposable interface explicitly
+    public void Dispose()
+    {
+        _isDisposed = true;
+        // Add any additional cleanup logic here, if needed
+    }
+
 }

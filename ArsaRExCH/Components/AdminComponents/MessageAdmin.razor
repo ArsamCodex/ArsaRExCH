@@ -13,7 +13,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _timer = new Timer(CheckTime, null, 0, 1000); // Check every second
+        _timer = new Timer(CheckTime, null, 0, 10000); // Check every second
         await FetchMessageAsync();
     }
 

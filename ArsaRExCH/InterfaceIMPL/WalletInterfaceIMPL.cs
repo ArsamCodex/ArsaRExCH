@@ -21,15 +21,13 @@ namespace ArsaRExCH.InterfaceIMPL
 {
     public class WalletInterfaceIMPL : WalletInterface<double>
     {
-        private readonly ApplicationDbContext _context;
-        public readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
 
-        public WalletInterfaceIMPL(ApplicationDbContext context, HttpClient httpClient, IConfiguration configuration, IDbContextFactory<ApplicationDbContext> dbContextFactory)
+        public WalletInterfaceIMPL(HttpClient httpClient, IConfiguration configuration, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
-            _context = context;
-            this.httpClient = httpClient;
+            _httpClient = httpClient;
             _configuration = configuration;
             _dbContextFactory = dbContextFactory;
         }
@@ -158,7 +156,7 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             var url = $"https://api.blockcypher.com/v1/btc/main/addrs/{bitcoinAddress}/balance";
 
-            var response = await httpClient.GetFromJsonAsync<BlockCypherBalanceResponse>(url);
+            var response = await _httpClient.GetFromJsonAsync<BlockCypherBalanceResponse>(url);
 
             if (response != null)
             {
@@ -303,7 +301,7 @@ namespace ArsaRExCH.InterfaceIMPL
 
             string url = $"https://blockchain.info/balance?active={walletId}";
 
-            HttpResponseMessage response = await httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException($"Failed to retrieve balance for wallet {walletId}. Status code: {response.StatusCode}");
@@ -517,7 +515,8 @@ namespace ArsaRExCH.InterfaceIMPL
             var topCount = 10;
             try
             {
-                // Fetch top X winners
+                var _context = _dbContextFactory.CreateDbContext();
+
                 var result = await _context.Bet
                     .Where(b => b.WiningAmount != 0 && b.WiningAmount !=null) // Filter out irrelevant bets
                     .GroupBy(b => b.UserIdSec)
@@ -583,7 +582,7 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                using var context = _dbContextFactory.CreateDbContext(); // Create a new DbContext
+               await using var context = _dbContextFactory.CreateDbContext(); // Create a new DbContext
 
                 // Retrieve the user's wallets for BTC and USDT
                 var btcWallet = await context.Wallet.FirstOrDefaultAsync(w => w.UserIDSec == userId && w.PairName == "BTC");
@@ -618,30 +617,29 @@ namespace ArsaRExCH.InterfaceIMPL
             catch (KeyNotFoundException ex)
             {
                 // Handle cases where the wallet was not found
-                ErrorMessage = $"Wallet error: {ex.Message}";
+              //  ErrorMessage = $"Wallet error: {ex.Message}";
             }
             catch (InvalidOperationException ex)
             {
                 // Handle cases where the operation is invalid, such as insufficient balance
-                ErrorMessage = $"Operation error: {ex.Message}";
+               // ErrorMessage = $"Operation error: {ex.Message}";
             }
             catch (DbUpdateException ex)
             {
                 // Handle database update exceptions, such as connection issues or concurrency conflicts
-                ErrorMessage = $"Database error: {ex.Message}";
+               // ErrorMessage = $"Database error: {ex.Message}";
             }
             catch (ArgumentNullException ex)
             {
                 // Handle cases where a null argument was passed (unlikely here, but just in case)
-                ErrorMessage = $"Argument error: {ex.Message}";
+               // ErrorMessage = $"Argument error: {ex.Message}";
             }
             catch (Exception ex)
             {
                 // Handle any other unexpected exceptions
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+               // ErrorMessage = $"An unexpected error occurred: {ex.Message}";
             }
         }
 
-        public string ErrorMessage { get; private set; } // Property to hold error messages
     }
 }

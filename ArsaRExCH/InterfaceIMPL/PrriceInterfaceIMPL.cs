@@ -9,13 +9,20 @@ namespace ArsaRExCH.InterfaceIMPL
 {
     public class PrriceInterfaceIMPL : PriceInterface
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        // Constructor to inject IHttpClientFactory
+        public PrriceInterfaceIMPL(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
         public async Task<double> GetBtcPriceFromBinance()
         {
             try
             {
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    var btcResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+                var httpClient = _httpClientFactory.CreateClient("BinanceClient");
+
+                var btcResponse = await httpClient.GetStringAsync("/api/v3/ticker/price?symbol=BTCUSDT");
                     var btcPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(btcResponse);
 
                     // Convert the price string to double
@@ -23,7 +30,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     {
                         return (double)btcPrice; // Return as double
                     }
-                }
+                
             }
             catch (Exception ex)
             {
@@ -37,9 +44,9 @@ namespace ArsaRExCH.InterfaceIMPL
         {
             try
             {
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+                var httpClient = _httpClientFactory.CreateClient("BinanceClient");
+
+                var ethResponse = await httpClient.GetStringAsync("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
                     var ethPriceData = JsonSerializer.Deserialize<CryptoPriceResponse>(ethResponse);
 
                     // Convert the price string to double
@@ -47,7 +54,7 @@ namespace ArsaRExCH.InterfaceIMPL
                     {
                         return (double)ethPrice; // Return as double
                     }
-                }
+                
             }
             catch (Exception ex)
             {

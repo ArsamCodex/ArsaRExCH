@@ -1,17 +1,20 @@
 ﻿using ArsaRExCH.Interface;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ArsaRExCH.StaticsHelper
-{
+{/*
     public class DaailyMessageChedcker : BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
+        
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
-
-
-        public DaailyMessageChedcker(IServiceProvider serviceProvider)
+        public DaailyMessageChedcker(IServiceScopeFactory serviceScopeFactory)
         {
-            _serviceProvider = serviceProvider;
-
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -21,7 +24,7 @@ namespace ArsaRExCH.StaticsHelper
                 try
                 {
                     // Check for today's messages
-                    await CheckForAdminWarningMessage();
+                    await CheckForAdminWarningMessage(stoppingToken);
 
                     // Calculate the delay until the next run
                     var delay = CalculateDelayUntilNextRun();
@@ -37,24 +40,40 @@ namespace ArsaRExCH.StaticsHelper
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    Console.WriteLine($"An error occurred in ExecuteAsync: {ex.Message} - {ex.StackTrace}");
                 }
             }
         }
 
-        private async Task CheckForAdminWarningMessage()
+        private async Task CheckForAdminWarningMessage(CancellationToken stoppingToken)
         {
-            using var scope = _serviceProvider.CreateScope();
-            var adminWarningService = scope.ServiceProvider.GetRequiredService<AdministrationInterface>();
+            using var scope = _serviceScopeFactory.CreateScope();
+            try
+            {
+                var adminWarningService = scope.ServiceProvider.GetRequiredService<AdministrationInterface>();
 
-            var today = DateTime.Today;
-            var message = await adminWarningService.GetAdminWarningMessage(today);
+                var today = DateTime.Today;
+                var message = await adminWarningService.GetAdminWarningMessage(today);
 
+                // Process the message as needed
+                if (message != null)
+                {
+                    Console.WriteLine($"Admin warning message for {today}: {message}");
+                }
+                else
+                {
+                    Console.WriteLine($"No admin warning message found for {today}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching admin warning message: {ex.Message} - {ex.StackTrace}");
+            }
         }
 
         private TimeSpan CalculateDelayUntilNextRun()
         {
-            // Target time for daily execution (10:12 PM)
+            // Target time for daily execution (19:13)
             var targetTime = DateTime.Today.AddHours(19).AddMinutes(13);
             Console.WriteLine($"Target run time is set for: {targetTime}");
 
@@ -70,5 +89,5 @@ namespace ArsaRExCH.StaticsHelper
 
             return delay;
         }
-    }
+    }*/
 }

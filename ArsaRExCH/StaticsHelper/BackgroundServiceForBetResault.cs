@@ -9,6 +9,7 @@ using System.Globalization;
 
 namespace ArsaRExCH.StaticsHelper
 {
+    /*
     public class BackgroundServiceForBetResault : BackgroundService
     {
         private readonly IServiceScopeFactory _ServiceScope;
@@ -138,7 +139,7 @@ namespace ArsaRExCH.StaticsHelper
 
             }
         }
-        /*First here wecalcuate every day 00:01 */
+      
         private TimeSpan CalculateDelayUntilNextDay00()
         {
             DateTime now = DateTime.Now;
@@ -164,5 +165,5 @@ namespace ArsaRExCH.StaticsHelper
             [JsonPropertyName("price")]
             public string Price { get; set; }
         }
-    }
+    }*/
 }
