@@ -16,7 +16,8 @@
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
 
-    <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: white">
+    <div id="additional-content" style="flex: 0 0 30%; height: 100px; background-color: white">
+        <p>Market orders</p>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -30,24 +31,50 @@
                 @foreach (var trade in TradeListLast50)
                 {
                     <tr>
-                        <td>@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5))</td>
-                        <td>@trade.symbolI.ToString("F4")</td>
-                        <td>@trade.SymbolII.ToString("F4")</td>
-                        <td>@trade.dateTime</td>
+                        <td style="padding: 3px 0;">@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5))</td>
+                        <td style="padding: 3px 0;">@trade.symbolI.ToString("F4")</td>
+                        <td style="padding: 3px 0;">@trade.SymbolII.ToString("F4")</td>
+                        <td style="padding: 3px 0;">@trade.dateTime</td>
                     </tr>
                 }
             </tbody>
         </table>
-      
+
     </div>
    
 </div>
+
+<div id="additional-content" style="width: 30%; height: 200px; background-color: white;float:right">
+    <p>Your Orders</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>BTC</th>
+                <th>USDT</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var trade in OrderTradeList)
+            {
+                <tr>
+                    <td>@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5))</td>
+                    <td>@trade.symbolI.ToString("F4")</td>
+                    <td>@trade.SymbolII.ToString("F4")</td>
+                    <td>@trade.dateTime</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
 <div style="width:67%;">
     <h5><b>Select Order Type</b></h5>
-<select @bind="selectedTradeType" class="form-select">
-    <option value="Market">Market</option>
-    <option value="Order">Order</option>
-</select>
+    <select @bind="selectedTradeType" class="form-select">
+        <option value="Market">Market</option>
+        <option value="Order">Order</option>
+    </select>
 
 </div>
 <h5><b>@tradeModel.TradePair</b></h5>
@@ -90,6 +117,7 @@
     public double AvailableBtcAmountToSwap { get; set; }
     private List<Trade> TradeListLast50 { get; set; } = new List<Trade>();
     private string selectedTradeType = "Market"; // Default selected value
+    private List<Trade> OrderTradeList { get; set; } = new List<Trade>();
 
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
@@ -105,7 +133,26 @@
                 btcPriceVariable = value;
                 UpdateTimestamp();
                 FetchTradesAsync();
+                CalcuateUsdtGet();
+                FetchTradesAsyncUnfinished();
             }
+        }
+    }
+    private async Task FetchTradesAsyncUnfinished()
+    {
+        try
+        {
+            var allTrades = await _tradeInterface.GetAllTrades();
+            OrderTradeList = allTrades
+                    .Where(trade => trade.IsTradeDone==false && trade.IsMarketBuy==false && trade.ApplicationUserId == user2)
+                    .OrderByDescending(trade => trade.dateTime)
+                    .Take(50)
+                    .ToList(); StateHasChanged(); // Request a UI update
+        }
+        catch (Exception ex)
+        {
+            OrderTradeList = new List<Trade>(); // Ensure no null reference
+            Console.WriteLine($"Error fetching trades: {ex.Message}"); // Debug log
         }
     }
     private async Task FetchTradesAsync()
@@ -113,8 +160,11 @@
         try
         {
             var allTrades = await _tradeInterface.GetAllTrades();
-            TradeListLast50 = allTrades.OrderByDescending(trade => trade.dateTime).Take(50).ToList();
-            StateHasChanged(); // Request a UI update
+            TradeListLast50 = allTrades
+                    .Where(trade => trade.IsTradeDone && trade.IsMarketBuy)
+                    .OrderByDescending(trade => trade.dateTime)
+                    .Take(12)
+                    .ToList(); StateHasChanged(); // Request a UI update
         }
         catch (Exception ex)
         {
@@ -148,6 +198,7 @@
             tradeModel.TradePair = PairNames.BTCUSDT;
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
             feeFromDbCall = await _tradeInterface.GetTradeFee();
+          await  FetchTradesAsyncUnfinished();
         }
     }
 
@@ -169,35 +220,35 @@
         BtcToswapInclude = tradeModel.symbolI - feeFromDbCall;
     }
 
-    private async Task HandleValidSubmit()
+private async Task HandleValidSubmit()
+{
+    if (tradeModel.symbolI > AvailableBtcAmountToSwap)
     {
-        if (tradeModel.symbolI > AvailableBtcAmountToSwap)
-        {
-            ErrorMessage = "Not Enough Balance Available";
-            return;
-        }
+        ErrorMessage = "Not Enough Balance Available";
+        return;
+    }
 
+    if (selectedTradeType == "Market")
+    {
         var trade = new Trade
-            {
-                TradeId = Guid.NewGuid().ToString(),
-                TradePair = PairNames.BTCUSDT,
-                dateTime = DateTime.Now,
-                symbolI = tradeModel.symbolI,
-                SymbolII = EstimatedUsdtToGetInCludeFee,
-                TradeFee = feeFromDbCall,//TODO edit echange wallet
-                IsMarketBuy = true,
-                IsTradeDone = true,
-                MyProperty = "sdsdsd",
-                ApplicationUserId = user2,
-                /*hardcode pool - A CALL TO DB NEED*/
-                BitcoinPoolId = 1
-            };
+        {
+            TradeId = Guid.NewGuid().ToString(),
+            TradePair = PairNames.BTCUSDT,
+            dateTime = DateTime.Now,
+            symbolI = tradeModel.symbolI,
+            SymbolII = EstimatedUsdtToGetInCludeFee,
+            TradeFee = feeFromDbCall, // TODO: edit exchange wallet
+            IsMarketBuy = true,
+            IsTradeDone = true,
+            ApplicationUserId = user2,
+            BitcoinPoolId = 1 // hardcode pool - A CALL TO DB NEED
+        };
 
         try
         {
             await _tradeInterface.SaveTrade(trade);
             await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
-            string ExchangeUserid = "45dd7981-10da-437b-926a-65071f4da71b";
+            string ExchangeUserid = "be6f09d3-73c7-42a6-aec2-3b99e29ec604";
             await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
             ErrorMessage = "Trade added successfully!";
             tradeModel = new Trade();
@@ -208,6 +259,38 @@
             ErrorMessage = "An error occurred while saving the trade.";
         }
     }
+    else
+    {
+        var trade = new Trade
+        {
+            TradeId = Guid.NewGuid().ToString(),
+            TradePair = PairNames.BTCUSDT,
+            dateTime = DateTime.Now,
+            symbolI = tradeModel.symbolI,
+            SymbolII = EstimatedUsdtToGetInCludeFee,
+            TradeFee = feeFromDbCall, // TODO: edit exchange wallet
+            IsMarketBuy = false,
+            IsTradeDone = false,
+            ApplicationUserId = user2,
+            BitcoinPoolId = 1 // hardcode pool - A CALL TO DB NEED
+        };
+
+        try
+        {
+            await _tradeInterface.SaveTrade(trade);
+            await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
+                string ExchangeUserid = "be6f09d3-73c7-42a6-aec2-3b99e29ec604";
+            await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
+            ErrorMessage = "Trade added successfully!";
+            tradeModel = new Trade();
+            AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An error occurred while saving the trade. order";
+        }
+    }
+}
 
 
     public double ConvertStringToDouble(string input)

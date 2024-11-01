@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241028214559_ininy")]
-    partial class ininy
+    [Migration("20241101194525_initoi")]
+    partial class initoi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,9 +95,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fc905e4c-a89a-46e4-90fa-a993fab9eee0",
+                            Id = "cbbc3868-178c-46ba-ba5e-4886e95499bb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "674332ef-a8f4-413e-9411-a6e78c134466",
+                            ConcurrencyStamp = "b9807492-0e0f-4d7c-a62f-7d668263beaf",
                             Email = "ARMINTTWAT@GMAIL.COM",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -105,7 +105,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "760c9be1-97ad-4dfa-8a43-80710e30e7e3",
+                            SecurityStamp = "8cd5dc00-70ce-4f17-9853-3c838325d4d2",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -440,7 +440,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9418),
+                            ListedDate = new DateTime(2024, 11, 1, 19, 45, 24, 814, DateTimeKind.Local).AddTicks(3282),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -448,7 +448,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9503),
+                            ListedDate = new DateTime(2024, 11, 1, 19, 45, 24, 814, DateTimeKind.Local).AddTicks(3328),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -456,7 +456,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9509),
+                            ListedDate = new DateTime(2024, 11, 1, 19, 45, 24, 814, DateTimeKind.Local).AddTicks(3332),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -538,10 +538,6 @@ namespace ArsaRExCH.Migrations
 
                     b.Property<bool>("IsTradeDone")
                         .HasColumnType("bit");
-
-                    b.Property<string>("MyProperty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("SymbolII")
                         .HasColumnType("float");
@@ -688,7 +684,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "9537d378-9c80-4f17-b3d9-82d536b5d93f",
+                            Id = "56727184-0881-4f10-923f-84c11e77189f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -783,8 +779,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "fc905e4c-a89a-46e4-90fa-a993fab9eee0",
-                            RoleId = "9537d378-9c80-4f17-b3d9-82d536b5d93f"
+                            UserId = "cbbc3868-178c-46ba-ba5e-4886e95499bb",
+                            RoleId = "56727184-0881-4f10-923f-84c11e77189f"
                         });
                 });
 

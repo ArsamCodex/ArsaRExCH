@@ -13,7 +13,6 @@ namespace ArsaRExCH.Model
         public double TradeFee { get; set; }
         public bool IsMarketBuy { get; set; }
         public bool IsTradeDone { get; set; }
-        public string MyProperty { get; set; }
         public string ApplicationUserId { get; set; }
         public ApplicationUser User { get; set; }
         public int BitcoinPoolId { get; set; }

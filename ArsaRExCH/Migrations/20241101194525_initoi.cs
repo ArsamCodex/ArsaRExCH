@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class ininy : Migration
+    public partial class initoi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -447,7 +447,6 @@ namespace ArsaRExCH.Migrations
                     TradeFee = table.Column<double>(type: "float", nullable: false),
                     IsMarketBuy = table.Column<bool>(type: "bit", nullable: false),
                     IsTradeDone = table.Column<bool>(type: "bit", nullable: false),
-                    MyProperty = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BitcoinPoolId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -493,27 +492,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "9537d378-9c80-4f17-b3d9-82d536b5d93f", null, "Admin", "ADMIN" });
+                values: new object[] { "56727184-0881-4f10-923f-84c11e77189f", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "fc905e4c-a89a-46e4-90fa-a993fab9eee0", 0, "674332ef-a8f4-413e-9411-a6e78c134466", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "760c9be1-97ad-4dfa-8a43-80710e30e7e3", false, "arminttwat@gmail.com" });
+                values: new object[] { "cbbc3868-178c-46ba-ba5e-4886e95499bb", 0, "b9807492-0e0f-4d7c-a62f-7d668263beaf", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "8cd5dc00-70ce-4f17-9853-3c838325d4d2", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9418), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9503), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 10, 28, 21, 45, 58, 783, DateTimeKind.Local).AddTicks(9509), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 11, 1, 19, 45, 24, 814, DateTimeKind.Local).AddTicks(3282), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 11, 1, 19, 45, 24, 814, DateTimeKind.Local).AddTicks(3328), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 11, 1, 19, 45, 24, 814, DateTimeKind.Local).AddTicks(3332), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "9537d378-9c80-4f17-b3d9-82d536b5d93f", "fc905e4c-a89a-46e4-90fa-a993fab9eee0" });
+                values: new object[] { "56727184-0881-4f10-923f-84c11e77189f", "cbbc3868-178c-46ba-ba5e-4886e95499bb" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AirDrops_ApplicationUserId",
