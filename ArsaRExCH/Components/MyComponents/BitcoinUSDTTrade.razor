@@ -15,7 +15,7 @@
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
-    
+
     <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: white">
         <table class="table table-striped">
             <thead>
@@ -38,9 +38,18 @@
                 }
             </tbody>
         </table>
+      
     </div>
+   
 </div>
+<div style="width:67%;">
+    <h5><b>Select Order Type</b></h5>
+<select @bind="selectedTradeType" class="form-select">
+    <option value="Market">Market</option>
+    <option value="Order">Order</option>
+</select>
 
+</div>
 <h5><b>@tradeModel.TradePair</b></h5>
 <div style="display: flex;">
     <div style="width: 20%; margin-right: 10px;">
@@ -67,7 +76,7 @@
     </div>
 </div>
 <p>@ErrorMessage</p>
-
+<p>@selectedTradeType</p>
 @code {
     private Trade tradeModel = new Trade();
     private EditContext editContext;
@@ -80,6 +89,7 @@
     public double BtcToswapInclude { get; set; }
     public double AvailableBtcAmountToSwap { get; set; }
     private List<Trade> TradeListLast50 { get; set; } = new List<Trade>();
+    private string selectedTradeType = "Market"; // Default selected value
 
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
@@ -174,7 +184,7 @@
                 dateTime = DateTime.Now,
                 symbolI = tradeModel.symbolI,
                 SymbolII = EstimatedUsdtToGetInCludeFee,
-                TradeFee = feeFromDbCall,//TODO edit echange wallet 
+                TradeFee = feeFromDbCall,//TODO edit echange wallet
                 IsMarketBuy = true,
                 IsTradeDone = true,
                 MyProperty = "sdsdsd",
@@ -199,7 +209,7 @@
         }
     }
 
-  
+
     public double ConvertStringToDouble(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
