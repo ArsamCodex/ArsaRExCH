@@ -132,11 +132,16 @@
             {
                 btcPriceVariable = value;
                 UpdateTimestamp();
-                FetchTradesAsync();
-                CalcuateUsdtGet();
-                FetchTradesAsyncUnfinished();
+                HandleBtcPriceChangedAsync().ConfigureAwait(false);
+
             }
         }
+    }
+    private async Task HandleBtcPriceChangedAsync()
+    {
+        await FetchTradesAsync();
+        await CalcuateUsdtGet();
+        await FetchTradesAsyncUnfinished();
     }
     private async Task FetchTradesAsyncUnfinished()
     {
