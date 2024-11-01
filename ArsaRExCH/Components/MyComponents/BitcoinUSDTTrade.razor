@@ -15,10 +15,30 @@
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
-    <!---
+    
     <div id="additional-content" style="flex: 0 0 30%; height: 400px; background-color: white">
-        <AllTradesHere></AllTradesHere>
-    </div>-->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>BTC</th>
+                    <th>USDT</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var trade in TradeListLast50)
+                {
+                    <tr>
+                        <td>@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5))</td>
+                        <td>@trade.symbolI.ToString("F4")</td>
+                        <td>@trade.SymbolII.ToString("F4")</td>
+                        <td>@trade.dateTime</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <h5><b>@tradeModel.TradePair</b></h5>
@@ -59,6 +79,7 @@
     private string ethPriceVariable;
     public double BtcToswapInclude { get; set; }
     public double AvailableBtcAmountToSwap { get; set; }
+    private List<Trade> TradeListLast50 { get; set; } = new List<Trade>();
 
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
@@ -73,16 +94,35 @@
             {
                 btcPriceVariable = value;
                 UpdateTimestamp();
+                FetchTradesAsync();
             }
         }
     }
-
+    private async Task FetchTradesAsync()
+    {
+        try
+        {
+            var allTrades = await _tradeInterface.GetAllTrades();
+            TradeListLast50 = allTrades.OrderByDescending(trade => trade.dateTime).Take(50).ToList();
+            StateHasChanged(); // Request a UI update
+        }
+        catch (Exception ex)
+        {
+            TradeListLast50 = new List<Trade>(); // Ensure no null reference
+            Console.WriteLine($"Error fetching trades: {ex.Message}"); // Debug log
+        }
+    }
     private string lastUpdatedTime;
 
     private void UpdateTimestamp()
     {
         lastUpdatedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         StateHasChanged(); // Trigger a UI update
+    }
+    protected override void OnParametersSet()
+    {
+        btcPriceVariable = BtcPrice;
+        ethPriceVariable = EthPrice;
     }
 
     protected override async Task OnInitializedAsync()
@@ -159,12 +199,7 @@
         }
     }
 
-    protected override void OnParametersSet()
-    {
-        btcPriceVariable = BtcPrice;
-        ethPriceVariable = EthPrice;
-    }
-
+  
     public double ConvertStringToDouble(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
