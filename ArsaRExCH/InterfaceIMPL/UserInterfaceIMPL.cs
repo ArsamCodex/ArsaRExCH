@@ -11,15 +11,10 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class UserInterfaceIMPL : UserIpInterface
+    public class UserInterfaceIMPL(IDbContextFactory<ApplicationDbContext> dbContext, HttpClient httpClient1) : UserIpInterface
     {
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
-        private readonly HttpClient httpClient1;
-        public UserInterfaceIMPL( IDbContextFactory<ApplicationDbContext> dbContext, HttpClient httpClient1)
-        {
-            _dbContext = dbContext;
-            this.httpClient1 = httpClient1;
-        }
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContext = dbContext;
+        private readonly HttpClient httpClient1 = httpClient1;
 
         public async Task<List<MaxInzetResultDTO>> CalculateMaxInzetAsync()
         {

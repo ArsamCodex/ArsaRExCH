@@ -19,18 +19,15 @@ using Xunit.Sdk;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class WalletInterfaceIMPL : WalletInterface<double>
+    public class WalletInterfaceIMPL(
+        HttpClient httpClient,
+        IConfiguration configuration,
+        IDbContextFactory<ApplicationDbContext> dbContextFactory) : WalletInterface<double>
     {
-        private readonly HttpClient _httpClient;
-        private readonly IConfiguration _configuration;
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
 
-        public WalletInterfaceIMPL(HttpClient httpClient, IConfiguration configuration, IDbContextFactory<ApplicationDbContext> dbContextFactory)
-        {
-            _httpClient = httpClient;
-            _configuration = configuration;
-            _dbContextFactory = dbContextFactory;
-        }
 
         public async Task<string> CreateBNBWallet(string id, string PairName)
         {

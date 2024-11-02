@@ -18,5 +18,6 @@ namespace ArsaRExCH.Model
         public ApplicationUser User { get; set; }
         public int BitcoinPoolId { get; set; }
         public BitcoinPool BitcoinPool { get; set; }
+        public string BitcoinPriceAtTheTime { get; set; }
     }
 }

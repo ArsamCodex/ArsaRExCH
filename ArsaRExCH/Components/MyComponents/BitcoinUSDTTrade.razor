@@ -11,6 +11,8 @@
 @using System.Security.Claims
 @attribute [Authorize]
 @implements IDisposable
+@inject ILogger<BitcoinUSDTTrade> _logger // Injecting ILogger
+
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
@@ -51,7 +53,7 @@
             <tr>
                 <th>ID</th>
                 <th>BTC</th>
-                <th>USDT</th>
+                <th>OrderPrice</th>
                 <th>Date</th>
             </tr>
         </thead>
@@ -61,7 +63,7 @@
                 <tr>
                     <td>@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5))</td>
                     <td>@trade.symbolI.ToString("F4")</td>
-                    <td>@trade.SymbolII.ToString("F4")</td>
+                    <td>@trade.RequestPriceFOrOrderBuy</td>
                     <td>@trade.dateTime</td>
                 </tr>
             }
@@ -163,12 +165,13 @@
         await FetchTradesAsync();
         await CalcuateUsdtGet();
         await FetchTradesAsyncUnfinished();
-        await ChckOrderAndFilIfPossibale(btcPriceVariable);
+        var IsDieDone = await _tradeInterface.CheckAndFIlledOrder(ConvertStringToDouble(btcPriceVariable), tradeModel.RequestPriceFOrOrderBuy ?? 0.0);
+        if (IsDieDone)
+        {
+            ErrorMessage = "Order Filled";
+        };
     }
-    private async Task ChckOrderAndFilIfPossibale(string btcprice)
-    {
-      //  await _tradeInterface.CheckAndFIlledOrder(btcprice);
-    }
+
     private async Task FetchTradesAsyncUnfinished()
     {
         try
@@ -192,7 +195,7 @@
         {
             var allTrades = await _tradeInterface.GetAllTrades();
             TradeListLast50 = allTrades
-                    .Where(trade => trade.IsTradeDone && trade.IsMarketBuy)
+                    .Where(trade => trade.IsTradeDone )
                     .OrderByDescending(trade => trade.dateTime)
                     .Take(12)
                     .ToList(); StateHasChanged(); // Request a UI update
@@ -229,7 +232,7 @@
             tradeModel.TradePair = PairNames.BTCUSDT;
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
             feeFromDbCall = await _tradeInterface.GetTradeFee();
-          await  FetchTradesAsyncUnfinished();
+        //  await  FetchTradesAsyncUnfinished();
         }
     }
 
@@ -272,6 +275,7 @@ private async Task HandleValidSubmit()
             IsMarketBuy = true,
             IsTradeDone = true,
             RequestPriceFOrOrderBuy = 0,
+                    BitcoinPriceAtTheTime = btcPriceVariable,
             ApplicationUserId = user2,
             BitcoinPoolId = 1 // hardcode pool - A CALL TO DB NEED
         };
@@ -303,6 +307,9 @@ private async Task HandleValidSubmit()
             TradeFee = feeFromDbCall, // TODO: edit exchange wallet
             IsMarketBuy = false,
             IsTradeDone = false,
+                    BitcoinPriceAtTheTime = btcPriceVariable,
+
+                    RequestPriceFOrOrderBuy = tradeModel.RequestPriceFOrOrderBuy,
             ApplicationUserId = user2,
             BitcoinPoolId = 1 // hardcode pool - A CALL TO DB NEED
         };
@@ -320,6 +327,8 @@ private async Task HandleValidSubmit()
         catch (Exception ex)
         {
             ErrorMessage = "An error occurred while saving the trade. order";
+                _logger.LogError(ex, "An error occurred in CheckAndFIlledOrder method while saving trade order.");
+
         }
     }
 }

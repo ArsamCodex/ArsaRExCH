@@ -10,25 +10,20 @@ using System.Text;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class BetInterfaceIMPL : BetInterface
+    public class BetInterfaceIMPL(
+      IConfiguration configuration,
+      ApplicationDbContext context,
+      ILogger<BetInterfaceIMPL> logger,
+      SignInManager<ApplicationUser> signInManager,
+      PriceInterface priceInterface,
+      IDbContextFactory<ApplicationDbContext> dbContextFactory) : BetInterface
     {
-        private readonly IConfiguration _configuration;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<BetInterfaceIMPL> _logger;
-        private readonly PriceInterface _priceInterface;
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
-
-        public BetInterfaceIMPL(IConfiguration configuration, ApplicationDbContext context, ILogger<BetInterfaceIMPL> logger,
-                            SignInManager<ApplicationUser> signInManager, PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContextFactory)
-        {
-            _logger = logger;
-            _context = context;
-            _configuration = configuration;
-            _signInManager = signInManager;
-            _priceInterface = priceInterface;
-            _dbContextFactory = dbContextFactory;
-        }
+        private readonly IConfiguration _configuration = configuration;
+        private readonly ApplicationDbContext _context = context;
+        private readonly ILogger<BetInterfaceIMPL> _logger = logger;
+        private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+        private readonly PriceInterface _priceInterface = priceInterface;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
 
         public async Task CalculateBetResault(DateTime date, string id)
         {

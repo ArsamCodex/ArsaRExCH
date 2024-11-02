@@ -6,14 +6,10 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class PostNadReplyInterfaceIMPL : PostNadReplyInterface
+    public class PostNadReplyInterfaceIMPL(IDbContextFactory<ApplicationDbContext> dbContextFactory) : PostNadReplyInterface
     {
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
 
-        public PostNadReplyInterfaceIMPL(IDbContextFactory<ApplicationDbContext> dbContextFactory)
-        {
-            _dbContextFactory = dbContextFactory;
-        }
 
         // For posts
         public async Task<List<Post>> GetAllPostsAsync()

@@ -5,12 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class IBitcoinPoolIMPL : IBitcoinPool
+    public class IBitcoinPoolIMPL(IDbContextFactory<ApplicationDbContext> dbContextFactory) : IBitcoinPool
     {
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
-        public IBitcoinPoolIMPL(IDbContextFactory<ApplicationDbContext> dbContextFactory) { 
-            _dbContextFactory = dbContextFactory;
-        }
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
+
         public async Task EditPool(BitcoinPool bitcoinPool)
         {
             using var _context = _dbContextFactory.CreateDbContext();

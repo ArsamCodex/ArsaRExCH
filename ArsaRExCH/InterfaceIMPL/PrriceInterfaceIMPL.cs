@@ -7,15 +7,11 @@ using System.Text.Json.Serialization;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class PrriceInterfaceIMPL : PriceInterface
+    public class PrriceInterfaceIMPL(IHttpClientFactory httpClientFactory) : PriceInterface
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        //Primary Constructor
+        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
-        // Constructor to inject IHttpClientFactory
-        public PrriceInterfaceIMPL(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
         public async Task<double> GetBtcPriceFromBinance()
         {
             try

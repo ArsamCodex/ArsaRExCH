@@ -6,46 +6,50 @@ using NBitcoin.Secp256k1;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class ItradeIMPL : ITrade
+    public class ItradeIMPL(IDbContextFactory<ApplicationDbContext> dbContextFactory) : ITrade
     {
-        private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
-        public ItradeIMPL(IDbContextFactory<ApplicationDbContext> _dbContextFactory)
-        {
-            dbContextFactory = _dbContextFactory;
-        }
+        private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory = dbContextFactory;
 
-        public async Task CheckAndFIlledOrder(double btcprice, double userprice)
+
+        public async Task<bool> CheckAndFIlledOrder(double btcprice, double userprice)
         {
+            if (btcprice == 0)
+            {
+                return false;
+            }
+
             var _context = dbContextFactory.CreateDbContext();
-            double tolerance = 100.0; // Set tolerance as double
+            double tolerance = 50.0;
+            bool anyTradeFilled = false;
 
-            // Fetch all trades from the database directly within this method
+            // Fetch all trades where the trade is not yet completed and is not a market buy
             var trades = await _context.Trade
-                .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy) // Assuming IsTradeDone and MarketBuy are properties
+                .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy)
                 .ToListAsync();
 
             foreach (var trade in trades)
             {
-                // Check if the order price is within the defined tolerance
-                if (trade.symbolI >= (btcprice - tolerance) && trade.symbolI <= (btcprice + tolerance))
+                // Check if the trade price is within ±50 of either btcprice or userprice
+                if (Math.Abs(trade.symbolI - btcprice) <= tolerance || Math.Abs(trade.symbolI - userprice) <= tolerance)
                 {
-                    // Optionally, you can check against the user price as well
-                    if (trade.symbolI >= (userprice - tolerance) && trade.symbolI <= (userprice + tolerance))
-                    {
-                        trade.IsTradeDone = true; // Mark the trade as done
-                                                  // Set other properties or perform additional logic as needed
-                    }
+                    trade.IsTradeDone = true; // Mark the trade as done
+                    anyTradeFilled = true; // Set flag to indicate that a trade was filled
                 }
             }
 
-            // Save changes back to the database
-            await _context.SaveChangesAsync();
+            // Save changes to the database only if any trade was marked as filled
+            if (anyTradeFilled)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return anyTradeFilled; // Return whether any trades were filled
+
+
         }
-    
 
 
-
-    public async Task<List<Trade>> GetAllTrades()
+            public async Task<List<Trade>> GetAllTrades()
         {
             try
             {
@@ -150,7 +154,7 @@ namespace ArsaRExCH.InterfaceIMPL
                 throw new ArgumentException("Symbol I must be greater than zero.", nameof(trade.symbolI));
             }
 
-            if (trade.SymbolII <= 0)
+            if (trade.SymbolII < 0)
             {
                 throw new ArgumentException("Symbol II must be greater than zero.", nameof(trade.SymbolII));
             }

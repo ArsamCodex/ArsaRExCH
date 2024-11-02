@@ -9,25 +9,14 @@ using System.Security.Claims;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class AdministrationInterfaceIMPL : AdministrationInterface
+    public class AdministrationInterfaceIMPL(
+        PriceInterface priceInterface,
+        IDbContextFactory<ApplicationDbContext> dbContext,
+        UserManager<ApplicationUser> userManager) : AdministrationInterface
     {
-
-
-
-        private readonly PriceInterface _priceInterface;
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContext;
-        private readonly UserManager<ApplicationUser> UserManager;
-        public AdministrationInterfaceIMPL(
-                         PriceInterface priceInterface, IDbContextFactory<ApplicationDbContext> dbContext, UserManager<ApplicationUser> _UserManager)
-        {
-
-
-            _priceInterface = priceInterface;
-            _dbContext = dbContext;
-
-            UserManager = _UserManager;
-        }
-
+        private readonly PriceInterface _priceInterface = priceInterface;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContext = dbContext;
+        private readonly UserManager<ApplicationUser> UserManager = userManager;
         public async Task AddAdminWarningMessage(AdminWarningMessage adminWarningMessage)
         {
 

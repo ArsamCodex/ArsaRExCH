@@ -5,13 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
-    public class ILiveChatIMPL : ILiveChat
+    public class ILiveChatIMPL(IDbContextFactory<ApplicationDbContext> dbContextFactory) : ILiveChat
     {
-        private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
-        public ILiveChatIMPL(IDbContextFactory<ApplicationDbContext> _dbContextFactory)
-        {
-            dbContextFactory = _dbContextFactory;
-        }
+        private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory = dbContextFactory;
         public async  Task<List<LiveChat>> GetAllMessages()
         {
             try
