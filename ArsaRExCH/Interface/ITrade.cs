@@ -9,6 +9,6 @@ namespace ArsaRExCH.Interface
         Task SaveFeeTrade(TradeFee tradeFee);
         Task<double> GetTradeFee();
         Task<List<Trade>> GetAllTrades();
-        Task<bool> CheckAndFIlledOrder(double btcprice,double userprice);
+        Task<bool> CheckAndFIlledOrder(double btcprice);
     }
 }
