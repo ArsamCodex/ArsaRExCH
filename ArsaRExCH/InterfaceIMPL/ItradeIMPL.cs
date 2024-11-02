@@ -2,6 +2,7 @@
 using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
 using Microsoft.EntityFrameworkCore;
+using NBitcoin.Secp256k1;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -13,7 +14,38 @@ namespace ArsaRExCH.InterfaceIMPL
             dbContextFactory = _dbContextFactory;
         }
 
-        public async Task<List<Trade>> GetAllTrades()
+        public async Task CheckAndFIlledOrder(double btcprice, double userprice)
+        {
+            var _context = dbContextFactory.CreateDbContext();
+            double tolerance = 100.0; // Set tolerance as double
+
+            // Fetch all trades from the database directly within this method
+            var trades = await _context.Trade
+                .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy) // Assuming IsTradeDone and MarketBuy are properties
+                .ToListAsync();
+
+            foreach (var trade in trades)
+            {
+                // Check if the order price is within the defined tolerance
+                if (trade.symbolI >= (btcprice - tolerance) && trade.symbolI <= (btcprice + tolerance))
+                {
+                    // Optionally, you can check against the user price as well
+                    if (trade.symbolI >= (userprice - tolerance) && trade.symbolI <= (userprice + tolerance))
+                    {
+                        trade.IsTradeDone = true; // Mark the trade as done
+                                                  // Set other properties or perform additional logic as needed
+                    }
+                }
+            }
+
+            // Save changes back to the database
+            await _context.SaveChangesAsync();
+        }
+    
+
+
+
+    public async Task<List<Trade>> GetAllTrades()
         {
             try
             {

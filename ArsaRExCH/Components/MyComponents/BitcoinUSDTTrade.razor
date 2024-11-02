@@ -79,6 +79,7 @@
 </div>
 <h5><b>@tradeModel.TradePair</b></h5>
 <div style="display: flex;">
+    @if (selectedTradeType=="Market"){
     <div style="width: 20%; margin-right: 10px;">
         <EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
@@ -93,7 +94,26 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
     </div>
+    }else{
 
+    <div style="width: 20%; margin-right: 10px;">
+        <EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label for="symbolI">BTC Amount</label>
+                <InputNumber id="symbolI"
+                             class="form-control"
+                             @bind-Value="tradeModel.symbolI" />
+                    <label for="symbolI">Order price</label>
+                    <InputNumber id="symbolI"
+                                 class="form-control"
+                                 @bind-Value="tradeModel.RequestPriceFOrOrderBuy" />
+            </div>
+            <p>Available Balance to swap : @AvailableBtcAmountToSwap</p>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+    </div>}
     <div style="width: 30%; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 20px;height:200px">
         <p>BTC Price :@btcPriceVariable</p>
         <p>Last Updated: @lastUpdatedTime</p>
@@ -134,6 +154,7 @@
                 UpdateTimestamp();
                 HandleBtcPriceChangedAsync().ConfigureAwait(false);
 
+
             }
         }
     }
@@ -142,6 +163,11 @@
         await FetchTradesAsync();
         await CalcuateUsdtGet();
         await FetchTradesAsyncUnfinished();
+        await ChckOrderAndFilIfPossibale(btcPriceVariable);
+    }
+    private async Task ChckOrderAndFilIfPossibale(string btcprice)
+    {
+      //  await _tradeInterface.CheckAndFIlledOrder(btcprice);
     }
     private async Task FetchTradesAsyncUnfinished()
     {
@@ -151,7 +177,7 @@
             OrderTradeList = allTrades
                     .Where(trade => trade.IsTradeDone==false && trade.IsMarketBuy==false && trade.ApplicationUserId == user2)
                     .OrderByDescending(trade => trade.dateTime)
-                    .Take(50)
+                    .Take(5)
                     .ToList(); StateHasChanged(); // Request a UI update
         }
         catch (Exception ex)
@@ -245,6 +271,7 @@ private async Task HandleValidSubmit()
             TradeFee = feeFromDbCall, // TODO: edit exchange wallet
             IsMarketBuy = true,
             IsTradeDone = true,
+            RequestPriceFOrOrderBuy = 0,
             ApplicationUserId = user2,
             BitcoinPoolId = 1 // hardcode pool - A CALL TO DB NEED
         };
@@ -272,7 +299,7 @@ private async Task HandleValidSubmit()
             TradePair = PairNames.BTCUSDT,
             dateTime = DateTime.Now,
             symbolI = tradeModel.symbolI,
-            SymbolII = EstimatedUsdtToGetInCludeFee,
+            SymbolII = 0,
             TradeFee = feeFromDbCall, // TODO: edit exchange wallet
             IsMarketBuy = false,
             IsTradeDone = false,
