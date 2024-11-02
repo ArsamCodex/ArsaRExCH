@@ -71,13 +71,21 @@
     </table>
 
 </div>
-<div style="width:67%;">
-    <h5><b>Select Order Type</b></h5>
-    <select @bind="selectedTradeType" class="form-select">
-        <option value="Market">Market</option>
-        <option value="Order">Order</option>
-    </select>
-
+<div style="width:67%; display: flex; align-items: center; gap: 10px;">
+    <div>
+        <h5><b>Select Order Type</b></h5>
+        <select @bind="selectedTradeType" class="form-select">
+            <option value="Market">Market</option>
+            <option value="Order">Order</option>
+        </select>
+    </div>
+    <div>
+        <h5><b>Buy/Sell</b></h5>
+        <select @bind="selectedBuySel" class="form-select">
+            <option value="Buy">Buy</option>
+            <option value="Sell">Sell</option>
+        </select>
+    </div>
 </div>
 <h5><b>@tradeModel.TradePair</b></h5>
 <div style="display: flex;">
@@ -140,6 +148,7 @@
     private List<Trade> TradeListLast50 { get; set; } = new List<Trade>();
     private string selectedTradeType = "Market"; // Default selected value
     private List<Trade> OrderTradeList { get; set; } = new List<Trade>();
+    private string selectedBuySel = "Sell";
 
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }

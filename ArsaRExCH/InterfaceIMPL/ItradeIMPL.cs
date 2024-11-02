@@ -17,39 +17,35 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 return false;
             }
-
-            var _context = dbContextFactory.CreateDbContext();
-            double tolerance = 50.0;
-            bool anyTradeFilled = false;
-
-            // Fetch all trades where the trade is not yet completed and is not a market buy
-            var trades = await _context.Trade
+            var context = dbContextFactory.CreateDbContext();
+            var trades = await context.Trade
                 .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy)
                 .ToListAsync();
 
+            const double tolerance = 50.0; // Example tolerance
+            bool anyTradeFilled = false;
+
             foreach (var trade in trades)
             {
-                // Check if the trade price is within ±50 of either btcprice or userprice
-                if (Math.Abs(trade.symbolI - btcprice) <= tolerance || Math.Abs(trade.symbolI - userprice) <= tolerance)
+                // Check if the trade price is within the ±50 tolerance range of btcprice
+                //65000   
+                if (trade.RequestPriceFOrOrderBuy == btcprice || trade.RequestPriceFOrOrderBuy>(btcprice- tolerance))
                 {
-                    trade.IsTradeDone = true; // Mark the trade as done
-                    anyTradeFilled = true; // Set flag to indicate that a trade was filled
+                    // Optionally, also check against the user price within the same tolerance
+                  
+                        trade.IsTradeDone = true; // Mark the trade as done
+                        anyTradeFilled = true; // Set flag to indicate that a trade was filled
+                    
                 }
             }
 
-            // Save changes to the database only if any trade was marked as filled
-            if (anyTradeFilled)
-            {
-                await _context.SaveChangesAsync();
-            }
-
+            await context.SaveChangesAsync(); // Save changes if any trades were filled
             return anyTradeFilled; // Return whether any trades were filled
-
-
         }
 
 
-            public async Task<List<Trade>> GetAllTrades()
+
+        public async Task<List<Trade>> GetAllTrades()
         {
             try
             {
