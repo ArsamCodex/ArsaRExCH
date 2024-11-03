@@ -10,7 +10,7 @@ namespace ArsaRExCH.Data
     {
 
 
-      //  public DbSet<Apllica> Users { get; set; }
+        //  public DbSet<Apllica> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
         public DbSet<BitcoinPool> BitcoinPools { get; set; }
@@ -27,9 +27,15 @@ namespace ArsaRExCH.Data
         public DbSet<Post> Post { get; set; }
         public DbSet<Reply> Reply { get; set; }
         public DbSet<Trade> Trade { get; set; }
-        public DbSet<AdminSetupInit> adminSetupInits { get;set; }
+        public DbSet<AdminSetupInit> adminSetupInits { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Wallet>()
+      .HasOne(w => w.User)
+      .WithMany(u => u.Wallets)
+      .HasForeignKey(w => w.ApplicationUserId)
+      .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Reply>()
                .HasOne(r => r.Post)
                .WithMany(p => p.Replies)
@@ -47,7 +53,7 @@ namespace ArsaRExCH.Data
             .HasDefaultValue(true);
 
             base.OnModelCreating(modelBuilder);
-       
+
             /*
             modelBuilder.Entity<ApplicationUser>()
            .HasMany(a => a.Wallets)
@@ -64,7 +70,7 @@ namespace ArsaRExCH.Data
             */
 
 
-             SeedInitialData(modelBuilder);
+            SeedInitialData(modelBuilder);
             SeedInitialWalletData(modelBuilder);
 
 
@@ -99,7 +105,7 @@ namespace ArsaRExCH.Data
                 RoleId = role.Id,
                 UserId = newUser.Id
             });
-           
+
         }
         private void SeedInitialWalletData(ModelBuilder modelBuilder)
         {

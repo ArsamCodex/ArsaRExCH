@@ -85,6 +85,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy&&trade.order==OrderType.Buy)
                 .ToListAsync();
 
+         
+
             bool anyTradeFilled = false;
 
             foreach (var trade in trades)
@@ -96,7 +98,8 @@ namespace ArsaRExCH.InterfaceIMPL
                 {
                     trade.IsTradeDone = true; // Mark the trade as done
                     anyTradeFilled = true; // Set flag to indicate that a trade was filled
-                    Console.WriteLine("Order filled for trade."); // Debug log
+         
+                   Console.WriteLine("Order filled for trade."); // Debug log
                 }
             }
 

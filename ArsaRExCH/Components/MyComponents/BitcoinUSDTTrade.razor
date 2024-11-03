@@ -1,4 +1,5 @@
-﻿@using ArsaRExCH.Model
+﻿@using ArsaRExCH.Data
+@using ArsaRExCH.Model
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
@@ -9,10 +10,11 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
 @attribute [Authorize]
 @implements IDisposable
 @inject ILogger<BitcoinUSDTTrade> _logger // Injecting ILogger
-
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
@@ -134,6 +136,7 @@
         <p>Btc To swap :@BtcToswapInclude</p>
         <p>To Get :@EstimatedUsdtToGetInCludeFee USDT </p>
         <p>Fee : @feeFromDbCall.ToString("F9")</p>
+        <p>Usdt: @UsdtWalletAmount</p>
     </div>
 </div>
 <p>@ErrorMessage</p>
@@ -154,7 +157,7 @@
     private string selectedTradeType = "Market"; // Default selected value
     private List<Trade> OrderTradeList { get; set; } = new List<Trade>();
     private string selectedBuySel = "Sell";
-
+    private double UsdtWalletAmount { get; set; }
     [CascadingParameter(Name = "EthPrice")]
     public string EthPrice { get; set; }
 
@@ -180,34 +183,35 @@
         await CalcuateUsdtGet();
         await FetchTradesAsyncUnfinished();
         //sel order
-        await FillOrderSell();
+        // await FillOrderSell();
         await FillOrderSellHigherThenBtc();
-      await  HandeBuyOrders();
+        await  HandeBuyOrders();
     }
+    /*
     private async Task FillOrderSell()
     {
-        if (selectedBuySel == "Sell" && selectedTradeType == "Order")
-        {
-            
-            // Debug output for selected values
-            Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
+    if (selectedBuySel == "Sell" && selectedTradeType == "Order")
+    {
 
-            // Attempt to fill order
-            var isDieDone = await _tradeInterface.CheckAndFIlledOrderSellUnderbtCPrice(ConvertStringToDouble(btcPriceVariable));
+    // Debug output for selected values
+    Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
 
-            // Debugging output to check if order was filled
-            if (isDieDone)
-            {
-                ErrorMessage = "Order Filled";
-                Console.WriteLine("Order was successfully filled.");
-            }
-            else
-            {
-                ErrorMessage = "No orders filled.";
-                Console.WriteLine("No orders were filled.");
-            }
-        }
+    // Attempt to fill order
+    var isDieDone = await _tradeInterface.CheckAndFIlledOrderSellUnderbtCPrice(ConvertStringToDouble(btcPriceVariable));
+
+    // Debugging output to check if order was filled
+    if (isDieDone)
+    {
+    ErrorMessage = "Order Filled";
+    Console.WriteLine("Order was successfully filled.");
     }
+    else
+    {
+    ErrorMessage = "No orders filled.";
+    Console.WriteLine("No orders were filled.");
+    }
+    }
+    }*/
     private async Task FillOrderSellHigherThenBtc()
     {
         if (selectedBuySel == "Sell" && selectedTradeType == "Order")
@@ -225,22 +229,72 @@
                 ErrorMessage = "Order Filled";
                 Console.WriteLine("Order was successfully filled.");
             }
-      
+
         }
     }
     private async Task HandeBuyOrders()
     {
+        bool anyTradeFilled = false;
         if (selectedBuySel == "Buy" && selectedTradeType == "Order")
         {
 
             // Debug output for selected values
             Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
 
-            // Attempt to fill order
-            var isDieDone = await _tradeInterface.CheckBuyOrdersToFill(ConvertStringToDouble(btcPriceVariable));
+            if (ConvertStringToDouble(btcPriceVariable) <= 0)
+            {
+                return;
+            }
+
+            var context = dbContextFactory.CreateDbContext();
+            var trades = await context.Trade
+                .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy && trade.order == OrderType.Buy)
+                .ToListAsync();
+
+
+            foreach (var trade in trades)
+            {
+                // Log trade details for debugging
+                Console.WriteLine($"Trade Request Price: {trade.RequestPriceFOrOrderBuy}, BTC Price: {ConvertStringToDouble(btcPriceVariable)}");
+
+                if (trade.RequestPriceFOrOrderBuy > ConvertStringToDouble(btcPriceVariable))
+                {
+                    trade.IsTradeDone = true; // Mark the trade as done
+                    anyTradeFilled = true; // Set flag to indicate that a trade was filled
+
+                    // Retrieve the USDT wallet for the user associated with this trade
+                    var walletList = await context.Wallet.ToListAsync();
+                    var tetherwallte=  walletList.Where(c => c.ApplicationUserId == trade.ApplicationUserId && c.PairName == "USDT")
+                        .FirstOrDefault();
+                    var bTcWallet = walletList.Where(c => c.ApplicationUserId == trade.ApplicationUserId && c.PairName == "BTC")
+                    .FirstOrDefault();
+                    if (walletList != null)
+                    {
+                        // Update the wallet's Amount (e.g., deduct the trade amount or add profit)
+                        tetherwallte.Amount -= EstimatedUsdtToGetInCludeFee;
+                        bTcWallet.Amount -= tradeModel.symbolI; 
+                        var x = context.Wallet
+                         .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+                         .FirstOrDefault();
+
+                        UsdtWalletAmount = x.Amount;
+                        AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+                        Console.WriteLine("Order filled for trade, and USDT wallet updated."); // Debug log
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("USDT wallet not found for the specified user.");
+                    }
+                    Console.WriteLine("Order filled for trade."); // Debug log
+                }
+            }
+
+            await context.SaveChangesAsync(); // Save changes if any trades were filled
+                                              // Return whether any trades were filled
 
             // Debugging output to check if order was filled
-            if (isDieDone)
+            if (anyTradeFilled)
             {
                 ErrorMessage = "Order Filled";
                 Console.WriteLine("Order was successfully filled.");
@@ -308,7 +362,12 @@
             tradeModel.TradePair = PairNames.BTCUSDT;
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
             feeFromDbCall = await _tradeInterface.GetTradeFee();
-            //  await  FetchTradesAsyncUnfinished();
+            var context = dbContextFactory.CreateDbContext();
+            var x=     context.Wallet
+                             .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+                             .FirstOrDefault();
+
+            UsdtWalletAmount = x.Amount;
         }
     }
 
@@ -360,7 +419,7 @@
             {
                 await _tradeInterface.SaveTrade(trade);
                 await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
-                string ExchangeUserid = "be6f09d3-73c7-42a6-aec2-3b99e29ec604";
+                string ExchangeUserid = "ad2e3560-0396-4df9-8df3-f8cb4a492fa4";
                 await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
                 ErrorMessage = "Trade added successfully!";
                 tradeModel = new Trade();
@@ -395,7 +454,7 @@
             {
                 await _tradeInterface.SaveTrade(trade);
                 await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
-                string ExchangeUserid = "be6f09d3-73c7-42a6-aec2-3b99e29ec604";
+                string ExchangeUserid = "ad2e3560-0396-4df9-8df3-f8cb4a492fa4";
                 await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
                 ErrorMessage = "Trade added successfully!";
                 tradeModel = new Trade();
@@ -431,12 +490,18 @@
             try
             {
                 await _tradeInterface.SaveTrade(trade);
-                await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
-                string ExchangeUserid = "be6f09d3-73c7-42a6-aec2-3b99e29ec604";
+                await _walletInterface.UpdateWalletsAfterTradeAsyncBuyOrder(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
+                string ExchangeUserid = "ad2e3560-0396-4df9-8df3-f8cb4a492fa4";
                 await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
                 ErrorMessage = "Trade added successfully!";
                 tradeModel = new Trade();
                 AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+                var conext = dbContextFactory.CreateDbContext();
+                var x = conext.Wallet
+                       .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+                       .FirstOrDefault();
+
+                UsdtWalletAmount = x.Amount;
             }
             catch (Exception ex)
             {
