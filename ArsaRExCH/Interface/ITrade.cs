@@ -12,5 +12,7 @@ namespace ArsaRExCH.Interface
         Task<bool> CheckAndFIlledOrderSellUnderbtCPrice(double btcprice);
         Task<bool> CheckAndFIlledOrderSellHigherbtCPrice(double btcprice);
 
+        Task<bool> CheckBuyOrdersToFill(double btcprice);
+
     }
 }

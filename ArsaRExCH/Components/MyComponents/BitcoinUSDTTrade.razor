@@ -181,7 +181,8 @@
         await FetchTradesAsyncUnfinished();
         //sel order
         await FillOrderSell();
-       await FillOrderSellHigherThenBtc();
+        await FillOrderSellHigherThenBtc();
+      await  HandeBuyOrders();
     }
     private async Task FillOrderSell()
     {
@@ -225,6 +226,26 @@
                 Console.WriteLine("Order was successfully filled.");
             }
       
+        }
+    }
+    private async Task HandeBuyOrders()
+    {
+        if (selectedBuySel == "Buy" && selectedTradeType == "Order")
+        {
+
+            // Debug output for selected values
+            Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
+
+            // Attempt to fill order
+            var isDieDone = await _tradeInterface.CheckBuyOrdersToFill(ConvertStringToDouble(btcPriceVariable));
+
+            // Debugging output to check if order was filled
+            if (isDieDone)
+            {
+                ErrorMessage = "Order Filled";
+                Console.WriteLine("Order was successfully filled.");
+            }
+
         }
     }
     private async Task FetchTradesAsyncUnfinished()
@@ -363,6 +384,43 @@
                     IsMarketBuy = false,
                     IsTradeDone = false,
                     order = OrderType.Sell,
+                    BitcoinPriceAtTheTime = btcPriceVariable,
+
+                    RequestPriceFOrOrderBuy = tradeModel.RequestPriceFOrOrderBuy,
+                    ApplicationUserId = user2,
+                    BitcoinPoolId = 1 // hardcode pool - A CALL TO DB NEED
+                };
+
+            try
+            {
+                await _tradeInterface.SaveTrade(trade);
+                await _walletInterface.UpdateWalletsAfterTradeAsync(user2, tradeModel.symbolI, EstimatedUsdtToGetInCludeFee);
+                string ExchangeUserid = "be6f09d3-73c7-42a6-aec2-3b99e29ec604";
+                await _adminInterface.EditBTCWalletExchangeAmountIncrease(ExchangeUserid, feeFromDbCall);
+                ErrorMessage = "Trade added successfully!";
+                tradeModel = new Trade();
+                AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "An error occurred while saving the trade. order";
+                _logger.LogError(ex, "An error occurred in CheckAndFIlledOrder method while saving trade order.");
+
+            }
+        }
+        if (selectedTradeType == "Order" && selectedBuySel == "Buy")
+        {
+            var trade = new Trade
+                {
+                    TradeId = Guid.NewGuid().ToString(),
+                    TradePair = PairNames.BTCUSDT,
+                    dateTime = DateTime.Now,
+                    symbolI = tradeModel.symbolI,
+                    SymbolII = 0,
+                    TradeFee = feeFromDbCall, // TODO: edit exchange wallet
+                    IsMarketBuy = false,
+                    IsTradeDone = false,
+                    order = OrderType.Buy,
                     BitcoinPriceAtTheTime = btcPriceVariable,
 
                     RequestPriceFOrOrderBuy = tradeModel.RequestPriceFOrOrderBuy,

@@ -73,9 +73,37 @@ namespace ArsaRExCH.InterfaceIMPL
             return anyTradeFilled; // Return whether any trades were filled
         }
 
+        public async Task<bool> CheckBuyOrdersToFill(double btcprice)
+        {
+            if (btcprice <= 0)
+            {
+                return false;
+            }
 
+            var context = dbContextFactory.CreateDbContext();
+            var trades = await context.Trade
+                .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy&&trade.order==OrderType.Buy)
+                .ToListAsync();
 
+            bool anyTradeFilled = false;
 
+            foreach (var trade in trades)
+            {
+                // Log trade details for debugging
+                Console.WriteLine($"Trade Request Price: {trade.RequestPriceFOrOrderBuy}, BTC Price: {btcprice}");
+
+                if (trade.RequestPriceFOrOrderBuy > btcprice)
+                {
+                    trade.IsTradeDone = true; // Mark the trade as done
+                    anyTradeFilled = true; // Set flag to indicate that a trade was filled
+                    Console.WriteLine("Order filled for trade."); // Debug log
+                }
+            }
+
+            await context.SaveChangesAsync(); // Save changes if any trades were filled
+            return anyTradeFilled; // Return whether any trades were filled
+        }
+    
 
         public async Task<List<Trade>> GetAllTrades()
         {
