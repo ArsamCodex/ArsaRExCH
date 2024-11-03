@@ -51,9 +51,9 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>BTC</th>
                 <th>OrderPrice</th>
+                <th>Type</th>
                 <th>Date</th>
             </tr>
         </thead>
@@ -61,9 +61,9 @@
             @foreach (var trade in OrderTradeList)
             {
                 <tr>
-                    <td>@trade.User?.Id?.ToString()?.Substring(Math.Max(0, trade.User.Id.Length - 5))</td>
                     <td>@trade.symbolI.ToString("F4")</td>
                     <td>@trade.RequestPriceFOrOrderBuy</td>
+                    <td>@trade.order</td>
                     <td>@trade.dateTime</td>
                 </tr>
             }
@@ -180,18 +180,19 @@
         await CalcuateUsdtGet();
         await FetchTradesAsyncUnfinished();
         //sel order
-       await FillOrderSell();
-
+        await FillOrderSell();
+       await FillOrderSellHigherThenBtc();
     }
     private async Task FillOrderSell()
     {
         if (selectedBuySel == "Sell" && selectedTradeType == "Order")
         {
+            
             // Debug output for selected values
             Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
 
             // Attempt to fill order
-            var isDieDone = await _tradeInterface.CheckAndFIlledOrder(ConvertStringToDouble(btcPriceVariable));
+            var isDieDone = await _tradeInterface.CheckAndFIlledOrderSellUnderbtCPrice(ConvertStringToDouble(btcPriceVariable));
 
             // Debugging output to check if order was filled
             if (isDieDone)
@@ -206,7 +207,26 @@
             }
         }
     }
+    private async Task FillOrderSellHigherThenBtc()
+    {
+        if (selectedBuySel == "Sell" && selectedTradeType == "Order")
+        {
 
+            // Debug output for selected values
+            Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
+
+            // Attempt to fill order
+            var isDieDone = await _tradeInterface.CheckAndFIlledOrderSellUnderbtCPrice(ConvertStringToDouble(btcPriceVariable));
+
+            // Debugging output to check if order was filled
+            if (isDieDone)
+            {
+                ErrorMessage = "Order Filled";
+                Console.WriteLine("Order was successfully filled.");
+            }
+      
+        }
+    }
     private async Task FetchTradesAsyncUnfinished()
     {
         try
@@ -330,7 +350,7 @@
                 ErrorMessage = "An error occurred while saving the trade.";
             }
         }
-        else
+        if (selectedTradeType == "Order" && selectedBuySel=="Sell")
         {
             var trade = new Trade
                 {
@@ -342,6 +362,7 @@
                     TradeFee = feeFromDbCall, // TODO: edit exchange wallet
                     IsMarketBuy = false,
                     IsTradeDone = false,
+                    order = OrderType.Sell,
                     BitcoinPriceAtTheTime = btcPriceVariable,
 
                     RequestPriceFOrOrderBuy = tradeModel.RequestPriceFOrOrderBuy,
