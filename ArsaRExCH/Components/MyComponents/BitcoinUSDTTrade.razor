@@ -140,8 +140,7 @@
     </div>
 </div>
 <p>@ErrorMessage</p>
-<p>@selectedTradeType</p>
-<p>@selectedBuySel</p>
+
 @code {
     private Trade tradeModel = new Trade();
     private EditContext editContext;
@@ -185,7 +184,7 @@
         //sel order
         // await FillOrderSell();
         await FillOrderSellHigherThenBtc();
-        await  HandeBuyOrders();
+        await HandeBuyOrders();
     }
     /*
     private async Task FillOrderSell()
@@ -264,34 +263,35 @@
 
                     // Retrieve the USDT wallet for the user associated with this trade
                     var walletList = await context.Wallet.ToListAsync();
-                    var tetherwallte=  walletList.Where(c => c.ApplicationUserId == trade.ApplicationUserId && c.PairName == "USDT")
-                        .FirstOrDefault();
+
                     var bTcWallet = walletList.Where(c => c.ApplicationUserId == trade.ApplicationUserId && c.PairName == "BTC")
                     .FirstOrDefault();
-                    if (walletList != null)
+
+                    if (bTcWallet != null)
                     {
-                        // Update the wallet's Amount (e.g., deduct the trade amount or add profit)
-                        tetherwallte.Amount -= EstimatedUsdtToGetInCludeFee;
-                        bTcWallet.Amount -= tradeModel.symbolI; 
-                        var x = context.Wallet
-                         .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
-                         .FirstOrDefault();
-
-                        UsdtWalletAmount = x.Amount;
-                        AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
-                        Console.WriteLine("Order filled for trade, and USDT wallet updated."); // Debug log
-
+                        bTcWallet.Amount +=trade.symbolI;
                     }
                     else
                     {
-                        Console.WriteLine("USDT wallet not found for the specified user.");
+                        Console.WriteLine("BTC wallet not found for the user.");
                     }
+                    /*
+                    var x = context.Wallet
+                         .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+                         .FirstOrDefault();
+
+                    UsdtWalletAmount = x.Amount;*/
+
+
+                    Console.WriteLine("Order filled for trade, and USDT wallet updated."); // Debug log
+
+
                     Console.WriteLine("Order filled for trade."); // Debug log
                 }
             }
 
             await context.SaveChangesAsync(); // Save changes if any trades were filled
-                                              // Return whether any trades were filled
+            AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
 
             // Debugging output to check if order was filled
             if (anyTradeFilled)
@@ -363,7 +363,7 @@
             AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
             feeFromDbCall = await _tradeInterface.GetTradeFee();
             var context = dbContextFactory.CreateDbContext();
-            var x=     context.Wallet
+            var x = context.Wallet
                              .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
                              .FirstOrDefault();
 
@@ -430,7 +430,7 @@
                 ErrorMessage = "An error occurred while saving the trade.";
             }
         }
-        if (selectedTradeType == "Order" && selectedBuySel=="Sell")
+        if (selectedTradeType == "Order" && selectedBuySel == "Sell")
         {
             var trade = new Trade
                 {
@@ -496,12 +496,7 @@
                 ErrorMessage = "Trade added successfully!";
                 tradeModel = new Trade();
                 AvailableBtcAmountToSwap = await _walletInterface.GetBTCBalanceOfWallet(user2);
-                var conext = dbContextFactory.CreateDbContext();
-                var x = conext.Wallet
-                       .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
-                       .FirstOrDefault();
-
-                UsdtWalletAmount = x.Amount;
+                UsdtWalletAmount = await USDTWalletAmountExtractor();
             }
             catch (Exception ex)
             {
@@ -532,6 +527,17 @@
             return 0;
         }
     }
+    private async Task<double> USDTWalletAmountExtractor()
+    {
+        var context = dbContextFactory.CreateDbContext();
+        var wallet = await context.Wallet
+            .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+            .FirstOrDefaultAsync();
+
+        // Check if the wallet was found before accessing the Amount property
+        return wallet.Amount; // Returns 0 if wallet is null
+    }
+
     public void Dispose()
     {
         // Unsubscribe from the OnFieldChanged event
