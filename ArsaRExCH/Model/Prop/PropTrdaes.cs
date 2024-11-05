@@ -17,6 +17,10 @@ namespace ArsaRExCH.Model.Prop
         public bool IsOrderTakeProfit { get; set; }
         public bool IsOrderStopLoss { get; set; }
         public bool IsOrderLiquidated { get; set; }
+        public decimal LiquidationPrice { get; set; }
+        public decimal StopLoss { get; set; }
+        public decimal TakeProfit { get; set; }
+        public decimal MarketOrderClose { get; set; }
         public string ApplicationUserId { get; set; }
         public ApplicationUser user { get; set; }
     }
