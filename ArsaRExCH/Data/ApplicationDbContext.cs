@@ -1,4 +1,5 @@
 using ArsaRExCH.Model;
+using ArsaRExCH.Model.Prop;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ namespace ArsaRExCH.Data
     {
 
 
-        //  public DbSet<Apllica> Users { get; set; }
+          public DbSet<PropTrdaes> propTrdaes { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
         public DbSet<BitcoinPool> BitcoinPools { get; set; }
@@ -133,7 +134,15 @@ namespace ArsaRExCH.Data
                  ListPrice = 300.0,
                  ListedDate = DateTime.Now,
                  NetworkName = "ETH"
-             }
+             },
+               new Pair
+               {
+                   PairID = 4,
+                   PaiName = "USDT",
+                   ListPrice = 1,
+                   ListedDate = DateTime.Now,
+                   NetworkName = "ETH"
+               }
          );
         }
 

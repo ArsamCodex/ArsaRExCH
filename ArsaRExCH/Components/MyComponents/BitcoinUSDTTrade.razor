@@ -213,6 +213,8 @@
     }*/
     private async Task FillOrderSellHigherThenBtc()
     {
+        bool anyTradeFilled = false;
+
         if (selectedBuySel == "Sell" && selectedTradeType == "Order")
         {
 
@@ -220,10 +222,56 @@
             Console.WriteLine($"Selected Buy/Sell: {selectedBuySel}, Selected Trade Type: {selectedTradeType}");
 
             // Attempt to fill order
-            var isDieDone = await _tradeInterface.CheckAndFIlledOrderSellUnderbtCPrice(ConvertStringToDouble(btcPriceVariable));
+            //   var isDieDone = await _tradeInterface.CheckAndFIlledOrderSellUnderbtCPrice(ConvertStringToDouble(btcPriceVariable));
+            if (ConvertStringToDouble(btcPriceVariable) <= 0)
+            {
+                return;
+            }
 
-            // Debugging output to check if order was filled
-            if (isDieDone)
+            var context = dbContextFactory.CreateDbContext();
+            var trades = await context.Trade
+                .Where(trade => !trade.IsTradeDone && !trade.IsMarketBuy && trade.order == OrderType.Sell)
+                .ToListAsync();
+
+
+            foreach (var trade in trades)
+            {
+                // Log trade details for debugging
+                Console.WriteLine($"Trade Request Price: {trade.RequestPriceFOrOrderBuy}, BTC Price: {ConvertStringToDouble(btcPriceVariable)}");
+
+                if (trade.RequestPriceFOrOrderBuy > ConvertStringToDouble(btcPriceVariable))
+                {
+                    trade.IsTradeDone = true; // Mark the trade as done
+                    anyTradeFilled = true; // Set flag to indicate that a trade was filled
+                    trade.BitcoinPriceAtTheTime = btcPriceVariable;
+
+                    // Retrieve the USDT wallet for the user associated with this trade
+                    var walletList = await context.Wallet.ToListAsync();
+
+                    var UsdtWallet = walletList.Where(c => c.ApplicationUserId == trade.ApplicationUserId && c.PairName == "USDT")
+                    .FirstOrDefault();
+
+                    if (UsdtWallet != null)
+                    {
+                        UsdtWallet.Amount += trade.symbolI;
+                    }
+                    else
+                    {
+                        Console.WriteLine("BTC wallet not found for the user.");
+                    }
+
+
+
+                    Console.WriteLine("Order filled for trade, and USDT wallet updated."); // Debug log
+
+
+                    Console.WriteLine("Order filled for trade."); // Debug log
+                }
+            }
+
+            await context.SaveChangesAsync(); // Save changes if any trades were filled
+            UsdtWalletAmount = await USDTWalletAmountExtractor();
+            if (anyTradeFilled)
             {
                 ErrorMessage = "Order Filled";
                 Console.WriteLine("Order was successfully filled.");
@@ -260,6 +308,7 @@
                 {
                     trade.IsTradeDone = true; // Mark the trade as done
                     anyTradeFilled = true; // Set flag to indicate that a trade was filled
+                    trade.BitcoinPriceAtTheTime = btcPriceVariable;
 
                     // Retrieve the USDT wallet for the user associated with this trade
                     var walletList = await context.Wallet.ToListAsync();
