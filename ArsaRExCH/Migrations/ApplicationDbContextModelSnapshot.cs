@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f2bfac30-d800-4bb6-961c-1e7ce1419ce3",
+                            Id = "b1fbaa40-2e3e-40cf-affa-d571a4c62803",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3a984523-b727-475d-97cb-d4bd4b2cff49",
+                            ConcurrencyStamp = "16294b75-62c6-4c2d-a5e2-481dade18e7c",
                             Email = "ARMINTTWAT@GMAIL.COM",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +102,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e0ead1f6-21af-4d07-99e5-c65754fe4d9b",
+                            SecurityStamp = "31082fd9-b72a-4dda-ad88-d8f9981f07fa",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -437,7 +437,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 11, 3, 14, 37, 30, 75, DateTimeKind.Local).AddTicks(7154),
+                            ListedDate = new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6399),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -445,7 +445,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 11, 3, 14, 37, 30, 75, DateTimeKind.Local).AddTicks(7204),
+                            ListedDate = new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6532),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -453,7 +453,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 11, 3, 14, 37, 30, 75, DateTimeKind.Local).AddTicks(7208),
+                            ListedDate = new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6535),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -487,6 +487,111 @@ namespace ArsaRExCH.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Post");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Prop.PropTrade", b =>
+                {
+                    b.Property<int>("PropTradeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PropTradeId"));
+
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("BtcPriceWhenOrderClosed")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("BtcPriceWhenOrderOpened")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("FeeInCase")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("ForceCloseTradeAccountLost")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<int>("Leverage")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("LiquidationPrice")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<bool>("MarketOrderClose")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("OrderPriceClosed")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("OrderPriceOpened")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("ProfitInCase")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<int>("PropUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("StopLoss")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("TakeProfit")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<DateTime?>("TradeClosedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TradeOpened")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PropTradeId");
+
+                    b.HasIndex("PropUserId");
+
+                    b.ToTable("propTrdaes");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Prop.PropUser", b =>
+                {
+                    b.Property<int>("PropUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PropUserId"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Balance")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<int>("CurrentAccountType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAccountActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("PropUserId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("PropUser");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
@@ -697,7 +802,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "dfda0d02-4513-4e5c-90cd-1047f84ec069",
+                            Id = "eec624b8-2629-4aca-9d46-0381a3718880",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -792,8 +897,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "f2bfac30-d800-4bb6-961c-1e7ce1419ce3",
-                            RoleId = "dfda0d02-4513-4e5c-90cd-1047f84ec069"
+                            UserId = "b1fbaa40-2e3e-40cf-affa-d571a4c62803",
+                            RoleId = "eec624b8-2629-4aca-9d46-0381a3718880"
                         });
                 });
 
@@ -847,6 +952,28 @@ namespace ArsaRExCH.Migrations
                         .IsRequired();
 
                     b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Prop.PropTrade", b =>
+                {
+                    b.HasOne("ArsaRExCH.Model.Prop.PropUser", "PropUser")
+                        .WithMany("PropTrades")
+                        .HasForeignKey("PropUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PropUser");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Prop.PropUser", b =>
+                {
+                    b.HasOne("ArsaRExCH.Data.ApplicationUser", "ApplicationUser")
+                        .WithMany("propUsers")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
@@ -965,6 +1092,8 @@ namespace ArsaRExCH.Migrations
                     b.Navigation("Wallets");
 
                     b.Navigation("liveChats");
+
+                    b.Navigation("propUsers");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.BitcoinPool", b =>
@@ -975,6 +1104,11 @@ namespace ArsaRExCH.Migrations
             modelBuilder.Entity("ArsaRExCH.Model.Post", b =>
                 {
                     b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Prop.PropUser", b =>
+                {
+                    b.Navigation("PropTrades");
                 });
 #pragma warning restore 612, 618
         }

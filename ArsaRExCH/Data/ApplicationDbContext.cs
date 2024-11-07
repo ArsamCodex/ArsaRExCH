@@ -11,7 +11,7 @@ namespace ArsaRExCH.Data
     {
 
 
-          public DbSet<PropTrdaes> propTrdaes { get; set; }
+        public DbSet<PropTrade> propTrdaes { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
         public DbSet<BitcoinPool> BitcoinPools { get; set; }
@@ -52,6 +52,45 @@ namespace ArsaRExCH.Data
             modelBuilder.Entity<AdminSetupInit>()
             .Property(a => a.ShowAdminSetupPopUp)
             .HasDefaultValue(true);
+
+
+            modelBuilder.Entity<PropTrade>(entity =>
+            {
+                entity.Property(e => e.BtcPriceWhenOrderOpened)
+                      .HasPrecision(18, 8); // Set precision and scale for each decimal property
+
+                entity.Property(e => e.BtcPriceWhenOrderClosed)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.OrderPriceOpened)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.OrderPriceClosed)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.ProfitInCase)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.FeeInCase)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.LiquidationPrice)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.StopLoss)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.TakeProfit)
+                      .HasPrecision(18, 8);
+
+                entity.Property(e => e.ForceCloseTradeAccountLost)
+                      .HasPrecision(18, 8);
+            });
+            modelBuilder.Entity<PropUser>(entity =>
+            {
+                entity.Property(e => e.Balance)
+                      .HasPrecision(18, 8); // Set precision and scale as needed
+            });
 
             base.OnModelCreating(modelBuilder);
 
@@ -134,15 +173,8 @@ namespace ArsaRExCH.Data
                  ListPrice = 300.0,
                  ListedDate = DateTime.Now,
                  NetworkName = "ETH"
-             },
-               new Pair
-               {
-                   PairID = 4,
-                   PaiName = "USDT",
-                   ListPrice = 1,
-                   ListedDate = DateTime.Now,
-                   NetworkName = "ETH"
-               }
+             }
+           
          );
         }
 

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class walletuser : Migration
+    public partial class innnit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -394,6 +394,28 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PropUser",
+                columns: table => new
+                {
+                    PropUserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Balance = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    CurrentAccountType = table.Column<int>(type: "int", nullable: false),
+                    IsAccountActive = table.Column<bool>(type: "bit", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropUser", x => x.PropUserId);
+                    table.ForeignKey(
+                        name: "FK_PropUser_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserDatesRecords",
                 columns: table => new
                 {
@@ -499,30 +521,65 @@ namespace ArsaRExCH.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "propTrdaes",
+                columns: table => new
+                {
+                    PropTradeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TradeOpened = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TradeClosedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BtcPriceWhenOrderOpened = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    BtcPriceWhenOrderClosed = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    OrderPriceOpened = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    OrderPriceClosed = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    Leverage = table.Column<int>(type: "int", nullable: false),
+                    ProfitInCase = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    FeeInCase = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    LiquidationPrice = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    StopLoss = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    TakeProfit = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    MarketOrderClose = table.Column<bool>(type: "bit", nullable: false),
+                    ForceCloseTradeAccountLost = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    AccountType = table.Column<int>(type: "int", nullable: false),
+                    PropUserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_propTrdaes", x => x.PropTradeId);
+                    table.ForeignKey(
+                        name: "FK_propTrdaes_PropUser_PropUserId",
+                        column: x => x.PropUserId,
+                        principalTable: "PropUser",
+                        principalColumn: "PropUserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "dfda0d02-4513-4e5c-90cd-1047f84ec069", null, "Admin", "ADMIN" });
+                values: new object[] { "eec624b8-2629-4aca-9d46-0381a3718880", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "f2bfac30-d800-4bb6-961c-1e7ce1419ce3", 0, "3a984523-b727-475d-97cb-d4bd4b2cff49", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "e0ead1f6-21af-4d07-99e5-c65754fe4d9b", false, "arminttwat@gmail.com" });
+                values: new object[] { "b1fbaa40-2e3e-40cf-affa-d571a4c62803", 0, "16294b75-62c6-4c2d-a5e2-481dade18e7c", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "31082fd9-b72a-4dda-ad88-d8f9981f07fa", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 11, 3, 14, 37, 30, 75, DateTimeKind.Local).AddTicks(7154), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 11, 3, 14, 37, 30, 75, DateTimeKind.Local).AddTicks(7204), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 11, 3, 14, 37, 30, 75, DateTimeKind.Local).AddTicks(7208), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6399), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6532), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6535), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "dfda0d02-4513-4e5c-90cd-1047f84ec069", "f2bfac30-d800-4bb6-961c-1e7ce1419ce3" });
+                values: new object[] { "eec624b8-2629-4aca-9d46-0381a3718880", "b1fbaa40-2e3e-40cf-affa-d571a4c62803" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AirDrops_ApplicationUserId",
@@ -576,6 +633,16 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Post_ApplicationUserId",
                 table: "Post",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_propTrdaes_PropUserId",
+                table: "propTrdaes",
+                column: "PropUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropUser_ApplicationUserId",
+                table: "PropUser",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
@@ -653,6 +720,9 @@ namespace ArsaRExCH.Migrations
                 name: "poolTransactions");
 
             migrationBuilder.DropTable(
+                name: "propTrdaes");
+
+            migrationBuilder.DropTable(
                 name: "Reply");
 
             migrationBuilder.DropTable(
@@ -669,6 +739,9 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "PropUser");
 
             migrationBuilder.DropTable(
                 name: "Post");
