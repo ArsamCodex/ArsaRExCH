@@ -17,6 +17,8 @@ using ArsaRExCH.StaticsHelper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MudBlazor.Services;
+using ArsaRExCH.Interface.PropInterface;
+using ArsaRExCH.InterfaceIMPL.PropImlp;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +47,7 @@ builder.Services.AddScoped<PostNadReplyInterface, PostNadReplyInterfaceIMPL>();
 builder.Services.AddScoped<IBitcoinPool, IBitcoinPoolIMPL>();
 builder.Services.AddScoped<ILiveChat, ILiveChatIMPL>();
 builder.Services.AddScoped<ITrade, ItradeIMPL>();
+builder.Services.AddScoped<IProp, IPropImPL>();
 
 
 
