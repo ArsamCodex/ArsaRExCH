@@ -3,18 +3,127 @@
 @inject ArsaRExCH.Interface.PropInterface.IProp _prop
 @using ArsaRExCH.DTOs
 @using ArsaRExCH.Interface
-<div>
-    <p>Price: @priceData?.Price</p>
+@using ArsaRExCH.Model.Prop
+<p>Price: @priceData?.Price</p>
+<div style="display: flex; gap: 20px;">
 
+    <!-- Chart Container -->
+    <div style="width: 70%; height: 400px;">
+        <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
+    </div>
+
+    <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
+
+        <!-- Progress Bar on Top -->
+        <div style="flex: 1;">
+            <div class="progress" style="height: 20px;">
+                <div class="progress-bar" role="progressbar" style="width: @GetPercentage(Level)%;"
+                     aria-valuenow="@Level" aria-valuemin="2" aria-valuemax="20">
+                    @Level
+                </div>
+            </div>
+        </div>
+
+        <!-- Leverage Slider and Dropdowns Below Progress Bar -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <!-- Leverage Control -->
+            <div>
+                <label for="levelSlider">Leverage (2-20):</label>
+                <input type="range" id="levelSlider" min="2" max="20" @bind="Level" class="form-range" />
+                <p>Chosen Leverage: @Level</p>
+            </div>
+
+            <!-- Order Type and Buy/Sell Selection -->
+            <div style="display: flex; gap: 10px; justify-content: space-between;">
+                <div>
+                    <h5><b>Order Type</b></h5>
+                    <select @bind="selectedTradeType" class="form-select">
+                        <option value="Market">Market</option>
+                        <option value="Order">Order</option>
+                    </select>
+                </div>
+                <div>
+                    <h5><b>Buy/Sell</b></h5>
+                    <select @bind="selectedBuySel" class="form-select">
+                        <option value="Buy">Buy</option>
+                        <option value="Sell">Sell</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Form for Amount, Take Profit, Stop Loss, and Submit Button -->
+            <EditForm EditContext="@editContext" OnValidSubmit="HandleTrade">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group" style="display: flex; gap: 20px; justify-content: space-between;">
+
+                    <!-- Amount Field -->
+                    <div style="flex: 1; display: flex; gap: 20px;">
+
+                        <!-- Amount Field -->
+                        <div style="flex: 1; width: 25%;">
+                            <label for="symbolI">Amount</label>
+                            <InputNumber id="symbolI"
+                                         class="form-control"
+                                         @bind-Value="propTrade.OrderPriceOpened" />
+                        </div>
+
+                        <!-- Take Profit Field -->
+                        <div style="flex: 1; width: 25%;">
+                            <label for="takeProfit">Take Profit</label>
+                            <InputNumber id="takeProfit"
+                                         class="form-control"
+                                         @bind-Value="propTrade.TakeProfit" />
+                        </div>
+
+                        <!-- Stop Loss Field -->
+                        <div style="flex: 1; width: 25%;">
+                            <label for="stopLoss">Stop Loss</label>
+                            <InputNumber id="stopLoss"
+                                         class="form-control"
+                                         @bind-Value="propTrade.StopLoss" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Place Order</button>
+            </EditForm>
+
+
+
+        </div>
+    </div>
 </div>
 
 @code {
     private BinancePrepetualPriceDTO priceData = new BinancePrepetualPriceDTO();
     private DateTime priceDate;
     private Timer _timer;
+    private int Level { get; set; } = 0;
+    private string selectedTradeType = "Market"; // Default selected value
+    private List<PropTrade> OrderTradeList { get; set; } = new List<PropTrade>();
+    private string selectedBuySel = "Sell";
+    private EditContext editContext;
+    private PropTrade propTrade = new PropTrade();
+
+
+
+    private async Task HandleTrade()
+    {
+        
+    }
+    private double GetPercentage(int level)
+    {
+        // Map the Level range (2-20) to 0-100% for the progress bar width.
+        return (level - 2) / 18.0 * 100;
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(propTrade);
+        editContext.OnFieldChanged += HandleFieldChanged;
         // Fetch initial data
         priceData = await _prop.GetBTCPerpetualPriceAsync();
         priceDate = DateTimeOffset.FromUnixTimeMilliseconds(priceData?.Time ?? 0).DateTime;
@@ -27,12 +136,16 @@
     {
         // Fetch new data and update the component
         priceData = await _prop.GetBTCPerpetualPriceAsync();
-        priceDate = DateTimeOffset.FromUnixTimeMilliseconds(priceData?.Time ?? 0).DateTime;
+      
 
-        // Ensure the component re-renders on the UI thread
       await  InvokeAsync(StateHasChanged);
     }
-
+    private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened))
+        {
+        }
+    }
     public void Dispose()
     {
         // Dispose the timer when the component is disposed
