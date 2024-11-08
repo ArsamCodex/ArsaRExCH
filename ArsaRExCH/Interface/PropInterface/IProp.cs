@@ -1,4 +1,5 @@
-﻿using ArsaRExCH.Model.Prop;
+﻿using ArsaRExCH.DTOs;
+using ArsaRExCH.Model.Prop;
 
 namespace ArsaRExCH.Interface.PropInterface
 {
@@ -9,6 +10,7 @@ namespace ArsaRExCH.Interface.PropInterface
         Task DeleteObjectById<T>(object id) where T : class;
         Task EditObject<T>(object id, T updatedEntity) where T : class;
         Task<IEnumerable<T>> GetAll<T>() where T : class;
+        Task<BinancePrepetualPriceDTO> GetBTCPerpetualPriceAsync();
 
     }
 }

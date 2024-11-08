@@ -68,14 +68,6 @@
 
 
 
-  <ItemGroup>
-    <Folder Include="Components\MyComponents\PropComponentss\" />
-  </ItemGroup>
-
-
-
-
-
 
 
 </Project>

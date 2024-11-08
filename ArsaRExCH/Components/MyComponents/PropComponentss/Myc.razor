@@ -1,0 +1,41 @@
+﻿@inject IJSRuntime JS
+@implements IDisposable
+@inject ArsaRExCH.Interface.PropInterface.IProp _prop
+@using ArsaRExCH.DTOs
+@using ArsaRExCH.Interface
+<div>
+    <p>Price: @priceData?.Price</p>
+
+</div>
+
+@code {
+    private BinancePrepetualPriceDTO priceData = new BinancePrepetualPriceDTO();
+    private DateTime priceDate;
+    private Timer _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch initial data
+        priceData = await _prop.GetBTCPerpetualPriceAsync();
+        priceDate = DateTimeOffset.FromUnixTimeMilliseconds(priceData?.Time ?? 0).DateTime;
+
+        // Set up a timer to refresh data every 5 seconds
+        _timer = new Timer(async _ => await UpdatePrice(), null, 0, 5000);
+    }
+
+    private async Task UpdatePrice()
+    {
+        // Fetch new data and update the component
+        priceData = await _prop.GetBTCPerpetualPriceAsync();
+        priceDate = DateTimeOffset.FromUnixTimeMilliseconds(priceData?.Time ?? 0).DateTime;
+
+        // Ensure the component re-renders on the UI thread
+      await  InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        // Dispose the timer when the component is disposed
+        _timer?.Dispose();
+    }
+}

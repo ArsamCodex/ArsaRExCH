@@ -1,17 +1,22 @@
 ﻿using ArsaRExCH.Data;
+using ArsaRExCH.DTOs;
 using ArsaRExCH.Interface.PropInterface;
 using ArsaRExCH.Model.Prop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using NBitcoin.Secp256k1;
+using Newtonsoft.Json;
 
 namespace ArsaRExCH.InterfaceIMPL.PropImlp
 {
-    public class IPropImPL(IDbContextFactory<ApplicationDbContext> context, ILogger<IPropImPL> logger) : IProp
+    public class IPropImPL(IDbContextFactory<ApplicationDbContext> context, ILogger<IPropImPL> logger
+        , HttpClient httpClient
+        ) : IProp
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbContext = context;
         private readonly ILogger<IPropImPL> _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+        private readonly HttpClient _httpClient = httpClient;
 
         public async Task DeleteObjectById<T>(object id) where T : class
         {
@@ -82,7 +87,6 @@ namespace ArsaRExCH.InterfaceIMPL.PropImlp
                 throw new Exception($"An unexpected error occurred while saving {typeof(T).Name}.", ex);
             }
         }
-
         public async Task EditObject<T>(object id, T updatedEntity) where T : class
         {
             // Check for null parameters
@@ -135,9 +139,6 @@ namespace ArsaRExCH.InterfaceIMPL.PropImlp
                 throw new Exception("An unexpected error occurred while editing the entity.", ex);
             }
         }
-
-
-
         public async Task<IEnumerable<T>> GetAll<T>() where T : class
         {
             try
@@ -166,6 +167,27 @@ namespace ArsaRExCH.InterfaceIMPL.PropImlp
             {
                 _logger.LogError(ex, "An unexpected error occurred while retrieving {EntityType} entities.", typeof(T).Name);
                 throw new Exception($"An unexpected error occurred while retrieving {typeof(T).Name} entities.", ex);
+            }
+        }
+
+        public async Task<BinancePrepetualPriceDTO> GetBTCPerpetualPriceAsync()
+        {
+            try
+            {
+                // Sending HTTP request to Binance API to get the price of BTCUSDT perpetual
+                var response = await _httpClient.GetStringAsync("https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT");
+
+                // Deserialize the response into the DTO object
+                var priceData = JsonConvert.DeserializeObject<BinancePrepetualPriceDTO>(response);
+
+                // Return the price data object
+                return priceData;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (logging, etc.)
+                Console.WriteLine($"Error fetching price: {ex.Message}");
+                return null;
             }
         }
 

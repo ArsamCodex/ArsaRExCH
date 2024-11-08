@@ -1,4 +1,4 @@
-﻿// wwwroot/tradingview.js
+﻿
 function initializeTradingViewChart(symbol) {
     if (typeof TradingView === "undefined") {
         console.error("TradingView is not defined. Please ensure the library is loaded correctly.");
@@ -17,7 +17,7 @@ function initializeTradingViewChart(symbol) {
         "locale": "en",
         "toolbar_bg": "#f1f3f6",
         "enable_publishing": false,
-        "allow_symbol_change": true,
+        "allow_symbol_change": false,
         "autosize": true
     });
 }
