@@ -92,9 +92,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b1fbaa40-2e3e-40cf-affa-d571a4c62803",
+                            Id = "4b3f53a8-b66b-4d6f-bc34-76489eb2836b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "16294b75-62c6-4c2d-a5e2-481dade18e7c",
+                            ConcurrencyStamp = "6498c93d-1088-463d-ac7f-195f644c9d3c",
                             Email = "ARMINTTWAT@GMAIL.COM",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +102,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "31082fd9-b72a-4dda-ad88-d8f9981f07fa",
+                            SecurityStamp = "d9693101-3a7f-4bba-aab2-7cc4e044c6b1",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -437,7 +437,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6399),
+                            ListedDate = new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7112),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -445,7 +445,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6532),
+                            ListedDate = new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7162),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -453,7 +453,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6535),
+                            ListedDate = new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7165),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -591,7 +591,7 @@ namespace ArsaRExCH.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("PropUser");
+                    b.ToTable("propUsers");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Reply", b =>
@@ -802,7 +802,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "eec624b8-2629-4aca-9d46-0381a3718880",
+                            Id = "7d32ce40-5895-4041-a06a-e61b3e8c3229",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -897,8 +897,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "b1fbaa40-2e3e-40cf-affa-d571a4c62803",
-                            RoleId = "eec624b8-2629-4aca-9d46-0381a3718880"
+                            UserId = "4b3f53a8-b66b-4d6f-bc34-76489eb2836b",
+                            RoleId = "7d32ce40-5895-4041-a06a-e61b3e8c3229"
                         });
                 });
 

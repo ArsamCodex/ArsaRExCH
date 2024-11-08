@@ -1,10 +1,17 @@
 ﻿@inject IJSRuntime JS
 @implements IDisposable
 @inject ArsaRExCH.Interface.PropInterface.IProp _prop
+@using ArsaRExCH.Components.Account
 @using ArsaRExCH.DTOs
 @using ArsaRExCH.Interface
 @using ArsaRExCH.Model.Prop
+@rendermode InteractiveServer
 <p>Price: @priceData?.Price</p>
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+
+
+<GetPropBalance></GetPropBalance>
 <div style="display: flex; gap: 20px;">
 
     <!-- Chart Container -->
@@ -60,31 +67,32 @@
 
                     <!-- Amount Field -->
                     <div style="flex: 1; display: flex; gap: 20px;">
+                        @if (selectedBuySel == "Buy" && selectedTradeType == "Market")
+                        {
+                            <!-- Amount Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="symbolI">Amount</label>
+                                <InputNumber id="symbolI"
+                                             class="form-control"
+                                             @bind-Value="propTrade.OrderPriceOpened" />
+                            </div>
 
-                        <!-- Amount Field -->
-                        <div style="flex: 1; width: 25%;">
-                            <label for="symbolI">Amount</label>
-                            <InputNumber id="symbolI"
-                                         class="form-control"
-                                         @bind-Value="propTrade.OrderPriceOpened" />
-                        </div>
+                            <!-- Take Profit Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="takeProfit">Take Profit</label>
+                                <InputNumber id="takeProfit"
+                                             class="form-control"
+                                             @bind-Value="propTrade.TakeProfit" />
+                            </div>
 
-                        <!-- Take Profit Field -->
-                        <div style="flex: 1; width: 25%;">
-                            <label for="takeProfit">Take Profit</label>
-                            <InputNumber id="takeProfit"
-                                         class="form-control"
-                                         @bind-Value="propTrade.TakeProfit" />
-                        </div>
-
-                        <!-- Stop Loss Field -->
-                        <div style="flex: 1; width: 25%;">
-                            <label for="stopLoss">Stop Loss</label>
-                            <InputNumber id="stopLoss"
-                                         class="form-control"
-                                         @bind-Value="propTrade.StopLoss" />
-                        </div>
-
+                            <!-- Stop Loss Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="stopLoss">Stop Loss</label>
+                                <InputNumber id="stopLoss"
+                                             class="form-control"
+                                             @bind-Value="propTrade.StopLoss" />
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -96,7 +104,22 @@
         </div>
     </div>
 </div>
+<div style="display: flex; gap: 20px;">
 
+    <!-- Chart Container -->
+    <div style="width: 70%; height: 400px;background-color:red">
+    </div>
+
+    <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
+        <p>Openede Price : @propTrade.OrderPriceOpened </p>
+        <p>StopLoss : @propTrade.StopLoss </p>
+        <p>Take Profit : @propTrade.TakeProfit</p>
+        <p>Amount : @propTrade.AmountForOrder </p>
+        <p>Leverage : @Level</p>
+
+    </div>
+</div>
 @code {
     private BinancePrepetualPriceDTO priceData = new BinancePrepetualPriceDTO();
     private DateTime priceDate;
@@ -107,12 +130,16 @@
     private string selectedBuySel = "Sell";
     private EditContext editContext;
     private PropTrade propTrade = new PropTrade();
-
-
+    public string user2 { get; set; }
+    public decimal OpenedPrice { get; set; }
+    public decimal Tp { get; set; }
+    public decimal Sl { get; set; }
+    public string ErrorMessage { get; set; }
+    //   public decimal Amount { get; set; }
 
     private async Task HandleTrade()
     {
-        
+
     }
     private double GetPercentage(int level)
     {
@@ -125,27 +152,71 @@
         editContext = new EditContext(propTrade);
         editContext.OnFieldChanged += HandleFieldChanged;
         // Fetch initial data
-        priceData = await _prop.GetBTCPerpetualPriceAsync();
-        priceDate = DateTimeOffset.FromUnixTimeMilliseconds(priceData?.Time ?? 0).DateTime;
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+                user2 = user5.Id; // Get the user ID here
+                Console.WriteLine(user5.Id);
+                _timer = new Timer(async _ => await UpdatePrice(), null, 0, 5000);
+            }
+            else
+            {
+                ErrorMessage = "Unable to retrieve user.";
+            }
+        }
+        else
+        {
+            ErrorMessage = "HttpContext is not available.";
+        }
 
         // Set up a timer to refresh data every 5 seconds
-        _timer = new Timer(async _ => await UpdatePrice(), null, 0, 5000);
+
     }
+
+    private async Task<decimal> CalculateBuyMarketLiquidation(int Leverage, decimal OrderPrice, decimal amount)
+    {
+        //Here we calculate liquidation for BUy Market
+        //Liquidation formula liquidationPrice = orderPrice * (1 - (1m / leverage));
+        /*Example
+     *      liquidationPrice = orderPrice * (1 - (amount / totalPositionSize));
+         *
+         *
+         *
+         */
+        // Calculate the total position size, which is margin * leverage
+        decimal totalPositionSize = Leverage * Level;
+
+        // liquidation price is =>if total posistion loss is =amount
+
+
+        // Calculate the liquidation price
+        decimal liquidationPrice = OrderPrice * (1 - (amount / totalPositionSize));
+
+        return liquidationPrice;
+
+
+    }
+
 
     private async Task UpdatePrice()
     {
         // Fetch new data and update the component
         priceData = await _prop.GetBTCPerpetualPriceAsync();
-      
 
-      await  InvokeAsync(StateHasChanged);
+
+        await InvokeAsync(StateHasChanged);
     }
+
     private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
-        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened))
+        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened) || e.FieldIdentifier.FieldName == nameof(propTrade.TakeProfit) || e.FieldIdentifier.FieldName == nameof(propTrade.StopLoss))
         {
         }
     }
+
     public void Dispose()
     {
         // Dispose the timer when the component is disposed

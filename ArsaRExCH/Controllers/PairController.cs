@@ -1,5 +1,6 @@
 ﻿using ArsaRExCH.Data;
 using ArsaRExCH.Interface;
+using ArsaRExCH.Interface.PropInterface;
 using ArsaRExCH.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,11 +18,13 @@ namespace ArsaRExCH.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly WalletInterface<double> _walletInterface;
-        public PairController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, WalletInterface<double> walletInterface)
+        private readonly IProp _prop;
+        public PairController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, WalletInterface<double> walletInterface, IProp prop)
         {
             _context = context;
             _userManager = userManager;
             _walletInterface = walletInterface;
+            _prop = prop;
         }
         /*
          * Add new Curr3nfcy to page
@@ -36,7 +39,7 @@ namespace ArsaRExCH.Controllers
 
                 //Get All IDs of users
                 var users = _userManager.Users.Select(u => u.Id).ToList();
-               // var tasks = new List<Task>();
+                // var tasks = new List<Task>();
 
                 // Create new wallets for all users
                 foreach (var userId in users)
@@ -49,7 +52,7 @@ namespace ArsaRExCH.Controllers
                     var walletEntity = new Model.Wallet
                     {
                         UserIDSec = userId,
-                        ApplicationUserId= userId,
+                        ApplicationUserId = userId,
                         PairName = ethereumPair.PaiName,
                         Adress = ad,
                         Amount = 0,
@@ -65,7 +68,7 @@ namespace ArsaRExCH.Controllers
                 }
 
                 // Wait for all wallet creation tasks to complete
-             //   await Task.WhenAll(tasks);
+                //   await Task.WhenAll(tasks);
 
                 return Ok(ethereumPair);
 
@@ -78,7 +81,7 @@ namespace ArsaRExCH.Controllers
 
         }
         [HttpGet]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPairs()
         {
             try
@@ -110,6 +113,7 @@ namespace ArsaRExCH.Controllers
                 return BadRequest(ex.Message);
             }
         }
+   
+
     }
-  
 }

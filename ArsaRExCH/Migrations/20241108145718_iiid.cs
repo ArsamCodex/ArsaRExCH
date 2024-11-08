@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class innnit : Migration
+    public partial class iiid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -394,7 +394,7 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PropUser",
+                name: "propUsers",
                 columns: table => new
                 {
                     PropUserId = table.Column<int>(type: "int", nullable: false)
@@ -406,9 +406,9 @@ namespace ArsaRExCH.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PropUser", x => x.PropUserId);
+                    table.PrimaryKey("PK_propUsers", x => x.PropUserId);
                     table.ForeignKey(
-                        name: "FK_PropUser_AspNetUsers_ApplicationUserId",
+                        name: "FK_propUsers_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -549,9 +549,9 @@ namespace ArsaRExCH.Migrations
                 {
                     table.PrimaryKey("PK_propTrdaes", x => x.PropTradeId);
                     table.ForeignKey(
-                        name: "FK_propTrdaes_PropUser_PropUserId",
+                        name: "FK_propTrdaes_propUsers_PropUserId",
                         column: x => x.PropUserId,
-                        principalTable: "PropUser",
+                        principalTable: "propUsers",
                         principalColumn: "PropUserId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -559,27 +559,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "eec624b8-2629-4aca-9d46-0381a3718880", null, "Admin", "ADMIN" });
+                values: new object[] { "7d32ce40-5895-4041-a06a-e61b3e8c3229", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "b1fbaa40-2e3e-40cf-affa-d571a4c62803", 0, "16294b75-62c6-4c2d-a5e2-481dade18e7c", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "31082fd9-b72a-4dda-ad88-d8f9981f07fa", false, "arminttwat@gmail.com" });
+                values: new object[] { "4b3f53a8-b66b-4d6f-bc34-76489eb2836b", 0, "6498c93d-1088-463d-ac7f-195f644c9d3c", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "d9693101-3a7f-4bba-aab2-7cc4e044c6b1", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6399), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6532), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 11, 7, 0, 34, 24, 760, DateTimeKind.Local).AddTicks(6535), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7112), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7162), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7165), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "eec624b8-2629-4aca-9d46-0381a3718880", "b1fbaa40-2e3e-40cf-affa-d571a4c62803" });
+                values: new object[] { "7d32ce40-5895-4041-a06a-e61b3e8c3229", "4b3f53a8-b66b-4d6f-bc34-76489eb2836b" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AirDrops_ApplicationUserId",
@@ -641,8 +641,8 @@ namespace ArsaRExCH.Migrations
                 column: "PropUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PropUser_ApplicationUserId",
-                table: "PropUser",
+                name: "IX_propUsers_ApplicationUserId",
+                table: "propUsers",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
@@ -741,7 +741,7 @@ namespace ArsaRExCH.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "PropUser");
+                name: "propUsers");
 
             migrationBuilder.DropTable(
                 name: "Post");

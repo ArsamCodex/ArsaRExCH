@@ -11,6 +11,8 @@ namespace ArsaRExCH.Interface.PropInterface
         Task EditObject<T>(object id, T updatedEntity) where T : class;
         Task<IEnumerable<T>> GetAll<T>() where T : class;
         Task<BinancePrepetualPriceDTO> GetBTCPerpetualPriceAsync();
-
+        Task<decimal> GetBalanceForAuthenticatedUser();
+        Task<bool> IsUserAuthenticated(string userId);
+        Task<decimal> GetBalance(string id);
     }
 }

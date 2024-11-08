@@ -12,6 +12,8 @@ namespace ArsaRExCH.Data
 
 
         public DbSet<PropTrade> propTrdaes { get; set; }
+        public DbSet<PropUser> propUsers { get; set; }
+
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
         public DbSet<BitcoinPool> BitcoinPools { get; set; }
@@ -84,12 +86,12 @@ namespace ArsaRExCH.Data
                       .HasPrecision(18, 8);
 
                 entity.Property(e => e.ForceCloseTradeAccountLost)
-                      .HasPrecision(18, 8);
+                      .HasPrecision(18,8 );
             });
             modelBuilder.Entity<PropUser>(entity =>
             {
                 entity.Property(e => e.Balance)
-                      .HasPrecision(18, 8); // Set precision and scale as needed
+                      .HasPrecision(18, 0); // Set precision and scale as needed
             });
 
             base.OnModelCreating(modelBuilder);

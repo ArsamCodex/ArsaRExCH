@@ -1,0 +1,32 @@
+﻿@inject ArsaRExCH.Interface.PropInterface.IProp _propInterface
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@if (balance != null)
+{
+    <p>The balance for user  @balance</p>
+}
+
+@code {
+    private decimal balance;
+    public string user2  { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+
+        }
+        balance = await _propInterface.GetBalance(user2);
+
+
+    }
+}

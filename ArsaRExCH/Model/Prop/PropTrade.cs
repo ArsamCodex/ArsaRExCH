@@ -1,4 +1,5 @@
 ﻿using ArsaRExCH.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArsaRExCH.Model.Prop
 {
@@ -20,6 +21,9 @@ namespace ArsaRExCH.Model.Prop
         public decimal TakeProfit { get; set; }
         public bool MarketOrderClose { get; set; }
         public decimal ForceCloseTradeAccountLost { get; set; }
+        [Precision(18,0)]
+        public decimal AmountForOrder { get; set; }
+        public decimal OrderPriceForBuyOrSelP { get; set; }
         public AccountType AccountType { get; set; }
        // public string ApplicationUserId { get; set; }
        // public ApplicationUser ApplicationUser { get; set; }

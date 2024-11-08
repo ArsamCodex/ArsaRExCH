@@ -2,6 +2,7 @@
 using ArsaRExCH.DTOs;
 using ArsaRExCH.Interface.PropInterface;
 using ArsaRExCH.Model.Prop;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
@@ -11,12 +12,14 @@ using Newtonsoft.Json;
 namespace ArsaRExCH.InterfaceIMPL.PropImlp
 {
     public class IPropImPL(IDbContextFactory<ApplicationDbContext> context, ILogger<IPropImPL> logger
-        , HttpClient httpClient
+        , HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider
         ) : IProp
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbContext = context;
         private readonly ILogger<IPropImPL> _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         private readonly HttpClient _httpClient = httpClient;
+        private readonly AuthenticationStateProvider _authenticationStateProvider = authenticationStateProvider ?? throw new ArgumentNullException();
+
 
         public async Task DeleteObjectById<T>(object id) where T : class
         {
@@ -191,7 +194,60 @@ namespace ArsaRExCH.InterfaceIMPL.PropImlp
             }
         }
 
+        public async Task<decimal> GetBalance(string id)
+        {
 
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id), "The user ID cannot be null.");
+            }
 
+            using var scope = _dbContext.CreateDbContext();
+            try
+            {
+                var myData = await scope.propUsers
+                    .Where(c => c.ApplicationUserId == id)
+                    .Select(c => c.Balance)
+                    .FirstOrDefaultAsync();
+
+                return myData;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"An error occurred while retrieving balance for user {id}: {ex.Message}");
+                return 0;
+            }
+        }
+
+        public async Task<bool> IsUserAuthenticated(string userId)
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Check if user is authenticated and userId matches
+            if (user.Identity?.IsAuthenticated ?? false)
+            {
+                var userNameIdentifier = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                return userNameIdentifier == userId;
+            }
+
+            return false; // User is not authenticated
+        }
+        public async Task<decimal> GetBalanceForAuthenticatedUser()
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated ?? false)
+            {
+                var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+                if (!string.IsNullOrEmpty(userId))
+                    return await GetBalance(userId);
+            }
+
+            Console.Error.WriteLine("User is not authenticated or user ID is missing.");
+            return 0;
+        }
     }
 }
