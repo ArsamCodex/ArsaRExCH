@@ -1,10 +1,15 @@
 ﻿@page "/Prepetual"
 @using ArsaRExCH.Data
+@using ArsaRExCH.Model.Prop
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@inject ArsaRExCH.Interface.PropInterface.IProp _propInterface
+@rendermode InteractiveServer
+@attribute [Authorize]
+
 <style>
     .header {
         color: #333;
@@ -115,12 +120,51 @@
         </button>
     </EditForm>
 }
+else{
+@if (propUserList != null && propUserList.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>PropUserId</th>
+                <th>Balance</th>
+                <th>Account Type</th>
+                <th>Account Active</th>
+                <th>Term Accepted</th>
+                <th>UserId</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in propUserList)
+            {
+                <tr>
+                    <td>@user.PropUserId</td>
+                    <td>@user.Balance</td>
+                    <td>@user.CurrentAccountType</td>
+                    <td>@user.IsAccountActive</td>
+                    <td>@user.IsTermAndConditionAccepted</td>
+                    <td>@user.ApplicationUserId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No PropUsers found.</p>
+}
+
+}
+<p>@user2</p>
+<p>Accepted Confition : @hasAcceptedTerms</p>
 @code {
     private bool isRiskAccepted = false;
     private EditContext editContext;
     public string user2 { get; set; }
     private bool hasAcceptedTerms;
-
+    public IEnumerable<PropTrade> propTrades { get; set; } = new List<PropTrade>();
+    private PropUser propUser = new PropUser();
+    private IEnumerable<PropUser> propUserList = new List<PropUser>();
     private bool IsButtonDisabled => !isRiskAccepted;
 
     protected override async Task OnInitializedAsync()
@@ -137,14 +181,77 @@
                         .Where(u => u.ApplicationUserId == user2) // Adjust to your user identifier field
                         .Select(u => u.IsTermAndConditionAccepted)
                         .FirstOrDefaultAsync();
-            hasAcceptedTerms = chekme;
+            if (chekme)
+            {
+                hasAcceptedTerms = true;
+                var propUserList2 = await _propInterface.GetAll<PropUser>();
+                propUserList = propUserList2.Where(c => c.ApplicationUserId == user2);
+
+
+            }
+
         }
-      
-       
+
+
+    }
+    private async Task HandleAccept()
+    {
+
+        // Initialize a new PropUser object
+        var propUser = new PropUser
+            {
+                // Create a new ApplicationUser object and assign the user ID
+                ApplicationUser = new ApplicationUser
+                {
+                    Id = user2 // Assuming user2 is the ApplicationUserId (string or GUID)
+                },
+
+                // Set the acceptance flag
+                IsTermAndConditionAccepted = true,
+
+                // Example initial balance, replace with actual logic or value
+                Balance = 1000.00m,
+
+                // Set the account type (replace with actual logic or value)
+                CurrentAccountType = AccountType.Standard,
+
+                // Set the account status to active (or false if not active)
+                IsAccountActive = true,
+
+                // Initialize the list of PropTrades (if necessary)
+                PropTrades = new List<PropTrade>()
+            };
+
+        // If you need to associate with ApplicationUser, fetch it from the database
+        using (var context = dbContextFactory.CreateDbContext())
+        {
+            var applicationUser = await context.ApplicationUsers
+                                               .FirstOrDefaultAsync(u => u.Id == user2);
+
+            if (applicationUser != null)
+            {
+                // Associate the ApplicationUser with PropUser
+                propUser.ApplicationUser = applicationUser;
+            }
+            else
+            {
+              //  _logger.LogWarning($"ApplicationUser with Id {user2} not found.");
+            }
+
+            // Add the PropUser to the context and save changes
+            await context.propUsers.AddAsync(propUser);
+            await context.SaveChangesAsync();
+        }
+
+
+        // After saving, set terms acceptance flag
+        hasAcceptedTerms = true;
+
+        // Fetch the updated list of PropUsers for the given ApplicationUserId
+        var propUserList2 = await _propInterface.GetAll<PropUser>();
+        propUserList = propUserList2.Where(c => c.ApplicationUserId == user2).ToList();
+
+        // You can now work with propUserList, e.g., update UI or process further
     }
 
-    private void HandleAccept()
-    {
-        // Navigate to the next page or initialize the user’s account
-    }
 }
