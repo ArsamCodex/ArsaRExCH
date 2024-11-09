@@ -83,6 +83,80 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+    /* The container div that holds the buttons */
+    .button-container {
+        display: flex; /* Align children in a row */
+        justify-content: space-between; /* Space between buttons */
+        width: 100%; /* Full width of the container */
+    }
+
+    /* Styling for each button */
+    .full-width-btn {
+        flex: 1; /* Each button takes up equal space */
+        padding: 10px; /* Add some padding to the buttons */
+        font-size: 16px; /* Font size */
+        background-color: #007bff; /* Button background color */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s ease; /* Smooth background change */
+        margin: 5px; /* Add margin for spacing between buttons */
+    }
+
+        /* Change background on hover */
+        .full-width-btn:hover {
+            background-color: #0056b3;
+        }
+        /*swap form style*/
+    /* Container for the swap form */
+    .swap-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 10px;
+        width: 250px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .swap-section {
+        width: 100%;
+    }
+
+    .swap-input {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+        .swap-input:focus {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+    .swap-button {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .swap-button:hover {
+            background-color: #0056b3;
+        }
+
 
 </style>
 
@@ -148,6 +222,13 @@ else{
             }
         </tbody>
     </table>
+        <h3>Available Pairs : </h3>
+
+        <div class="button-container">
+            <button class="full-width-btn">BTCUSDT</button>
+            <button class="full-width-btn">Button 2</button>
+            <button class="full-width-btn">Button 3</button>
+        </div>
 }
 else
 {
@@ -155,8 +236,25 @@ else
 }
 
 }
+
+
 <p>@user2</p>
 <p>Accepted Confition : @hasAcceptedTerms</p>
+<p>Need Transfer USDT from Main Acunt to prepetual</p>
+<div class="swap-container">
+    <div class="swap-section">
+        <span class="input-text">From Main Account</span>
+
+        <input type="number" @bind="fromValue" placeholder="From Main Account $" class="swap-input" />
+    </div>
+
+
+    <span class="balance-text">Balance: @mainAccountBalance USDT</span>
+    <button class="swap-button" @onclick="HandleSwap">Transfer</button>
+</div>
+
+
+
 @code {
     private bool isRiskAccepted = false;
     private EditContext editContext;
@@ -166,6 +264,9 @@ else
     private PropUser propUser = new PropUser();
     private IEnumerable<PropUser> propUserList = new List<PropUser>();
     private bool IsButtonDisabled => !isRiskAccepted;
+
+    private decimal fromValue;
+    private double mainAccountBalance;
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,12 +287,12 @@ else
                 hasAcceptedTerms = true;
                 var propUserList2 = await _propInterface.GetAll<PropUser>();
                 propUserList = propUserList2.Where(c => c.ApplicationUserId == user2);
+                mainAccountBalance = await USDTWalletAmountExtractor();
 
 
             }
 
         }
-
 
     }
     private async Task HandleAccept()
@@ -235,7 +336,7 @@ else
             }
             else
             {
-              //  _logger.LogWarning($"ApplicationUser with Id {user2} not found.");
+                //  _logger.LogWarning($"ApplicationUser with Id {user2} not found.");
             }
 
             // Add the PropUser to the context and save changes
@@ -253,5 +354,61 @@ else
 
         // You can now work with propUserList, e.g., update UI or process further
     }
+    private async Task HandleSwap()
+    {
+        if (fromValue > (decimal)mainAccountBalance)
+        {
+            // Consider adding a notification here for insufficient funds
+            return;
+        }
 
+        var context = dbContextFactory.CreateDbContext();
+
+        // Retrieve the wallet for the user and the "USDT" pair
+        var wallet = await context.Wallet
+                                   .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+                                   .FirstOrDefaultAsync();
+        // Retrieve the user's prop wallet
+        var prepWalletEdit = await context.propUsers
+                                          .Where(c => c.ApplicationUserId == user2)
+                                          .FirstOrDefaultAsync();
+
+        // Check if wallet is null
+        if (wallet == null)
+        {
+            // Handle the case where the wallet is not found, possibly returning or notifying the user
+            return;
+        }
+
+        // Update wallet amount (consider using decimal for consistency)
+        wallet.Amount -= (double)fromValue; 
+
+   
+
+        // Check if prop user is found
+        if (prepWalletEdit == null)
+        {
+            // Handle the case where the prop user is not found, possibly returning or notifying the user
+            return;
+        }
+
+        // Update the prop wallet balance
+        prepWalletEdit.Balance += fromValue;
+
+        // Save changes to the database
+        await context.SaveChangesAsync();
+        mainAccountBalance = await USDTWalletAmountExtractor();
+        var propUserList2 = await _propInterface.GetAll<PropUser>();
+        propUserList = propUserList2.Where(c => c.ApplicationUserId == user2);
+    }
+
+    private async Task<double> USDTWalletAmountExtractor()
+    {
+        var context = dbContextFactory.CreateDbContext();
+        var wallet = await context.Wallet
+            .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
+            .FirstOrDefaultAsync();
+
+        return wallet?.Amount ?? 0;
+    }
 }

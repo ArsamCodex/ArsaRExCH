@@ -416,7 +416,7 @@
                              .Where(c => c.ApplicationUserId == user2 && c.PairName == "USDT")
                              .FirstOrDefault();
 
-            UsdtWalletAmount = x.Amount;
+            UsdtWalletAmount = x?.Amount ?? 0.0; // If x is null, default to 0.0, otherwise use x.Amount
         }
     }
 
@@ -584,7 +584,7 @@
             .FirstOrDefaultAsync();
 
         // Check if the wallet was found before accessing the Amount property
-        return wallet.Amount; // Returns 0 if wallet is null
+        return wallet?.Amount ?? 0;
     }
 
     public void Dispose()
