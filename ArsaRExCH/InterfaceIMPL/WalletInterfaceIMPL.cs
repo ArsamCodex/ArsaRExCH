@@ -617,27 +617,36 @@ namespace ArsaRExCH.InterfaceIMPL
             catch (KeyNotFoundException ex)
             {
                 // Handle cases where the wallet was not found
-              //  ErrorMessage = $"Wallet error: {ex.Message}";
+                //  ErrorMessage = $"Wallet error: {ex.Message}";
+                Console.WriteLine(ex);
             }
             catch (InvalidOperationException ex)
             {
                 // Handle cases where the operation is invalid, such as insufficient balance
-               // ErrorMessage = $"Operation error: {ex.Message}";
+                // ErrorMessage = $"Operation error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (DbUpdateException ex)
             {
                 // Handle database update exceptions, such as connection issues or concurrency conflicts
-               // ErrorMessage = $"Database error: {ex.Message}";
+                // ErrorMessage = $"Database error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (ArgumentNullException ex)
             {
                 // Handle cases where a null argument was passed (unlikely here, but just in case)
-               // ErrorMessage = $"Argument error: {ex.Message}";
+                // ErrorMessage = $"Argument error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (Exception ex)
             {
                 // Handle any other unexpected exceptions
-               // ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                // ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
         }
 
@@ -681,26 +690,35 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 // Handle cases where the wallet was not found
                 //  ErrorMessage = $"Wallet error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (InvalidOperationException ex)
             {
                 // Handle cases where the operation is invalid, such as insufficient balance
                 // ErrorMessage = $"Operation error: {ex.Message}";
+                Console.WriteLine(ex);
             }
             catch (DbUpdateException ex)
             {
                 // Handle database update exceptions, such as connection issues or concurrency conflicts
                 // ErrorMessage = $"Database error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (ArgumentNullException ex)
             {
                 // Handle cases where a null argument was passed (unlikely here, but just in case)
                 // ErrorMessage = $"Argument error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (Exception ex)
             {
                 // Handle any other unexpected exceptions
                 // ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
         }
 
@@ -744,26 +762,36 @@ namespace ArsaRExCH.InterfaceIMPL
             {
                 // Handle cases where the wallet was not found
                 //  ErrorMessage = $"Wallet error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (InvalidOperationException ex)
             {
                 // Handle cases where the operation is invalid, such as insufficient balance
                 // ErrorMessage = $"Operation error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (DbUpdateException ex)
             {
                 // Handle database update exceptions, such as connection issues or concurrency conflicts
                 // ErrorMessage = $"Database error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (ArgumentNullException ex)
             {
                 // Handle cases where a null argument was passed (unlikely here, but just in case)
                 // ErrorMessage = $"Argument error: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
             catch (Exception ex)
             {
                 // Handle any other unexpected exceptions
                 // ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                Console.WriteLine(ex);
+
             }
         }
     }

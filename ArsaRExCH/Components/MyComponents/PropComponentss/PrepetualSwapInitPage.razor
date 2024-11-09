@@ -1,0 +1,150 @@
+﻿@page "/Prepetual"
+@using ArsaRExCH.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+<style>
+    .header {
+        color: #333;
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .intro {
+        text-align: center;
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 1.5rem;
+    }
+
+    .disclaimer {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: #333;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+        .disclaimer p,
+        .disclaimer ul {
+            margin-bottom: 1rem;
+        }
+
+        .disclaimer ul {
+            list-style: disc;
+            margin-left: 1.5rem;
+        }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+    }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+    .proceed-button {
+        background-color: #d9534f;
+        color: white;
+        font-size: 1rem;
+        padding: 0.5rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .proceed-button:hover:not(:disabled) {
+            background-color: #c9302c;
+        }
+
+        .proceed-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+</style>
+
+
+@if (!hasAcceptedTerms)
+{
+    <h2 class="header">Perpetual Swap Disclaimer</h2>
+
+    <p class="intro">Initializing user Prop Accounts</p>
+
+    <div class="disclaimer">
+        <p><strong>Warning:</strong> Perpetual swaps are complex and high-risk financial instruments. By trading perpetual swaps, you acknowledge the following risks:</p>
+
+        <ul>
+            <li><strong>Risk of Total Loss:</strong> You could lose your entire balance.</li>
+            <li><strong>Leverage Risk:</strong> Higher leverage increases exposure and can lead to rapid liquidation.</li>
+            <li><strong>Market Volatility:</strong> Prices can change suddenly, impacting your position.</li>
+            <li><strong>Fees and Costs:</strong> Trading incurs fees that reduce your balance over time.</li>
+            <li><strong>System Risk:</strong> Delays in execution during volatility may prevent effective position management.</li>
+        </ul>
+
+        <p><strong>Please ensure you fully understand these risks before proceeding. Only trade with funds you are prepared to lose, and consider seeking professional advice if necessary.</strong></p>
+    </div>
+
+    <EditForm EditContext="@editContext" class="form-container">
+        <div class="checkbox-container">
+            <input type="checkbox" id="acceptRisk" @bind="isRiskAccepted" />
+            <label for="acceptRisk">
+                I acknowledge and accept the risks associated with perpetual swaps.
+            </label>
+        </div>
+
+        <button type="button" class="btn btn-danger proceed-button" @onclick="HandleAccept" disabled="@IsButtonDisabled">
+            Accept and Proceed
+        </button>
+    </EditForm>
+}
+@code {
+    private bool isRiskAccepted = false;
+    private EditContext editContext;
+    public string user2 { get; set; }
+    private bool hasAcceptedTerms;
+
+    private bool IsButtonDisabled => !isRiskAccepted;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(this);
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            var context = dbContextFactory.CreateDbContext();
+            var chekme = await context.propUsers
+                        .Where(u => u.ApplicationUserId == user2) // Adjust to your user identifier field
+                        .Select(u => u.IsTermAndConditionAccepted)
+                        .FirstOrDefaultAsync();
+            hasAcceptedTerms = chekme;
+        }
+      
+       
+    }
+
+    private void HandleAccept()
+    {
+        // Navigate to the next page or initialize the user’s account
+    }
+}

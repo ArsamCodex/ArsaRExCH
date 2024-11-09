@@ -1,0 +1,72 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Threading
+@using System.Threading.Tasks
+@using System.Net.Http
+@inject IHttpClientFactory httpClientFactory
+@rendermode InteractiveServer
+<div>
+    <p>BTC Price: <b>@btcPriceString USD</b></p>
+</div>
+
+<CascadingValue Value="@btcPriceString" Name="BtcPrice">
+    @ChildContent
+</CascadingValue>
+
+
+@code {
+    private decimal BtcPrice;
+    private Timer timer;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private string btcPriceString => BtcPrice.ToString("F2");
+
+    protected override void OnInitialized()
+    {
+        // Initialize the timer to fetch BTC price every 10 seconds
+        timer = new Timer(async _ => await FetchCryptoPrice(), null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+    }
+
+    private async Task FetchCryptoPrice()
+    {
+        try
+        {
+            var _httpClient = httpClientFactory.CreateClient();
+            // Send HTTP request to Binance API to get BTCUSDT price
+            var response = await _httpClient.GetStringAsync("https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT");
+
+            // Deserialize the response to get the price
+            var priceResponse = JsonSerializer.Deserialize<CryptoPriceResponse>(response);
+
+            if (priceResponse != null && decimal.TryParse(priceResponse.Price, out var price))
+            {
+                BtcPrice = price;
+
+                // Trigger UI update
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                Console.WriteLine("Failed to parse BTC price from response.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching BTC price: {ex.Message}");
+        }
+    }
+
+    private class CryptoPriceResponse
+    {
+        [JsonPropertyName("price")]
+        public string Price { get; set; }
+    }
+
+    public void Dispose()
+    {
+        // Dispose of the timer when the component is disposed
+        timer?.Dispose();
+    }
+}

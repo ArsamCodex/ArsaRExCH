@@ -5,10 +5,9 @@
 @rendermode InteractiveServer
 @attribute [Authorize]
 
-@if (balance != null)
-{
+
     <p>The balance for user  @balance</p>
-}
+
 
 @code {
     private decimal balance;

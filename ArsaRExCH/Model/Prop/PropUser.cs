@@ -13,5 +13,6 @@ namespace ArsaRExCH.Model.Prop
         public List<PropTrade> PropTrades { get; set; } = new List<PropTrade>();
         public string ApplicationUserId { get; set; }
          public ApplicationUser ApplicationUser { get; set; }
+        public bool IsTermAndConditionAccepted { get; set; }
     }
 }

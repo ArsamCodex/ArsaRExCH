@@ -72,7 +72,7 @@ namespace ArsaRExCH.InterfaceIMPL
             }
             catch (Exception ex)
             {
-                throw new Exception("Some Problem");
+                throw new Exception($"Some Problem{ex}");
             }
         }
 
@@ -187,12 +187,12 @@ namespace ArsaRExCH.InterfaceIMPL
 
             // Fetch the message for the specified date
             return await _context.adminWarningMessages
-                .Where(c => c.time.Date == date) // Assuming 'time' is a DateTime field
-                .FirstOrDefaultAsync();
+                .Where(c => c.time.Date == date)
+                .FirstOrDefaultAsync() ?? new AdminWarningMessage(); // Provide a default instance here
         }
 
 
-        public async Task<List<AirDropFaq>> GetAllAirDropFaq()
+            public async Task<List<AirDropFaq>> GetAllAirDropFaq()
         {
             try
             {

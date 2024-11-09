@@ -58,11 +58,7 @@ namespace ArsaRExCH.Data
 
             modelBuilder.Entity<PropTrade>(entity =>
             {
-                entity.Property(e => e.BtcPriceWhenOrderOpened)
-                      .HasPrecision(18, 8); // Set precision and scale for each decimal property
-
-                entity.Property(e => e.BtcPriceWhenOrderClosed)
-                      .HasPrecision(18, 8);
+              
 
                 entity.Property(e => e.OrderPriceOpened)
                       .HasPrecision(18, 8);
@@ -85,8 +81,7 @@ namespace ArsaRExCH.Data
                 entity.Property(e => e.TakeProfit)
                       .HasPrecision(18, 8);
 
-                entity.Property(e => e.ForceCloseTradeAccountLost)
-                      .HasPrecision(18,8 );
+            
             });
             modelBuilder.Entity<PropUser>(entity =>
             {

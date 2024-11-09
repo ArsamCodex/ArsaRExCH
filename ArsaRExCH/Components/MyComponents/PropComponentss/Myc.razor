@@ -6,9 +6,9 @@
 @using ArsaRExCH.Interface
 @using ArsaRExCH.Model.Prop
 @rendermode InteractiveServer
-<p>Price: @priceData?.Price</p>
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IdentityUserAccessor UserAccessor
+@using ArsaRExCH.Components.Chartss
 
 
 <GetPropBalance></GetPropBalance>
@@ -16,7 +16,7 @@
 
     <!-- Chart Container -->
     <div style="width: 70%; height: 400px;">
-        <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
+        <ArsaRExCH.Components.Chartss.TradingViewChart pair="BTCUSDT"></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
 
     <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <!-- Form for Amount, Take Profit, Stop Loss, and Submit Button -->
-            <EditForm EditContext="@editContext" OnValidSubmit="HandleTrade">
+            <EditForm EditContext="@editContext" OnValidSubmit="HandleTradeBuyMarketButton">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="form-group" style="display: flex; gap: 20px; justify-content: space-between;">
@@ -112,17 +112,11 @@
 
     <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
     <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
-        <p>Openede Price : @propTrade.OrderPriceOpened </p>
-        <p>StopLoss : @propTrade.StopLoss </p>
-        <p>Take Profit : @propTrade.TakeProfit</p>
-        <p>Amount : @propTrade.AmountForOrder </p>
-        <p>Leverage : @Level</p>
+
 
     </div>
 </div>
 @code {
-    private BinancePrepetualPriceDTO priceData = new BinancePrepetualPriceDTO();
-    private DateTime priceDate;
     private Timer _timer;
     private int Level { get; set; } = 0;
     private string selectedTradeType = "Market"; // Default selected value
@@ -130,16 +124,25 @@
     private string selectedBuySel = "Sell";
     private EditContext editContext;
     private PropTrade propTrade = new PropTrade();
-    public string user2 { get; set; }
+    public string? user2 { get; set; }
     public decimal OpenedPrice { get; set; }
     public decimal Tp { get; set; }
     public decimal Sl { get; set; }
-    public string ErrorMessage { get; set; }
-    //   public decimal Amount { get; set; }
+    public string? ErrorMessage { get; set; }
+    public decimal LiquidationPrice { get; set; }
+    public decimal TotalMargin { get; set; }
+    public string btcPriceVariable { get; set; }
 
-    private async Task HandleTrade()
+    private async Task HandleTradeBuyMarketButton()
     {
+        //save order first 
+        // Initialize PropTrade values (can be dynamically set based on user input or calculations)
+        propTrade.TradeOpened = DateTime.Now;
 
+        propTrade.OrderPriceOpened = 35000; // For example, order price for buy
+        propTrade.Leverage = 10; // Example leverage value
+        propTrade.AmountForOrder = 0; // Example order amount
+        propTrade.Status = OrderStatus.Open; // Initial status as Pending
     }
     private double GetPercentage(int level)
     {
@@ -160,7 +163,6 @@
             {
                 user2 = user5.Id; // Get the user ID here
                 Console.WriteLine(user5.Id);
-                _timer = new Timer(async _ => await UpdatePrice(), null, 0, 5000);
             }
             else
             {
@@ -176,44 +178,40 @@
 
     }
 
-    private async Task<decimal> CalculateBuyMarketLiquidation(int Leverage, decimal OrderPrice, decimal amount)
+    private async Task<decimal> CalculateBuyMarketLiquidation(int Leverage , decimal OrderPrice, decimal amount)
     {
         //Here we calculate liquidation for BUy Market
         //Liquidation formula liquidationPrice = orderPrice * (1 - (1m / leverage));
         /*Example
-     *      liquidationPrice = orderPrice * (1 - (amount / totalPositionSize));
-         *
-         *
-         *
-         */
+        *      liquidationPrice = orderPrice * (1 - (amount / totalPositionSize));
+        *
+        *
+        *
+        */
         // Calculate the total position size, which is margin * leverage
-        decimal totalPositionSize = Leverage * Level;
-
+        if (Leverage==0 || OrderPrice==0 || amount == 0)
+        {
+            ErrorMessage = " zeop devide error";
+        }
+        decimal totalPositionSize = amount * Level;
         // liquidation price is =>if total posistion loss is =amount
-
+        TotalMargin = totalPositionSize;
 
         // Calculate the liquidation price
-        decimal liquidationPrice = OrderPrice * (1 - (amount / totalPositionSize));
-
-        return liquidationPrice;
+        decimal liquidationPrice = OrderPrice * (1 - (propTrade.OrderPriceOpened / totalPositionSize));
+        LiquidationPrice = liquidationPrice;
+        return  liquidationPrice;
 
 
     }
 
 
-    private async Task UpdatePrice()
-    {
-        // Fetch new data and update the component
-        priceData = await _prop.GetBTCPerpetualPriceAsync();
-
-
-        await InvokeAsync(StateHasChanged);
-    }
 
     private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
-        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened) || e.FieldIdentifier.FieldName == nameof(propTrade.TakeProfit) || e.FieldIdentifier.FieldName == nameof(propTrade.StopLoss))
+        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened) )
         {
+            await CalculateBuyMarketLiquidation(Level,50000, propTrade.OrderPriceOpened);
         }
     }
 
@@ -221,5 +219,26 @@
     {
         // Dispose the timer when the component is disposed
         _timer?.Dispose();
+    }
+
+    [CascadingParameter(Name = "BtcPrice")]
+    public string BtcPrice
+    {
+        get => btcPriceVariable;
+        set
+        {
+            if (btcPriceVariable != value)
+            {
+                btcPriceVariable = value;
+
+
+
+            }
+        }
+    }
+    protected override void OnParametersSet()
+    {
+        btcPriceVariable = BtcPrice;
+
     }
 }

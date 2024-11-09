@@ -17,7 +17,7 @@
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 <div style="display: flex; width: 100%;">
     <div style="flex: 0 0 70%; height: 400px;">
-        <ArsaRExCH.Components.Chartss.TradingViewChart></ArsaRExCH.Components.Chartss.TradingViewChart>
+        <ArsaRExCH.Components.Chartss.TradingViewChart pair="BTCUSDT"></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
 
     <div id="additional-content" style="flex: 0 0 30%; height: 100px; background-color: white">
@@ -476,7 +476,7 @@
             }
             catch (Exception ex)
             {
-                ErrorMessage = "An error occurred while saving the trade.";
+                ErrorMessage = $"An error occurred while saving the trade.{ex}";
             }
         }
         if (selectedTradeType == "Order" && selectedBuySel == "Sell")

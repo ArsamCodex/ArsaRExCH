@@ -5,12 +5,13 @@
 
 @code {
     private bool _isDisposed;
-
+    [Parameter]
+    public string pair { get; set; }    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !_isDisposed)
         {
-            string symbol = "BTCUSDT";
+            string symbol = pair;
             await JSRuntime.InvokeVoidAsync("waitForTradingViewAndInitialize", symbol);
         }
     }
