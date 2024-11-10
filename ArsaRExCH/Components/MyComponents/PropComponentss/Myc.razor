@@ -9,9 +9,13 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IdentityUserAccessor UserAccessor
 @using ArsaRExCH.Components.Chartss
+@using Microsoft.EntityFrameworkCore
+@using ArsaRExCH.Data
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 
-
-<GetPropBalance></GetPropBalance>
+<p>Prop User Balance  :@propUser.Balance</p>
+<p>Prop UserId:@propUser.PropUserId</p>
+<p>Account Type : @propUser.CurrentAccountType</p>
 <div style="display: flex; gap: 20px;">
 
     <!-- Chart Container -->
@@ -132,7 +136,8 @@
     public decimal LiquidationPrice { get; set; }
     public decimal TotalMargin { get; set; }
     public string btcPriceVariable { get; set; }
-
+    public int PropUserId { get; set; }
+    public PropUser propUser { get; set; } = new PropUser();
     private async Task HandleTradeBuyMarketButton()
     {
         //save order first 
@@ -163,6 +168,10 @@
             {
                 user2 = user5.Id; // Get the user ID here
                 Console.WriteLine(user5.Id);
+                // PropUserId=await GetPropUserId(user2);
+                propUser = await GetPropUser(user2);
+              //  PropUserId = propUser.PropUserId;
+
             }
             else
             {
@@ -240,5 +249,13 @@
     {
         btcPriceVariable = BtcPrice;
 
+    }
+    private async Task<PropUser> GetPropUser(string userId)
+    {
+        var context = dbContextFactory.CreateDbContext();
+        var mydata = await context.propUsers
+        .Where(c => c.ApplicationUserId == userId)
+        .FirstOrDefaultAsync();
+        return mydata;
     }
 }

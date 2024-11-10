@@ -14,7 +14,9 @@ namespace ArsaRExCH.Data
         public DbSet<PropTrade> propTrdaes { get; set; }
         public DbSet<PropUser> propUsers { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<TransferBetweenAcounts> transferBetweenAcounts { get; set; }
 
+        
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pair> Pair { get; set; }
         public DbSet<BitcoinPool> BitcoinPools { get; set; }
