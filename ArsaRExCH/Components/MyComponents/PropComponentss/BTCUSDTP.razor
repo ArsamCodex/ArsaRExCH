@@ -1,9 +1,11 @@
-﻿@page "/Prepetual/BTCUSDTP"
+﻿@page "/Prepetual/BTCUSDTP/{hash}"
 @rendermode InteractiveServer
 <h3>BTCUSDTP</h3>
 <BtcPricePrepetual>
-    <Myc></Myc>
+    <Myc HashFllag="@hash"></Myc>
 </BtcPricePrepetual>
-@code {
 
+@code {
+    [Parameter]
+    public string hash { get; set; }
 }

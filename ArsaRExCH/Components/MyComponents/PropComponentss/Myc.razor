@@ -16,13 +16,14 @@
 <p>Prop User Balance  :@propUser.Balance</p>
 <p>Prop UserId:@propUser.PropUserId</p>
 <p>Account Type : @propUser.CurrentAccountType</p>
+<p>Flag : @HashFllag</p>
+
 <div style="display: flex; gap: 20px;">
 
     <!-- Chart Container -->
     <div style="width: 70%; height: 400px;">
         <ArsaRExCH.Components.Chartss.TradingViewChart pair="BTCUSDT"></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
-
     <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
     <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
 
@@ -121,6 +122,8 @@
     </div>
 </div>
 @code {
+    [Parameter]
+    public string HashFllag { get; set; }
     private Timer _timer;
     private int Level { get; set; } = 0;
     private string selectedTradeType = "Market"; // Default selected value

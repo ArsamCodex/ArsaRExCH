@@ -14,5 +14,6 @@ namespace ArsaRExCH.Model.Prop
         public string ApplicationUserId { get; set; }
          public ApplicationUser ApplicationUser { get; set; }
         public bool IsTermAndConditionAccepted { get; set; }
+        public string MyUniqueFlag { get; set; }
     }
 }

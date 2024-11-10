@@ -8,6 +8,7 @@
 @using System.Security.Claims
 @inject ArsaRExCH.Interface.PropInterface.IProp _propInterface
 @rendermode InteractiveServer
+@inject ArsaRExCH.Interface.BetInterface _betInterface
 @attribute [Authorize]
 
 <style>
@@ -84,8 +85,8 @@
             cursor: not-allowed;
         }
 
-    
-        /*swap form style*/
+
+    /*swap form style*/
     /* Container for the swap form */
     .swap-container {
         display: flex;
@@ -133,8 +134,6 @@
             background-color: #0056b3;
         }
 
-    
-
 </style>
 
 
@@ -171,96 +170,98 @@
         </button>
     </EditForm>
 }
-else{
-@if (propUserList != null && propUserList.Any())
+else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>PropUserId</th>
-                <th>Balance</th>
-                <th>Account Type</th>
-                <th>Account Active</th>
-                <th>Term Accepted</th>
-                <th>UserId</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in propUserList)
-            {
+    @if (propUserList != null && propUserList.Any())
+    {
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>@user.PropUserId</td>
-                    <td>@user.Balance</td>
-                    <td>@user.CurrentAccountType</td>
-                    <td>@user.IsAccountActive</td>
-                    <td>@user.IsTermAndConditionAccepted</td>
-                    <td>@user.ApplicationUserId</td>
+                    <th>PropUserId</th>
+                    <th>Balance</th>
+                    <th>Account Type</th>
+                    <th>Account Active</th>
+                    <th>Term Accepted</th>
+                    <th>UserId</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-        <p>Here To Transfer Internal FOunds Between accounts</p>
+            </thead>
+            <tbody>
+                @foreach (var user in propUserList)
+                {
+                    <tr>
+                        <td>@user.PropUserId</td>
+                        <td>@user.Balance</td>
+                        <td>@user.CurrentAccountType</td>
+                        <td>@user.IsAccountActive</td>
+                        <td>@user.IsTermAndConditionAccepted</td>
+                        <td>@user.ApplicationUserId</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <p>Available pairs</p>
+        <a href="/Prepetual/BTCUSDTP/@(GeneratedHashFlag)">BTCUSDT</a>
+        <hr />
         <div @onclick="ToggleFormVisibility" style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; border-radius: 4px; background-color: #4CAF50; color: white; cursor: pointer; text-align: center;">
             Transfer Between Accounts
         </div>
-}
-else
-{
-    <p>No PropUsers found.</p>
-}
+        @GeneratedHashFlag
 
-}
-<p>Available pairs</p>
-<a href="/Prepetual/BTCUSDTP">BTCUSDT</a>
-<hr />
+    }
+    else
+    {
+        <p>No PropUsers found.</p>
+    }
+    @if (isFormVisible)
+    {
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0;">
 
-@if (isFormVisible)
-{
-<div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0;">
-   
-    <label for="accountSelection" style="font-weight: bold; color: #333;">Select Account:</label>
-    <select id="accountSelection" @bind="selectedAccount" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; background-color: #f9f9f9; font-size: 1rem; color: #333;">
-        <option value="from">From Main Account</option>
-        <option value="to">To Main Account</option>
-        <option value="no"></option>
+            <label for="accountSelection" style="font-weight: bold; color: #333;">Select Account:</label>
+            <select id="accountSelection" @bind="selectedAccount" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; background-color: #f9f9f9; font-size: 1rem; color: #333;">
+                <option value="from">From Main Account</option>
+                <option value="to">To Main Account</option>
+                <option value="no"></option>
 
-    </select>
-</div>
-<br>
-@if (selectedAccount == "from")
-{
-    <div class="swap-container">
-    <div class="swap-section">
-        <span class="input-text">From Main Account</span>
-
-        <input type="number" @bind="fromValue" placeholder="From Main Account $" class="swap-input" />
-    </div>
-
-
-    <span class="balance-text">Balance: @mainAccountBalance USDT</span>
-    <button class="swap-button" @onclick="HandleSwap">Transfer</button>
-    </div>
-}
-@if (selectedAccount == "to")
-{
-    <div class="swap-container">
-        <div class="swap-section">
-            <span class="input-text">To Main Account</span>
-
-            <input type="number" @bind="fromValue" placeholder="From Main Account $" class="swap-input" />
+            </select>
         </div>
+        <br>
+        @if (selectedAccount == "from")
+        {
+            <div class="swap-container">
+                <div class="swap-section">
+                    <span class="input-text">From Main Account</span>
+
+                    <input type="number" @bind="fromValue" placeholder="From Main Account $" class="swap-input" />
+                </div>
 
 
-        <span class="balance-text">Balance: @mainAccountBalance USDT</span>
-        <button class="swap-button" @onclick="HandleSwapToMainAcc">Transfer</button>
-    </div>
+                <span class="balance-text">Balance: @mainAccountBalance USDT</span>
+                <button class="swap-button" @onclick="HandleSwap">Transfer</button>
+            </div>
+        }
+        @if (selectedAccount == "to")
+        {
+            <div class="swap-container">
+                <div class="swap-section">
+                    <span class="input-text">To Main Account</span>
+
+                    <input type="number" @bind="fromValue" placeholder="From Main Account $" class="swap-input" />
+                </div>
+
+
+                <span class="balance-text">Balance: @mainAccountBalance USDT</span>
+                <button class="swap-button" @onclick="HandleSwapToMainAcc">Transfer</button>
+            </div>
+        }
+        else
+        {
+
+        }       }
 }
-else
-{
-    
-}}
-@selectedAccount
 
+
+
+@selectedAccount
 
 @code {
     private bool isRiskAccepted = false;
@@ -272,7 +273,7 @@ else
     private IEnumerable<PropUser> propUserList = new List<PropUser>();
     private bool IsButtonDisabled => !isRiskAccepted;
     private string selectedAccount { get; set; }
-
+    private string GeneratedHashFlag { get; set; }
     private decimal fromValue;
     private double mainAccountBalance;
 
@@ -295,6 +296,7 @@ else
                 hasAcceptedTerms = true;
                 var propUserList2 = await _propInterface.GetAll<PropUser>();
                 propUserList = propUserList2.Where(c => c.ApplicationUserId == user2);
+                GeneratedHashFlag = propUserList.FirstOrDefault().MyUniqueFlag;
                 mainAccountBalance = await USDTWalletAmountExtractor();
 
 
@@ -323,6 +325,9 @@ else
 
                 // Set the account type (replace with actual logic or value)
                 CurrentAccountType = AccountType.Standard,
+
+               
+                MyUniqueFlag = await _betInterface.Generatesha256(),
 
                 // Set the account status to active (or false if not active)
                 IsAccountActive = true,
@@ -389,7 +394,7 @@ else
         }
 
         // Update wallet amount (consider using decimal for consistency)
-        wallet.Amount -= (double)fromValue; 
+        wallet.Amount -= (double)fromValue;
 
 
 
