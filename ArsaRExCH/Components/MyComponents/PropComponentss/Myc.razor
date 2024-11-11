@@ -126,25 +126,25 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>PNL</th>
-                        <th>Order Price Opened</th>
-                        <th>Amount for Order</th>
+                        <th>Order Price </th>
+                        <th>Amount </th>
                         <th>Leverage</th>
                         <th>Trade Opened Date</th>
-                        <th>Profite</th>
-              
+                        <th>Profit</th>
+                        <th>Action</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var trade in OrderTradeList)
                     {
                         <tr>
-                            <td>@PandL</td>
                             <td>@trade.OrderPriceOpened</td>
                             <td>@trade.AmountForOrder</td>
                             <td>@trade.Leverage</td>
                             <td>@trade.TradeOpened.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                            <td>@CalculateProfitLossInDollar(trade.OrderPriceOpened, decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m, trade.AmountForOrder, trade.Leverage)</td>
+                            <td>@CalculateProfitLossInDollar(trade.OrderPriceOpened, decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m, trade.AmountForOrder, trade.Leverage).ToString("0.###")</td>
+                            <td><button @onclick="() => CloseMarketOrder(trade.PropTradeId)">Close</button></td>
 
                         </tr>
                     }
@@ -161,7 +161,7 @@
     [Parameter]
     public string HashFllag { get; set; }
     private Timer _timer;
-    private int Level { get; set; } = 0;
+    private int Level { get; set; } = 1;
     private string selectedTradeType = "Market"; // Default selected value
     private List<PropTrade> OrderTradeList { get; set; } = new List<PropTrade>();
     private string selectedBuySel = "Sell";
@@ -232,7 +232,7 @@
                 propUser = await GetPropUser(user2);
                 userIdprop = propUser.PropUserId;
                 //  PropUserId = propUser.PropUserId;
-                OrderTradeList= await ListOfOpenTrades();
+                OrderTradeList = await ListOfOpenTrades();
             }
             else
             {
@@ -269,9 +269,6 @@
 
         return liquidationPrice;
     }
-
-
-
 
     private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
@@ -322,15 +319,7 @@
         var myTrades = await context.propTrdaes
             .Where(c => c.PropUserId == userIdprop && c.Status == OrderStatus.Open)
             .ToListAsync();
-        foreach(var x in myTrades)
-        {
-            var Myord = x.OrderPriceOpened;
-            var MyAmou = x.AmountForOrder;
-            var MyLe = x.Leverage;
-  
-          //  PandL = CalculateProfitLossInDollar(Myord, btcDecimal, MyAmou, MyLe);
-   
-        }
+
         // Log the results to see what's coming back
         Console.WriteLine($"Number of trades found: {myTrades.Count}");
 
@@ -340,12 +329,7 @@
 
     private decimal CalculateProfitLossInDollar(decimal orderPrice, decimal currentPrice, decimal amount, int leverage)
     {
-        // Check for invalid input values
-        if (leverage <= 0 || orderPrice <= 0 || amount <= 0)
-        {
-            ErrorMessage = "Invalid input values";
-            return 0m;
-        }
+
 
         // Calculate the effective Bitcoin amount held in this margin position
         decimal effectiveBitcoin = (amount * leverage) / orderPrice;
@@ -357,7 +341,7 @@
         if (currentPrice > orderPrice)
         {
             // Profit calculation for long position (profit if currentPrice > orderPrice)
-           //
+            //
             unleveragedProfitLoss = (currentPrice - orderPrice) * effectiveBitcoin;
         }
         else if (currentPrice < orderPrice)
@@ -373,8 +357,6 @@
         return leveragedProfitLoss;
     }
 
-
-
     private async Task<PropUser> GetPropUser(string userId)
     {
         var context = dbContextFactory.CreateDbContext();
@@ -386,5 +368,33 @@
     private async Task HandleAllCOmmand()
     {
         await ListOfOpenTrades();
+    }
+    private async Task CloseMarketOrder(int tradePoprdId)
+    {
+        var context = dbContextFactory.CreateDbContext();
+        var Dataget = await context.propTrdaes.
+        Where(c => c.PropTradeId == tradePoprdId).FirstOrDefaultAsync();
+
+        var propuserI = await context.propUsers.
+                     Where(c => c.PropUserId == userIdprop).FirstOrDefaultAsync();
+
+
+        var pnl = Math.Round(
+            CalculateProfitLossInDollar(
+                Dataget.OrderPriceOpened,
+                decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m,
+                Dataget.AmountForOrder,
+                Dataget.Leverage
+            ),
+            1 // Rounding to one decimal place
+        ); Dataget.ProfitInCase = pnl;
+
+        propuserI.Balance += pnl;
+
+        Dataget.Status = OrderStatus.ClosedManually;
+        await context.SaveChangesAsync();
+        OrderTradeList = await ListOfOpenTrades();
+        propUser = await GetPropUser(user2);
+
     }
 }

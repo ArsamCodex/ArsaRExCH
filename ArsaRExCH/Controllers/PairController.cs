@@ -46,6 +46,11 @@ namespace ArsaRExCH.Controllers
                 {
                     //Eth addres is same here to not make but copy maded eth wallet in db
                     var x = await _context.Wallet.FirstOrDefaultAsync(c => c.ApplicationUserId == userId && c.PairName == "ETH");
+
+                    if (x == null)
+                    {
+                        continue; // Skip creating the wallet for this user if their existing wallet is missing.
+                    }
                     var ad = x.Adress;
                     var seed = x.SeedPhrase;
                     var privateKey = x.PrivateKey;
