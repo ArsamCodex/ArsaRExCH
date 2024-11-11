@@ -14,7 +14,7 @@
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 
 <p>Prop User Balance  :@propUser.Balance</p>
-<p>Prop UserId:@propUser.PropUserId</p>
+<p>Prop UserId:@userIdprop</p>
 <p>Account Type : @propUser.CurrentAccountType</p>
 <p>Flag : @HashFllag</p>
 
@@ -79,7 +79,7 @@
                                 <label for="symbolI">Amount</label>
                                 <InputNumber id="symbolI"
                                              class="form-control"
-                                             @bind-Value="propTrade.OrderPriceOpened" />
+                                             @bind-Value="propTrade.AmountForOrder" />
                             </div>
 
                             <!-- Take Profit Field -->
@@ -112,13 +112,49 @@
 <div style="display: flex; gap: 20px;">
 
     <!-- Chart Container -->
-    <div style="width: 70%; height: 400px;background-color:red">
+    <div style="width: 70%; height: 400px">
+        @if (OrderTradeList == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else if (OrderTradeList.Count == 0)
+        {
+            <p>No prop trades found.</p>
+        }
+        else
+        {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>PNL</th>
+                        <th>Order Price Opened</th>
+                        <th>Amount for Order</th>
+                        <th>Leverage</th>
+                        <th>Trade Opened Date</th>
+                        <th>Profite</th>
+              
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var trade in OrderTradeList)
+                    {
+                        <tr>
+                            <td>@PandL</td>
+                            <td>@trade.OrderPriceOpened</td>
+                            <td>@trade.AmountForOrder</td>
+                            <td>@trade.Leverage</td>
+                            <td>@trade.TradeOpened.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>@CalculateProfitLossInDollar(trade.OrderPriceOpened, decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m, trade.AmountForOrder, trade.Leverage)</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 
     <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
     <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
-
-
     </div>
 </div>
 @code {
@@ -141,17 +177,38 @@
     public string btcPriceVariable { get; set; }
     public int PropUserId { get; set; }
     public PropUser propUser { get; set; } = new PropUser();
+    public decimal WinstOrLost { get; set; }
+    public int userIdprop { get; set; }
+    public decimal PandL { get; set; }
+
+
+
     private async Task HandleTradeBuyMarketButton()
     {
-        //save order first 
-        // Initialize PropTrade values (can be dynamically set based on user input or calculations)
-        propTrade.TradeOpened = DateTime.Now;
+        var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
+        // Create a new instance of PropTrade
+        var newPropTrade = new PropTrade
+            {
+                TradeOpened = DateTime.Now,
+                OrderPriceOpened = btcDecimal,
+                Leverage = Level, // Example leverage value
+                AmountForOrder = propTrade.AmountForOrder, // Example order amount
+                Status = OrderStatus.Open, // Initial status as Open
+                ProfitInCase = 0,
+                FeeInCase = 0,
+                LiquidationPrice = CalculateBuyMarketLiquidation(Level, btcDecimal, propTrade.AmountForOrder),
+                TakeProfit = propTrade.TakeProfit,
+                StopLoss = propTrade.StopLoss,
+                // Set the PropUserId if necessary
+                PropUserId = propUser.PropUserId // Assuming propUser is defined elsewhere
+            };
 
-        propTrade.OrderPriceOpened = 35000; // For example, order price for buy
-        propTrade.Leverage = 10; // Example leverage value
-        propTrade.AmountForOrder = 0; // Example order amount
-        propTrade.Status = OrderStatus.Open; // Initial status as Pending
+        // Use the context to add and save the new propTrade instance
+        var context = dbContextFactory.CreateDbContext();
+        await context.propTrdaes.AddAsync(newPropTrade);
+        await context.SaveChangesAsync();
     }
+
     private double GetPercentage(int level)
     {
         // Map the Level range (2-20) to 0-100% for the progress bar width.
@@ -173,8 +230,9 @@
                 Console.WriteLine(user5.Id);
                 // PropUserId=await GetPropUserId(user2);
                 propUser = await GetPropUser(user2);
-              //  PropUserId = propUser.PropUserId;
-
+                userIdprop = propUser.PropUserId;
+                //  PropUserId = propUser.PropUserId;
+                OrderTradeList= await ListOfOpenTrades();
             }
             else
             {
@@ -190,40 +248,36 @@
 
     }
 
-    private async Task<decimal> CalculateBuyMarketLiquidation(int Leverage , decimal OrderPrice, decimal amount)
+    private decimal CalculateBuyMarketLiquidation(int leverage, decimal orderPrice, decimal amount)
     {
-        //Here we calculate liquidation for BUy Market
-        //Liquidation formula liquidationPrice = orderPrice * (1 - (1m / leverage));
-        /*Example
-        *      liquidationPrice = orderPrice * (1 - (amount / totalPositionSize));
-        *
-        *
-        *
-        */
-        // Calculate the total position size, which is margin * leverage
-        if (Leverage==0 || OrderPrice==0 || amount == 0)
+        // Check for zero values to avoid division by zero
+        if (leverage == 0 || orderPrice == 0 || amount == 0)
         {
-            ErrorMessage = " zeop devide error";
+            ErrorMessage = "Zero divide error";
+            return 0m; // Handle the error appropriately
         }
-        decimal totalPositionSize = amount * Level;
-        // liquidation price is =>if total posistion loss is =amount
+
+        // Calculate the total position size
+        decimal totalPositionSize = amount * leverage;
         TotalMargin = totalPositionSize;
 
-        // Calculate the liquidation price
-        decimal liquidationPrice = OrderPrice * (1 - (propTrade.OrderPriceOpened / totalPositionSize));
+        // Calculate the liquidation price using the correct formula
+        decimal liquidationPrice = orderPrice * (1 - (amount / totalPositionSize));
+
+        // Store the liquidation price for reference
         LiquidationPrice = liquidationPrice;
-        return  liquidationPrice;
 
-
+        return liquidationPrice;
     }
+
 
 
 
     private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
-        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened) )
+        if (e.FieldIdentifier.FieldName == nameof(propTrade.OrderPriceOpened))
         {
-            await CalculateBuyMarketLiquidation(Level,50000, propTrade.OrderPriceOpened);
+            //   await CalculateBuyMarketLiquidation(Level,50000, propTrade.OrderPriceOpened);
         }
     }
 
@@ -242,6 +296,7 @@
             if (btcPriceVariable != value)
             {
                 btcPriceVariable = value;
+                HandleAllCOmmand().ConfigureAwait(false);
 
 
 
@@ -253,6 +308,73 @@
         btcPriceVariable = BtcPrice;
 
     }
+    private async Task<List<PropTrade>> ListOfOpenTrades()
+    {
+        // Check the value of propTrade.PropUserId
+        Console.WriteLine($"PropUserId: {propTrade.PropUserId}");
+
+        var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
+
+        // Get the context
+        var context = dbContextFactory.CreateDbContext();
+
+        // Log the query execution to check if it's returning any results
+        var myTrades = await context.propTrdaes
+            .Where(c => c.PropUserId == userIdprop && c.Status == OrderStatus.Open)
+            .ToListAsync();
+        foreach(var x in myTrades)
+        {
+            var Myord = x.OrderPriceOpened;
+            var MyAmou = x.AmountForOrder;
+            var MyLe = x.Leverage;
+  
+          //  PandL = CalculateProfitLossInDollar(Myord, btcDecimal, MyAmou, MyLe);
+   
+        }
+        // Log the results to see what's coming back
+        Console.WriteLine($"Number of trades found: {myTrades.Count}");
+
+        // Return the list of trades
+        return myTrades;
+    }
+
+    private decimal CalculateProfitLossInDollar(decimal orderPrice, decimal currentPrice, decimal amount, int leverage)
+    {
+        // Check for invalid input values
+        if (leverage <= 0 || orderPrice <= 0 || amount <= 0)
+        {
+            ErrorMessage = "Invalid input values";
+            return 0m;
+        }
+
+        // Calculate the effective Bitcoin amount held in this margin position
+        decimal effectiveBitcoin = (amount * leverage) / orderPrice;
+
+        // Calculate the unleveraged profit or loss based on the position type
+        decimal unleveragedProfitLoss = 0m;
+
+        // For a long position (buy)
+        if (currentPrice > orderPrice)
+        {
+            // Profit calculation for long position (profit if currentPrice > orderPrice)
+           //
+            unleveragedProfitLoss = (currentPrice - orderPrice) * effectiveBitcoin;
+        }
+        else if (currentPrice < orderPrice)
+        {
+            // Loss calculation for long position (loss if currentPrice < orderPrice)
+            unleveragedProfitLoss = (currentPrice - orderPrice) * effectiveBitcoin;
+        }
+
+        // Apply leverage
+        decimal leveragedProfitLoss = unleveragedProfitLoss;
+
+        // Return the profit or loss in the same currency as the asset (e.g., USD)
+        return leveragedProfitLoss;
+    }
+
+
+
     private async Task<PropUser> GetPropUser(string userId)
     {
         var context = dbContextFactory.CreateDbContext();
@@ -260,5 +382,9 @@
         .Where(c => c.ApplicationUserId == userId)
         .FirstOrDefaultAsync();
         return mydata;
+    }
+    private async Task HandleAllCOmmand()
+    {
+        await ListOfOpenTrades();
     }
 }
