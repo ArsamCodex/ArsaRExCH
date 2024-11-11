@@ -157,11 +157,12 @@
     <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
     </div>
 </div>
+@ErrorMessage
 @code {
     [Parameter]
     public string HashFllag { get; set; }
     private Timer _timer;
-    private int Level { get; set; } = 1;
+    private int Level { get; set; } = 2;
     private string selectedTradeType = "Market"; // Default selected value
     private List<PropTrade> OrderTradeList { get; set; } = new List<PropTrade>();
     private string selectedBuySel = "Sell";
@@ -186,27 +187,50 @@
     private async Task HandleTradeBuyMarketButton()
     {
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
-        // Create a new instance of PropTrade
-        var newPropTrade = new PropTrade
+        if (selectedTradeType == "Market" && selectedBuySel == "Buy")
+        {
+            if (propTrade.AmountForOrder <= 0 )
             {
-                TradeOpened = DateTime.Now,
-                OrderPriceOpened = btcDecimal,
-                Leverage = Level, // Example leverage value
-                AmountForOrder = propTrade.AmountForOrder, // Example order amount
-                Status = OrderStatus.Open, // Initial status as Open
-                ProfitInCase = 0,
-                FeeInCase = 0,
-                LiquidationPrice = CalculateBuyMarketLiquidation(Level, btcDecimal, propTrade.AmountForOrder),
-                TakeProfit = propTrade.TakeProfit,
-                StopLoss = propTrade.StopLoss,
-                // Set the PropUserId if necessary
-                PropUserId = propUser.PropUserId // Assuming propUser is defined elsewhere
-            };
+                ErrorMessage = "amount smaller then zero";
+                return;
+            }
 
-        // Use the context to add and save the new propTrade instance
-        var context = dbContextFactory.CreateDbContext();
-        await context.propTrdaes.AddAsync(newPropTrade);
-        await context.SaveChangesAsync();
+            var newPropTrade = new PropTrade
+                {
+                    TradeOpened = DateTime.Now,
+                    OrderPriceOpened = btcDecimal,
+                    Leverage = Level, // Example leverage value
+                    AmountForOrder = propTrade.AmountForOrder, // Example order amount
+                    Status = OrderStatus.Open, // Initial status as Open
+                    ProfitInCase = 0,
+                    FeeInCase = 0,
+                    orderTypeProp = OrderTypeProp.Buy,
+                    LiquidationPrice = CalculateBuyMarketLiquidation(Level, btcDecimal, propTrade.AmountForOrder),
+                    TakeProfit = propTrade.TakeProfit,
+                    StopLoss = propTrade.StopLoss,
+                    // Set the PropUserId if necessary
+                    PropUserId = propUser.PropUserId // Assuming propUser is defined elsewhere
+                };
+
+            // Use the context to add and save the new propTrade instance
+            var context = dbContextFactory.CreateDbContext();
+
+            var myT=  await context.propUsers.Where(c => c.ApplicationUserId == user2)
+              .FirstOrDefaultAsync();
+            if(myT.Balance < propTrade.AmountForOrder)
+            {
+                ErrorMessage = "Not Allow Balance Greater";
+                return;
+            }
+            myT.Balance -= propTrade.AmountForOrder;
+
+
+            await context.propTrdaes.AddAsync(newPropTrade);
+            await context.SaveChangesAsync();
+            OrderTradeList = await ListOfOpenTrades();
+            propUser = await GetPropUser(user2);
+
+        }
     }
 
     private double GetPercentage(int level)
@@ -247,7 +271,7 @@
         // Set up a timer to refresh data every 5 seconds
 
     }
-
+    /*This method need to moified later*/
     private decimal CalculateBuyMarketLiquidation(int leverage, decimal orderPrice, decimal amount)
     {
         // Check for zero values to avoid division by zero
@@ -367,10 +391,12 @@
     }
     private async Task HandleAllCOmmand()
     {
-        await ListOfOpenTrades();
+        OrderTradeList = await ListOfOpenTrades();
+
     }
     private async Task CloseMarketOrder(int tradePoprdId)
     {
+        var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
         var context = dbContextFactory.CreateDbContext();
         var Dataget = await context.propTrdaes.
         Where(c => c.PropTradeId == tradePoprdId).FirstOrDefaultAsync();
@@ -378,23 +404,46 @@
         var propuserI = await context.propUsers.
                      Where(c => c.PropUserId == userIdprop).FirstOrDefaultAsync();
 
+       if(btcDecimal>Dataget.OrderPriceOpened){
+            var pnl = Math.Round(
+                CalculateProfitLossInDollar(
+                    Dataget.OrderPriceOpened,
+                    btcDecimal,
+                    Dataget.AmountForOrder,
+                    Dataget.Leverage
+                ),
+                1 // Rounding to one decimal place
+            ); Dataget.ProfitInCase = pnl;
 
-        var pnl = Math.Round(
-            CalculateProfitLossInDollar(
-                Dataget.OrderPriceOpened,
-                decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m,
-                Dataget.AmountForOrder,
-                Dataget.Leverage
-            ),
-            1 // Rounding to one decimal place
-        ); Dataget.ProfitInCase = pnl;
+            propuserI.Balance += pnl + Dataget.AmountForOrder;
 
-        propuserI.Balance += pnl;
+            Dataget.Status = OrderStatus.ClosedManually;
+            Dataget.OrderPriceClosed = btcDecimal;
+            Dataget.TradeClosedDate = DateTime.Now;
+            await context.SaveChangesAsync();
+            OrderTradeList = await ListOfOpenTrades();
+            propUser = await GetPropUser(user2);
+       }
+        if (btcDecimal < Dataget.OrderPriceOpened)
+        {
+            var pnl = Math.Round(
+                CalculateProfitLossInDollar(
+                    Dataget.OrderPriceOpened,
+                    btcDecimal,
+                    Dataget.AmountForOrder,
+                    Dataget.Leverage
+                ),
+                1 // Rounding to one decimal place
+            ); Dataget.ProfitInCase = pnl;
 
-        Dataget.Status = OrderStatus.ClosedManually;
-        await context.SaveChangesAsync();
-        OrderTradeList = await ListOfOpenTrades();
-        propUser = await GetPropUser(user2);
+            propuserI.Balance += (Dataget.AmountForOrder-pnl );
 
+            Dataget.Status = OrderStatus.ClosedManually;
+            Dataget.OrderPriceClosed = btcDecimal;
+            Dataget.TradeClosedDate = DateTime.Now;
+            await context.SaveChangesAsync();
+            OrderTradeList = await ListOfOpenTrades();
+            propUser = await GetPropUser(user2);
+        }
     }
 }

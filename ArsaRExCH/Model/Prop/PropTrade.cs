@@ -1,5 +1,7 @@
 ﻿using ArsaRExCH.Data;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using Xunit.Sdk;
 
 namespace ArsaRExCH.Model.Prop
 {
@@ -7,27 +9,38 @@ namespace ArsaRExCH.Model.Prop
     {
         public int PropTradeId { get; set; }
         public DateTime TradeOpened { get; set; }
-        public DateTime? TradeClosedDate { get; set; }  // Nullable until trade closes
+        public DateTime? TradeClosedDate { get; set; }
 
-        //BtcPrice aat time
+ 
         public decimal OrderPriceOpened { get; set; }
-        //btc price at close time
+
+
         public decimal? OrderPriceClosed { get; set; }
+
+ 
         public int Leverage { get; set; }
+
+
         public decimal ProfitInCase { get; set; }
+
+    
         public decimal FeeInCase { get; set; }
-        public OrderStatus Status { get; set; } 
+
+  
         public decimal LiquidationPrice { get; set; }
+
         public decimal? StopLoss { get; set; }
+
         public decimal? TakeProfit { get; set; }
-       // public bool MarketOrderClose { get; set; }
-       // public decimal ForceCloseTradeAccountLost { get; set; }
-        [Precision(18,0)]
+
+        [Precision(18, 8)]
+        [Required(ErrorMessage = "AmountForOrder is required")]
+        [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "AmountForOrder must be greater than zero")]
         public decimal AmountForOrder { get; set; }
-      //  public decimal OrderPriceForBuyOrSelP { get; set; }
+
+        public OrderStatus Status { get; set; }
         public AccountType AccountType { get; set; }
-       // public string ApplicationUserId { get; set; }
-       // public ApplicationUser ApplicationUser { get; set; }
+        public OrderTypeProp orderTypeProp { get; set; }
         public int PropUserId { get; set; }
         public PropUser PropUser { get; set; }
     }
