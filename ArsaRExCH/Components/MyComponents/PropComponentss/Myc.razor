@@ -111,7 +111,6 @@
 </div>
 <div style="display: flex; gap: 20px;">
 
-    <!-- Chart Container -->
     <div style="width: 70%; height: 400px">
         @if (OrderTradeList == null)
         {
@@ -123,7 +122,7 @@
         }
         else
         {
-            <table class="table table-bordered">
+            <table class="table table-bordered" style="box-shadow: 0px 4px 8px rgba(4, 6, 4, 0.3);">
                 <thead>
                     <tr>
                         <th>Order Price </th>
@@ -139,12 +138,20 @@
                     @foreach (var trade in OrderTradeList)
                     {
                         <tr>
-                            <td>@trade.OrderPriceOpened</td>
-                            <td>@trade.AmountForOrder</td>
+                            <td>@trade.OrderPriceOpened.ToString("0.###")</td>
+                            <td>@trade.AmountForOrder.ToString("0.##")</td>
                             <td>@trade.Leverage</td>
                             <td>@trade.TradeOpened.ToString("yyyy-MM-dd HH:mm:ss")</td>
                             <td>@CalculateProfitLossInDollar(trade.OrderPriceOpened, decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m, trade.AmountForOrder, trade.Leverage).ToString("0.###")</td>
-                            <td><button @onclick="() => CloseMarketOrder(trade.PropTradeId)">Close</button></td>
+                            <td>
+                                <button @onclick="() => CloseMarketOrder(trade.PropTradeId)"
+                                        style="background-color: yellow; color: black; border: none; padding: 8px 16px; cursor: pointer;"
+                                        onmouseover="this.style.backgroundColor='red'; this.style.color='white';"
+                                        onmouseout="this.style.backgroundColor='yellow'; this.style.color='black';">
+                                    Close
+                                </button>
+                            </td>
+
 
                         </tr>
                     }
@@ -155,6 +162,7 @@
 
     <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
     <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
+        <p>hgggj</p>
     </div>
 </div>
 @ErrorMessage
@@ -415,7 +423,7 @@
                 1 // Rounding to one decimal place
             ); Dataget.ProfitInCase = pnl;
 
-            propuserI.Balance += pnl + Dataget.AmountForOrder;
+            propuserI.Balance += (pnl + Dataget.AmountForOrder);
 
             Dataget.Status = OrderStatus.ClosedManually;
             Dataget.OrderPriceClosed = btcDecimal;
@@ -424,7 +432,7 @@
             OrderTradeList = await ListOfOpenTrades();
             propUser = await GetPropUser(user2);
        }
-        if (btcDecimal < Dataget.OrderPriceOpened)
+        if (btcDecimal <= Dataget.OrderPriceOpened)
         {
             var pnl = Math.Round(
                 CalculateProfitLossInDollar(
@@ -436,7 +444,7 @@
                 1 // Rounding to one decimal place
             ); Dataget.ProfitInCase = pnl;
 
-            propuserI.Balance += (Dataget.AmountForOrder-pnl );
+            propuserI.Balance += Dataget.AmountForOrder - Math.Abs(pnl);
 
             Dataget.Status = OrderStatus.ClosedManually;
             Dataget.OrderPriceClosed = btcDecimal;
