@@ -13,10 +13,14 @@
 @using ArsaRExCH.Data
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 
-<p>Prop User Balance  :@propUser.Balance</p>
-<p>Prop UserId:@userIdprop</p>
-<p>Account Type : @propUser.CurrentAccountType</p>
-<p>Flag : @HashFllag</p>
+<div style="display: flex; gap: 20px; align-items: center; font-size: 16px; color: #333; font-family: Arial, sans-serif;">
+    <p style="margin: 0; font-weight: bold;">Prop User Balance: <span style="font-weight: normal;background-color:greenyellow">@propUser.Balance</span></p>
+    <p style="margin: 0; font-weight: bold;">Account Type: <span style="font-weight: normal;">@propUser.CurrentAccountType</span></p>
+    <p style="margin: 0; font-weight: bold;">PropUserId: <span style="font-weight: normal;">@propUser.PropUserId</span></p>
+
+</div>
+
+
 
 <div style="display: flex; gap: 20px;">
 
@@ -126,10 +130,13 @@
                 <thead>
                     <tr>
                         <th>Order Price </th>
+                        <th>SL</th>
                         <th>Amount </th>
                         <th>Leverage</th>
-                        <th>Trade Opened Date</th>
+                        <th> Opened Date</th>
+                        <th> Margin Size</th>
                         <th>Profit</th>
+                      
                         <th>Action</th>
 
                     </tr>
@@ -138,11 +145,27 @@
                     @foreach (var trade in OrderTradeList)
                     {
                         <tr>
-                            <td>@trade.OrderPriceOpened.ToString("0.###")</td>
+                            <td style="width:12%">@trade.OrderPriceOpened.ToString("0.###")</td>
+                            <td style="width:12%">@trade.StopLoss</td>
                             <td>@trade.AmountForOrder.ToString("0.##")</td>
                             <td>@trade.Leverage</td>
                             <td>@trade.TradeOpened.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                            <td>@CalculateProfitLossInDollar(trade.OrderPriceOpened, decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m, trade.AmountForOrder, trade.Leverage).ToString("0.###")</td>
+                            <td>@((trade.Leverage * trade.AmountForOrder).ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))) </td>
+
+                            <td>
+                                @{
+                                    var profitLoss = CalculateProfitLossInDollar(
+                                    trade.OrderPriceOpened,
+                                    decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m,
+                                    trade.AmountForOrder,
+                                    trade.Leverage
+                                    );
+                                    var backgroundColor = profitLoss >= 0 ? "green" : "red";
+                                }
+                                <span style="font-weight: normal; background-color: @backgroundColor; color: white;">
+                                    @profitLoss.ToString("0.###")
+                                </span>
+                            </td>
                             <td>
                                 <button @onclick="() => CloseMarketOrder(trade.PropTradeId)"
                                         style="background-color: yellow; color: black; border: none; padding: 8px 16px; cursor: pointer;"
@@ -197,7 +220,7 @@
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
         if (selectedTradeType == "Market" && selectedBuySel == "Buy")
         {
-            if (propTrade.AmountForOrder <= 0 )
+            if (propTrade.AmountForOrder <= 0)
             {
                 ErrorMessage = "amount smaller then zero";
                 return;
@@ -223,9 +246,9 @@
             // Use the context to add and save the new propTrade instance
             var context = dbContextFactory.CreateDbContext();
 
-            var myT=  await context.propUsers.Where(c => c.ApplicationUserId == user2)
+            var myT = await context.propUsers.Where(c => c.ApplicationUserId == user2)
               .FirstOrDefaultAsync();
-            if(myT.Balance < propTrade.AmountForOrder)
+            if (myT.Balance < propTrade.AmountForOrder)
             {
                 ErrorMessage = "Not Allow Balance Greater";
                 return;
@@ -339,8 +362,7 @@
     }
     private async Task<List<PropTrade>> ListOfOpenTrades()
     {
-        // Check the value of propTrade.PropUserId
-        Console.WriteLine($"PropUserId: {propTrade.PropUserId}");
+
 
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
 
@@ -400,7 +422,46 @@
     private async Task HandleAllCOmmand()
     {
         OrderTradeList = await ListOfOpenTrades();
+        var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
 
+        var context = dbContextFactory.CreateDbContext();
+        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && c.Status == OrderStatus.Open)
+        .ToListAsync();
+        var EditUserX = await context.propUsers.Where(c => c.ApplicationUserId == user2)
+        .FirstOrDefaultAsync();
+
+        foreach (var x in DatasToCHeck)
+        {
+            if (x.StopLoss == 0)
+            {
+                continue; // Skip to the next item if StopLoss is 0
+            }
+
+            if (x.orderTypeProp == OrderTypeProp.Buy)
+            {
+                // Stop-loss activated if the price has hit or dropped below StopLoss
+                if (btcDecimal <= x.StopLoss)
+                {
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                        x.OrderPriceOpened,
+                        btcDecimal,
+                        x.AmountForOrder,
+                        x.Leverage),
+                1
+                    );
+
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.StopLoss;
+                    x.TradeClosedDate = DateTime.Now;
+
+                    // Corrected addition to balance
+                    EditUserX.Balance += (x.AmountForOrder - Math.Abs(pnl));
+
+                    await context.SaveChangesAsync();
+                    OrderTradeList = await ListOfOpenTrades();
+                }
+            }
+        }
     }
     private async Task CloseMarketOrder(int tradePoprdId)
     {
@@ -412,7 +473,8 @@
         var propuserI = await context.propUsers.
                      Where(c => c.PropUserId == userIdprop).FirstOrDefaultAsync();
 
-       if(btcDecimal>Dataget.OrderPriceOpened){
+        if (btcDecimal > Dataget.OrderPriceOpened)
+        {
             var pnl = Math.Round(
                 CalculateProfitLossInDollar(
                     Dataget.OrderPriceOpened,
@@ -431,7 +493,7 @@
             await context.SaveChangesAsync();
             OrderTradeList = await ListOfOpenTrades();
             propUser = await GetPropUser(user2);
-       }
+        }
         if (btcDecimal <= Dataget.OrderPriceOpened)
         {
             var pnl = Math.Round(
