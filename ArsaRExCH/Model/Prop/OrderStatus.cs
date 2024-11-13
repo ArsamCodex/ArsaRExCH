@@ -6,6 +6,7 @@
         ClosedManually,
         TakeProfit,
         StopLoss,
-        Liquidated
+        Liquidated,
+        Pending
     }
 }
