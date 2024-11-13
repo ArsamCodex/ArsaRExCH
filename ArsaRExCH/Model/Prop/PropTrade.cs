@@ -28,8 +28,10 @@ namespace ArsaRExCH.Model.Prop
 
   
         public decimal LiquidationPrice { get; set; }
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "StopLoss cannot be negative")]
 
         public decimal? StopLoss { get; set; }
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "TakeProfit cannot be negative")]
 
         public decimal? TakeProfit { get; set; }
 
