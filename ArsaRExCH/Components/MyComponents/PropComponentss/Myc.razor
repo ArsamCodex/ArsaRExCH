@@ -161,8 +161,8 @@
                         <th>Amount </th>
                         <th>Lev</th>
                         <th>Liquidation</th>
-                        <th> Opened Date</th>
-                        <th>Order Type</th>
+                        <th>Opened Date</th>
+                        <th>Type</th>
                         <th> Margin Size</th>
                         <th>Profit</th>
                       
@@ -182,7 +182,9 @@
                             <td style="width:8%">X @trade.Leverage</td>
                             <td style="width:8%">@trade.LiquidationPrice.ToString("0.###")</td>
                             <td>@trade.TradeOpened.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                            <td style="width:8%">@trade.orderTypeProp</td>
+                            <td style="width:6%; background-color:@(trade.orderTypeProp == OrderTypeProp.Buy ? "lightgreen" : "red")">
+                                @trade.orderTypeProp
+                            </td>
 
                             <td>@((trade.Leverage * trade.AmountForOrder).ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))) </td>
 
@@ -192,7 +194,8 @@
                                     trade.OrderPriceOpened,
                                     decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m,
                                     trade.AmountForOrder,
-                                    trade.Leverage
+                                    trade.Leverage,
+                                    trade.orderTypeProp
                                     );
                                     var backgroundColor = profitLoss >= 0 ? "green" : "red";
                                 }
@@ -265,6 +268,7 @@
                     AmountForOrder = propTrade.AmountForOrder, // Example order amount
                     Status = OrderStatus.Open, // Initial status as Open
                     ProfitInCase = 0,
+                    MarketType=MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Buy,
                     LiquidationPrice = CalculateLiquidationPrice( btcDecimal,Level),
@@ -309,6 +313,7 @@
                     AmountForOrder = propTrade.AmountForOrder, // Example order amount
                     Status = OrderStatus.Open, // Initial status as Open
                     ProfitInCase = 0,
+                    MarketType=MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
                     LiquidationPrice = CalculateShortLiquidationPriceShortMarket(btcDecimal, Level),
@@ -456,32 +461,35 @@
         return myTrades;
     }
 
-    private decimal CalculateProfitLossInDollar(decimal orderPrice, decimal currentPrice, decimal amount, int leverage)
+    private decimal CalculateProfitLossInDollar(decimal orderPrice, decimal currentPrice, decimal amount, int leverag,OrderTypeProp ordertype)
     {
 
 
         // Calculate the effective Bitcoin amount held in this margin position
-        decimal effectiveBitcoin = (amount * leverage) / orderPrice;
+        decimal effectiveBitcoin = (amount * leverag) / orderPrice;
 
         // Calculate the unleveraged profit or loss based on the position type
         decimal unleveragedProfitLoss = 0m;
-
-        // For a long position (buy)
-        if (currentPrice > orderPrice)
+        decimal leveragedProfitLoss = 0m;
+        if (ordertype == OrderTypeProp.Buy)
         {
-            // Profit calculation for long position (profit if currentPrice > orderPrice)
-            //
-            unleveragedProfitLoss = (currentPrice - orderPrice) * effectiveBitcoin;
+            // For a long position (buy)
+            if (currentPrice >= orderPrice)
+            {
+                // Profit calculation for long position (profit if currentPrice > orderPrice)
+                //
+                leveragedProfitLoss = (currentPrice - orderPrice) * effectiveBitcoin;
+            }
+           
         }
-        else if (currentPrice < orderPrice)
+        else
         {
-            // Loss calculation for long position (loss if currentPrice < orderPrice)
             unleveragedProfitLoss = (orderPrice - currentPrice) * effectiveBitcoin;
+
+            // Apply leverage
+            leveragedProfitLoss = unleveragedProfitLoss;
         }
-
-        // Apply leverage
-        decimal leveragedProfitLoss = unleveragedProfitLoss;
-
+       
         // Return the profit or loss in the same currency as the asset (e.g., USD)
         return leveragedProfitLoss;
     }
@@ -512,7 +520,7 @@
                 continue; // Skip to the next item if StopLoss is 0
             }
 
-            if (x.orderTypeProp == OrderTypeProp.Buy)
+            if (x.orderTypeProp == OrderTypeProp.Buy&&x.MarketType==MarketType.Market)
             {
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal <= x.StopLoss)
@@ -521,7 +529,7 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage),
+                        x.Leverage,x.orderTypeProp),
                 1
                     );
 
@@ -541,7 +549,7 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage),
+                        x.Leverage, x.orderTypeProp),
                 1
                     );
 
@@ -564,7 +572,7 @@
                        x.OrderPriceOpened,
                        btcDecimal,
                        x.AmountForOrder,
-                       x.Leverage),
+                       x.Leverage,x.orderTypeProp),
                1
                    );
                     decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
@@ -578,7 +586,7 @@
                     }
                 }
             }
-            if (x.orderTypeProp == OrderTypeProp.Sell)
+            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Market)
             {
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal >= x.StopLoss)
@@ -587,7 +595,7 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage),
+                        x.Leverage, x.orderTypeProp),
                 1
                     );
 
@@ -607,7 +615,7 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage),
+                        x.Leverage, x.orderTypeProp),
                 1
                     );
 
@@ -630,7 +638,7 @@
                        x.OrderPriceOpened,
                        btcDecimal,
                        x.AmountForOrder,
-                       x.Leverage),
+                       x.Leverage, x.orderTypeProp),
                1
                    );
                     decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
@@ -655,7 +663,7 @@
 
         var propuserI = await context.propUsers.
                      Where(c => c.PropUserId == userIdprop).FirstOrDefaultAsync();
-
+                     //make this button dynamic for all orders TODO
         if (btcDecimal > Dataget.OrderPriceOpened)
         {
             var pnl = Math.Round(
@@ -663,7 +671,8 @@
                     Dataget.OrderPriceOpened,
                     btcDecimal,
                     Dataget.AmountForOrder,
-                    Dataget.Leverage
+                    Dataget.Leverage,
+                    Dataget.orderTypeProp
                 ),
                 1 // Rounding to one decimal place
             ); Dataget.ProfitInCase = pnl;
@@ -684,7 +693,8 @@
                     Dataget.OrderPriceOpened,
                     btcDecimal,
                     Dataget.AmountForOrder,
-                    Dataget.Leverage
+                    Dataget.Leverage,
+                    Dataget.orderTypeProp
                 ),
                 1 // Rounding to one decimal place
             ); Dataget.ProfitInCase = pnl;

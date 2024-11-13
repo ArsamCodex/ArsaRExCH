@@ -43,6 +43,7 @@ namespace ArsaRExCH.Model.Prop
         public OrderStatus Status { get; set; }
         public AccountType AccountType { get; set; }
         public OrderTypeProp orderTypeProp { get; set; }
+        public MarketType MarketType { get; set; }
         public int PropUserId { get; set; }
         public PropUser PropUser { get; set; }
     }
