@@ -296,7 +296,7 @@
     private async Task HandleTradeBuyMarketButton()
     {
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
-        if (selectedTradeType == "Market" && selectedBuySel == "Buy")
+        if (selectedTradeType == "Market" && selectedBuySel == "Buy" )
         {
             if (propTrade.AmountForOrder <= 0)
             {
@@ -550,42 +550,53 @@
         return myTrades;
     }
 
-    private decimal CalculateProfitLossInDollar(decimal orderPrice, decimal currentPrice, decimal amount, int leverag, OrderTypeProp ordertype, MarketType marketType,OrderStatus orderStatus)
+    private decimal CalculateProfitLossInDollar(decimal orderPrice, decimal currentPrice, decimal amount, int leverage, OrderTypeProp ordertype, MarketType marketType, OrderStatus orderStatus)
     {
         if (orderStatus == OrderStatus.Pending)
         {
             return 0.0m;
         }
 
-
-        // Calculate the effective Bitcoin amount held in this margin position
-        decimal effectiveBitcoin = (amount * leverag) / orderPrice;
-
-        // Calculate the unleveraged profit or loss based on the position type
-        decimal unleveragedProfitLoss = 0m;
+        // Calculate the effective amount based on leverage
+        decimal effectiveAmount = (amount * leverage) / orderPrice;
         decimal leveragedProfitLoss = 0m;
-        if (ordertype == OrderTypeProp.Buy && marketType == MarketType.Market)
+
+        if (orderStatus == OrderStatus.Open && marketType == MarketType.Market)
         {
-            // For a long position (buy)
-            if (currentPrice >= orderPrice)
+            if (ordertype == OrderTypeProp.Buy)
             {
-                // Profit calculation for long position (profit if currentPrice > orderPrice)
-                //
-                leveragedProfitLoss = (currentPrice - orderPrice) * effectiveBitcoin;
+                // For a long position
+                if (currentPrice > orderPrice)
+                {
+                    // Profit calculation
+                    leveragedProfitLoss = (currentPrice - orderPrice) * effectiveAmount;
+                }
+                else if (currentPrice < orderPrice)
+                {
+                    // Loss calculation
+                    leveragedProfitLoss = (orderPrice - currentPrice) * effectiveAmount * -1; // Negative for loss
+                }
             }
-
-        }
-        else
-        {
-            unleveragedProfitLoss = (orderPrice - currentPrice) * effectiveBitcoin;
-
-            // Apply leverage
-            leveragedProfitLoss = unleveragedProfitLoss;
+            else if (ordertype == OrderTypeProp.Sell)
+            {
+                // For a short position
+                if (currentPrice < orderPrice)
+                {
+                    // Profit calculation
+                    leveragedProfitLoss = (orderPrice - currentPrice) * effectiveAmount;
+                }
+                else if (currentPrice > orderPrice)
+                {
+                    // Loss calculation
+                    leveragedProfitLoss = (currentPrice - orderPrice) * effectiveAmount * -1; // Negative for loss
+                }
+            }
         }
 
         // Return the profit or loss in the same currency as the asset (e.g., USD)
         return leveragedProfitLoss;
     }
+
 
     private async Task<PropUser> GetPropUser(string userId)
     {
@@ -597,6 +608,7 @@
     }
     private async Task HandleAllCOmmand()
     {
+        //whole this checks are background task which later relocate to right section for now for tets i need here for eaciertest
         OrderTradeList = await ListOfOpenTrades();
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
 
@@ -608,12 +620,9 @@
 
         foreach (var x in DatasToCHeck)
         {
-            if (x.StopLoss == 0)
-            {
-                continue; // Skip to the next item if StopLoss is 0
-            }
 
-            if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Market)
+
+            if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Market )
             {
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal <= x.StopLoss)
@@ -630,6 +639,7 @@
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.StopLoss;
                     x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
 
                     // Corrected addition to balance
                     EditUserX.Balance += (x.AmountForOrder - Math.Abs(pnl));
