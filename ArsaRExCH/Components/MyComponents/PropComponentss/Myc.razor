@@ -226,7 +226,7 @@
                             <td style="width:8%">@((trade.Leverage * trade.AmountForOrder).ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))) </td>
 
                             <td style="width:8%">
-                                
+
                                 @{
                                     var profitLoss = CalculateProfitLossInDollar(
                                     trade.OrderPriceOpened,
@@ -296,7 +296,7 @@
     private async Task HandleTradeBuyMarketButton()
     {
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
-        if (selectedTradeType == "Market" && selectedBuySel == "Buy" )
+        if (selectedTradeType == "Market" && selectedBuySel == "Buy")
         {
             if (propTrade.AmountForOrder <= 0)
             {
@@ -561,7 +561,7 @@
         decimal effectiveAmount = (amount * leverage) / orderPrice;
         decimal leveragedProfitLoss = 0m;
 
-        if (orderStatus == OrderStatus.Open && marketType == MarketType.Market)
+        if (orderStatus == OrderStatus.Open && marketType == MarketType.Market || marketType==MarketType.Order)
         {
             if (ordertype == OrderTypeProp.Buy)
             {
@@ -613,7 +613,7 @@
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
 
         var context = dbContextFactory.CreateDbContext();
-        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && c.Status == OrderStatus.Open)
+        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending))
         .ToListAsync();
         var EditUserX = await context.propUsers.Where(c => c.ApplicationUserId == user2)
         .FirstOrDefaultAsync();
@@ -622,7 +622,7 @@
         {
 
 
-            if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Market )
+            if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Market)
             {
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal <= x.StopLoss)
@@ -653,13 +653,14 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType,x.Status),
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                 1
                     );
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.TakeProfit;
                     x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
 
                     // Corrected addition to balance
                     EditUserX.Balance += (x.AmountForOrder + Math.Abs(pnl));
@@ -676,7 +677,7 @@
                        x.OrderPriceOpened,
                        btcDecimal,
                        x.AmountForOrder,
-                       x.Leverage, x.orderTypeProp, x.MarketType,x.Status),
+                       x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                1
                    );
                     decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
@@ -699,13 +700,14 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType,x.Status),
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                 1
                     );
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.StopLoss;
                     x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
 
                     // Corrected addition to balance
                     EditUserX.Balance += (x.AmountForOrder - Math.Abs(pnl));
@@ -719,13 +721,14 @@
                         x.OrderPriceOpened,
                         btcDecimal,
                         x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType,x.Status),
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                 1
                     );
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.TakeProfit;
                     x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
 
                     // Corrected addition to balance
                     EditUserX.Balance += (x.AmountForOrder + Math.Abs(pnl));
@@ -742,7 +745,7 @@
                        x.OrderPriceOpened,
                        btcDecimal,
                        x.AmountForOrder,
-                       x.Leverage, x.orderTypeProp, x.MarketType,x.Status),
+                       x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                1
                    );
                     decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
@@ -756,6 +759,34 @@
                     }
                 }
             }
+
+
+          
+            decimal targetPrice = x.OrderPriceOpened; // The target price for opening/closing the order
+            decimal priceRange = 10m; // $10 range
+
+            // Check if it's a Buy order, in the correct market type, and in Pending status
+            if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Order && x.Status == OrderStatus.Pending)
+            {
+                // Open the order only if the price is within a $10 range of the target price
+                if (btcDecimal >= targetPrice - priceRange && btcDecimal <= targetPrice + priceRange)
+                {
+                    x.Status = OrderStatus.Open;
+                    await context.SaveChangesAsync();
+                    Console.WriteLine($"Order opened at price: {btcDecimal}");
+                }
+                //RTODO second side if price under 
+                if (btcDecimal < targetPrice - priceRange)
+                {
+              
+                    x.Status = OrderStatus.Open; 
+                    await context.SaveChangesAsync();
+                    Console.WriteLine($"Order closed due to low price: {btcDecimal}");
+                }
+            }
+
+
+
         }
     }
     private async Task CloseMarketOrder(int tradePoprdId)
@@ -800,7 +831,7 @@
                     btcDecimal,
                     Dataget.AmountForOrder,
                     Dataget.Leverage,
-                    Dataget.orderTypeProp, Dataget.MarketType,Dataget.Status
+                    Dataget.orderTypeProp, Dataget.MarketType, Dataget.Status
                 ),
                 1 // Rounding to one decimal place
             ); Dataget.ProfitInCase = pnl;
