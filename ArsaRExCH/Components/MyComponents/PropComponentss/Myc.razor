@@ -250,12 +250,19 @@
                             <td>
                                 <button @onclick="() => CloseMarketOrder(trade.PropTradeId)"
                                         style="background-color: yellow; color: black; border: none; padding: 8px 16px; cursor: pointer;"
-                                        onmouseover="this.style.backgroundColor='red'; this.style.color='white';"
+                                        onmouseover="this.style.backgroundColor='lightblue'; this.style.color='white';"
                                         onmouseout="this.style.backgroundColor='yellow'; this.style.color='black';">
                                     Close
                                 </button>
+                         
+                           
+                                <button
+                                        style="background-color: lightcoral; color: black; border: none; padding: 8px 16px; cursor: pointer;"
+                                        onmouseover="this.style.backgroundColor='red'; this.style.color='white';"
+                                        onmouseout="this.style.backgroundColor='lightcoral'; this.style.color='black';">
+                                    Edit SP/TP
+                                </button>
                             </td>
-
 
                         </tr>
                     }
@@ -287,9 +294,7 @@
     public string btcPriceVariable { get; set; }
     public int PropUserId { get; set; }
     public PropUser propUser { get; set; } = new PropUser();
-    public decimal WinstOrLost { get; set; }
     public int userIdprop { get; set; }
-    public decimal PandL { get; set; }
 
 
 
@@ -761,9 +766,9 @@
             }
 
 
-          
+
             decimal targetPrice = x.OrderPriceOpened; // The target price for opening/closing the order
-            decimal priceRange = 10m; // $10 range
+            decimal priceRange = 5m; // $10 range
 
             // Check if it's a Buy order, in the correct market type, and in Pending status
             if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Order && x.Status == OrderStatus.Pending)
@@ -772,14 +777,20 @@
                 if (btcDecimal >= targetPrice - priceRange && btcDecimal <= targetPrice + priceRange)
                 {
                     x.Status = OrderStatus.Open;
+                    x.OrderPriceTriggerd = btcDecimal;
+                    x.OrderTriggerdAt = DateTime.Now;
+
+
                     await context.SaveChangesAsync();
                     Console.WriteLine($"Order opened at price: {btcDecimal}");
                 }
                 //RTODO second side if price under 
                 if (btcDecimal < targetPrice - priceRange)
                 {
-              
-                    x.Status = OrderStatus.Open; 
+
+                    x.Status = OrderStatus.Open;
+                    x.OrderPriceTriggerd = btcDecimal;
+                    x.OrderTriggerdAt = DateTime.Now;
                     await context.SaveChangesAsync();
                     Console.WriteLine($"Order closed due to low price: {btcDecimal}");
                 }

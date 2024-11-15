@@ -46,6 +46,10 @@ namespace ArsaRExCH.Model.Prop
         public MarketType MarketType { get; set; }
         public int PropUserId { get; set; }
         public PropUser PropUser { get; set; }
+        [Precision(18, 8)]
+
+        public decimal? OrderPriceTriggerd { get; set; }
+        public DateTime? OrderTriggerdAt { get; set; }
     }
 
 }

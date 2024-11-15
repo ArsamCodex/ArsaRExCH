@@ -200,7 +200,7 @@ else
             </tbody>
         </table>
         <p>Available pairs</p>
-        <a href="/Prepetual/BTCUSDTP/@(GeneratedHashFlag)">BTCUSDT</a>
+        <a href="/Prepetual/BTCUSDTP/@GeneratedHashFlag">BTCUSDT</a>
         <hr />
         <div @onclick="ToggleFormVisibility" style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; border-radius: 4px; background-color: #4CAF50; color: white; cursor: pointer; text-align: center;">
             Transfer Between Accounts
@@ -295,8 +295,14 @@ else
             {
                 hasAcceptedTerms = true;
                 var propUserList2 = await _propInterface.GetAll<PropUser>();
-                propUserList = propUserList2.Where(c => c.ApplicationUserId == user2);
-                GeneratedHashFlag = propUserList.FirstOrDefault().MyUniqueFlag;
+                propUserList = propUserList2.Where(c => c.ApplicationUserId == user2).ToList() ;
+                //GeneratedHashFlag = (await propUserList.FirstOrDefaultAsync()).MyUniqueFlag;
+                // Get the first user (or null) synchronously, since propUserList is an IEnumerable
+                var user8 = propUserList.FirstOrDefault();
+                if (user8 != null)
+                {
+                    GeneratedHashFlag = user8.MyUniqueFlag; // Access MyUniqueFlag safely
+                }
                 mainAccountBalance = await USDTWalletAmountExtractor();
 
 
@@ -326,8 +332,9 @@ else
                 // Set the account type (replace with actual logic or value)
                 CurrentAccountType = AccountType.Standard,
 
-               
+
                 MyUniqueFlag = await _betInterface.Generatesha256(),
+
 
                 // Set the account status to active (or false if not active)
                 IsAccountActive = true,
@@ -364,7 +371,7 @@ else
         // Fetch the updated list of PropUsers for the given ApplicationUserId
         var propUserList2 = await _propInterface.GetAll<PropUser>();
         propUserList = propUserList2.Where(c => c.ApplicationUserId == user2).ToList();
-
+        GeneratedHashFlag = propUserList.FirstOrDefault().MyUniqueFlag;
         // You can now work with propUserList, e.g., update UI or process further
     }
     private async Task HandleSwap()

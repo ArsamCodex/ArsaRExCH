@@ -4,6 +4,7 @@ using ArsaRExCH.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114165132_Triggerorderprivced")]
+    partial class Triggerorderprivced
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d8015630-5782-43c7-bc88-a2c8cac93002",
+                            Id = "ff3311f8-cb24-4d2b-b2e9-890d47619fae",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1bf38660-5e3d-472e-8345-b491ff79bc01",
+                            ConcurrencyStamp = "a671dcd1-b726-4f32-9f50-1aba056b4c05",
                             Email = "ARMINTTWAT@GMAIL.COM",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -102,7 +105,7 @@ namespace ArsaRExCH.Migrations
                             NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "61c39ef5-0b3c-4421-82df-d3d7a8d46cc9",
+                            SecurityStamp = "646f86ad-eb26-490d-9fee-3581fafbb7c7",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -435,7 +438,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 11, 14, 19, 23, 53, 272, DateTimeKind.Local).AddTicks(3974),
+                            ListedDate = new DateTime(2024, 11, 14, 16, 51, 31, 240, DateTimeKind.Local).AddTicks(5383),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -443,7 +446,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 11, 14, 19, 23, 53, 272, DateTimeKind.Local).AddTicks(4024),
+                            ListedDate = new DateTime(2024, 11, 14, 16, 51, 31, 240, DateTimeKind.Local).AddTicks(5466),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -451,7 +454,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 11, 14, 19, 23, 53, 272, DateTimeKind.Local).AddTicks(4028),
+                            ListedDate = new DateTime(2024, 11, 14, 16, 51, 31, 240, DateTimeKind.Local).AddTicks(5474),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -527,9 +530,6 @@ namespace ArsaRExCH.Migrations
                     b.Property<decimal?>("OrderPriceTriggerd")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18,8)");
-
-                    b.Property<DateTime?>("OrderTriggerdAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("ProfitInCase")
                         .HasPrecision(18, 8)
@@ -843,7 +843,7 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "34dcdffc-17a1-46dc-9af5-cc0583f6481e",
+                            Id = "a5dae255-3662-4b9c-92b1-50cc629026d9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -938,8 +938,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "d8015630-5782-43c7-bc88-a2c8cac93002",
-                            RoleId = "34dcdffc-17a1-46dc-9af5-cc0583f6481e"
+                            UserId = "ff3311f8-cb24-4d2b-b2e9-890d47619fae",
+                            RoleId = "a5dae255-3662-4b9c-92b1-50cc629026d9"
                         });
                 });
 
