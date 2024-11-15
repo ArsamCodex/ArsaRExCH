@@ -12,6 +12,7 @@
 @using Microsoft.EntityFrameworkCore
 @using ArsaRExCH.Data
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject NavigationManager _manager
 
 <div style="display: flex; gap: 20px; align-items: center; font-size: 16px; color: #333; font-family: Arial, sans-serif;">
     <p style="margin: 0; font-weight: bold;">Prop User Balance: <span style="font-weight: normal;background-color:greenyellow">@propUser.Balance</span></p>
@@ -459,13 +460,24 @@
             if (user5 != null)
             {
                 //check here or incoming pair is valid in our format if not default BTCUSDT
-                user2 = user5.Id; // Get the user ID here
-                Console.WriteLine(user5.Id);
-                // PropUserId=await GetPropUserId(user2);
-                propUser = await GetPropUser(user2);
-                userIdprop = propUser.PropUserId;
-                //  PropUserId = propUser.PropUserId;
-                OrderTradeList = await ListOfOpenTrades();
+                //TODO
+                var conn = dbContextFactory.CreateDbContext();
+                bool exists = await conn.prepPirs.AnyAsync(p => p.PairName == Pair);
+                if (exists)
+                {
+                    //Its valid 
+                    user2 = user5.Id; // Get the user ID here
+                    Console.WriteLine(user5.Id);
+                    // PropUserId=await GetPropUserId(user2);
+                    propUser = await GetPropUser(user2);
+                    userIdprop = propUser.PropUserId;
+                    //  PropUserId = propUser.PropUserId;
+                    OrderTradeList = await ListOfOpenTrades();
+                }
+                else
+                {
+                    _manager.NavigateTo($"ErrorPrepPAir/{Pair}");
+                }
             }
             else
             {

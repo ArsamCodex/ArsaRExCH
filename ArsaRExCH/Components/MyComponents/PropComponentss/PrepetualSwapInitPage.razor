@@ -277,14 +277,15 @@ else
     private decimal fromValue;
     private double mainAccountBalance;
     /*Here a database cal will reterive all avaulable pair*/
-    private List<string> PairNames { get; set; } = new List<string>
-{
-    "BTCUSDT",
-    "BTC/BNB",
-    "BTC/USDT",
-    "ETH/BNB",
-    "BNB/USDT"
-};
+    private List<string> PairNames { get; set; } = new List<string>()
+    {
+       "BTCUSDT",
+        "ETHUSDT"
+    };
+
+        
+    
+
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(this);

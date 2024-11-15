@@ -11,6 +11,7 @@
     {
         if (firstRender && !_isDisposed)
         {
+            //check database for chart validation 
             string symbol = pair;
             await JSRuntime.InvokeVoidAsync("waitForTradingViewAndInitialize", symbol);
         }
