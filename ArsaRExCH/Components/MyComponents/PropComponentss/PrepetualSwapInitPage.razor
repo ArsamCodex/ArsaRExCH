@@ -200,7 +200,7 @@ else
             </tbody>
         </table>
         <p>Available pairs</p>
-        <a href="/Prepetual/BTCUSDTP/@GeneratedHashFlag">BTCUSDT</a>
+        <a href="/Prepetual/@GeneratedHashFlag/@PairNames.FirstOrDefault(c => c == "BTCUSDT")">BTCUSDT</a>
         <hr />
         <div @onclick="ToggleFormVisibility" style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; border-radius: 4px; background-color: #4CAF50; color: white; cursor: pointer; text-align: center;">
             Transfer Between Accounts
@@ -276,7 +276,15 @@ else
     private string GeneratedHashFlag { get; set; }
     private decimal fromValue;
     private double mainAccountBalance;
-
+    /*Here a database cal will reterive all avaulable pair*/
+    private List<string> PairNames { get; set; } = new List<string>
+{
+    "BTCUSDT",
+    "BTC/BNB",
+    "BTC/USDT",
+    "ETH/BNB",
+    "BNB/USDT"
+};
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(this);

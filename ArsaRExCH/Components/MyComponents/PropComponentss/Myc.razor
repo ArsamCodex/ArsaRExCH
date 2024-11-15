@@ -26,7 +26,7 @@
 
     <!-- Chart Container -->
     <div style="width: 70%; height: 400px;">
-        <ArsaRExCH.Components.Chartss.TradingViewChart pair="BTCUSDT"></ArsaRExCH.Components.Chartss.TradingViewChart>
+        <ArsaRExCH.Components.Chartss.TradingViewChart pair="@Pair"></ArsaRExCH.Components.Chartss.TradingViewChart>
     </div>
     <!-- Sidebar for Progress Bar, Form, and Dropdowns -->
     <div style="display: flex; flex-direction: column; gap: 20px; width: 30%; border: 1px solid red; padding: 10px;">
@@ -274,9 +274,12 @@
 
 </div>
 @ErrorMessage
+<p>@Pair</p>
 @code {
     [Parameter]
     public string HashFllag { get; set; }
+    [Parameter]
+    public string Pair { get; set; }
     private Timer _timer;
     private int Level { get; set; } = 2;
     private string selectedTradeType = "Market"; // Default selected value
@@ -455,6 +458,7 @@
             var user5 = await UserAccessor.GetRequiredUserAsync(context);
             if (user5 != null)
             {
+                //check here or incoming pair is valid in our format if not default BTCUSDT
                 user2 = user5.Id; // Get the user ID here
                 Console.WriteLine(user5.Id);
                 // PropUserId=await GetPropUserId(user2);

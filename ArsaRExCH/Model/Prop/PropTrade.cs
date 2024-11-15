@@ -50,6 +50,7 @@ namespace ArsaRExCH.Model.Prop
 
         public decimal? OrderPriceTriggerd { get; set; }
         public DateTime? OrderTriggerdAt { get; set; }
+        public string PairName { get; set; }
     }
 
 }
