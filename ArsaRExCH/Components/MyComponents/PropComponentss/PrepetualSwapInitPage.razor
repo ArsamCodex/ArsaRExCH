@@ -133,7 +133,29 @@
         .swap-button:hover {
             background-color: #0056b3;
         }
+        /*pair style*/
+    .pair-container {
+        white-space: nowrap; /* Prevents wrapping to the next line */
+        overflow-x: auto; /* Adds horizontal scroll if content exceeds screen width */
+        padding: 10px 0; /* Adds vertical padding for spacing */
+    }
 
+    .pair-item {
+        display: inline; /* Keeps items in a single line */
+        margin-right: 15px; /* Space between each link */
+        font-size: 1rem; /* Adjusts text size */
+        color: #007BFF; /* Link color */
+        text-decoration: none; /* Removes underline */
+        padding: 5px 10px; /* Adds padding around text */
+        border-radius: 5px; /* Rounds corners */
+        transition: background-color 0.3s ease; /* Smooth background color transition */
+    }
+
+        .pair-item:hover {
+            background-color: #e8f4ff; /* Light background on hover */
+            color: #0056b3; /* Darker color on hover */
+            text-decoration: underline; /* Adds underline on hover */
+        }
 </style>
 
 
@@ -200,7 +222,14 @@ else
             </tbody>
         </table>
         <p>Available pairs</p>
-        <a href="/Prepetual/@GeneratedHashFlag/@PairNames.FirstOrDefault(c => c == "BTCUSDT")">BTCUSDT</a>
+        <div class="pair-container">
+            @foreach (var pair in PairNames)
+            {
+                <a href="/Prepetual/@GeneratedHashFlag/@pair.PairName" class="pair-item">@pair.PairName</a>
+            }
+        </div>
+
+        <hr />
         <hr />
         <div @onclick="ToggleFormVisibility" style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; border-radius: 4px; background-color: #4CAF50; color: white; cursor: pointer; text-align: center;">
             Transfer Between Accounts
@@ -277,14 +306,10 @@ else
     private decimal fromValue;
     private double mainAccountBalance;
     /*Here a database cal will reterive all avaulable pair*/
-    private List<string> PairNames { get; set; } = new List<string>()
-    {
-       "BTCUSDT",
-        "ETHUSDT"
-    };
+    private List<PrepPir> PairNames { get; set; } = new List<PrepPir>();
 
-        
-    
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -313,7 +338,7 @@ else
                     GeneratedHashFlag = user8.MyUniqueFlag; // Access MyUniqueFlag safely
                 }
                 mainAccountBalance = await USDTWalletAmountExtractor();
-
+                PairNames = await context.prepPirs.ToListAsync() ;
 
             }
 

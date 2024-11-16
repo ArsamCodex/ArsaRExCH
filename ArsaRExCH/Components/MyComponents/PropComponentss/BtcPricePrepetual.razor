@@ -20,6 +20,8 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public string Pairs { get; set; }
 
     private string btcPriceString => BtcPrice.ToString("F2");
 
@@ -35,7 +37,7 @@
         {
             var _httpClient = httpClientFactory.CreateClient();
             // Send HTTP request to Binance API to get BTCUSDT price
-            var response = await _httpClient.GetStringAsync("https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT");
+            var response = await _httpClient.GetStringAsync($"https://fapi.binance.com/fapi/v1/ticker/price?symbol={Pairs}");
 
             // Deserialize the response to get the price
             var priceResponse = JsonSerializer.Deserialize<CryptoPriceResponse>(response);

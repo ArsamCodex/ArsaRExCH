@@ -1,7 +1,7 @@
 ﻿@page "/Prepetual/{hash}/{Pair}"
 @rendermode InteractiveServer
 <h3>BTCUSDTP</h3>
-<BtcPricePrepetual>
+<BtcPricePrepetual Pairs="@Pair">
     <Myc HashFllag="@hash" Pair="@Pair"></Myc>
 </BtcPricePrepetual>
 
