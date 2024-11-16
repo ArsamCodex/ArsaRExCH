@@ -70,6 +70,7 @@
                 </div>
             </div>
             <!-- Form for Amount, Take Profit, Stop Loss, and Submit Button -->
+            <strong>@ErrorMessage</strong>
             <EditForm EditContext="@editContext" OnValidSubmit="HandleTradeBuyMarketButton">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -130,6 +131,42 @@
                             </div>
                         }
                         @if (selectedBuySel == "Buy" && selectedTradeType == "Order")
+                        {
+                            <!-- Stop Loss Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="stopLoss">OrderP</label>
+                                <InputNumber id="stopLoss"
+                                             class="form-control"
+                                             @bind-Value="propTrade.OrderPriceOpened" />
+
+                            </div>
+                            <!-- Amount Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="symbolI">Amount</label>
+                                <InputNumber id="symbolI"
+                                             class="form-control"
+                                             @bind-Value="propTrade.AmountForOrder" />
+                            </div>
+
+                            <!-- Take Profit Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="takeProfit">Take Profit</label>
+                                <InputNumber id="takeProfit"
+                                             class="form-control"
+                                             @bind-Value="propTrade.TakeProfit" />
+                            </div>
+
+                            <!-- Stop Loss Field -->
+                            <div style="flex: 1; width: 25%;">
+                                <label for="stopLoss">Stop Loss</label>
+                                <InputNumber id="stopLoss"
+                                             class="form-control"
+                                             @bind-Value="propTrade.StopLoss" />
+
+                            </div>
+
+                        }
+                        @if (selectedBuySel == "Sell" && selectedTradeType == "Order")
                         {
                             <!-- Stop Loss Field -->
                             <div style="flex: 1; width: 25%;">
@@ -307,7 +344,8 @@
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
         if (selectedTradeType == "Market" && selectedBuySel == "Buy")
         {
-            if (propTrade.AmountForOrder <= 0)
+            //TODO here i need to validate 
+            if (propTrade.AmountForOrder <= 0 )
             {
                 ErrorMessage = "amount smaller then zero";
                 return;
@@ -317,9 +355,9 @@
                 {
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = btcDecimal,
-                    Leverage = Level, // Example leverage value
-                    AmountForOrder = propTrade.AmountForOrder, // Example order amount
-                    Status = OrderStatus.Open, // Initial status as Open
+                    Leverage = Level, 
+                    AmountForOrder = propTrade.AmountForOrder, 
+                    Status = OrderStatus.Open, 
                     ProfitInCase = 0,
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
@@ -327,8 +365,10 @@
                     LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
-                    // Set the PropUserId if necessary
-                    PropUserId = propUser.PropUserId // Assuming propUser is defined elsewhere
+                    PropUserId = propUser.PropUserId ,
+                    PairName = Pair
+
+
                 };
 
             // Use the context to add and save the new propTrade instance
@@ -362,18 +402,20 @@
                 {
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = btcDecimal,
-                    Leverage = Level, // Example leverage value
-                    AmountForOrder = propTrade.AmountForOrder, // Example order amount
-                    Status = OrderStatus.Open, // Initial status as Open
+                    Leverage = Level,
+                    AmountForOrder = propTrade.AmountForOrder, 
+                    Status = OrderStatus.Open,
                     ProfitInCase = 0,
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateShortLiquidationPriceShortMarket(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     // Set the PropUserId if necessary
-                    PropUserId = propUser.PropUserId // Assuming propUser is defined elsewhere
+                    PropUserId = propUser.PropUserId,
+                    PairName = Pair
+
                 };
 
             // Use the context to add and save the new propTrade instance
@@ -408,18 +450,63 @@
                 {
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = propTrade.OrderPriceOpened,
-                    Leverage = Level, // Example leverage value
-                    AmountForOrder = propTrade.AmountForOrder, // Example order amount
-                    Status = OrderStatus.Pending, // Initial status as Open
+                    Leverage = Level,
+                    AmountForOrder = propTrade.AmountForOrder, 
+                    Status = OrderStatus.Pending,
                     ProfitInCase = 0,
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Buy,
-                    LiquidationPrice = 0,
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
-                    // Set the PropUserId if necessary
-                    PropUserId = propUser.PropUserId // Assuming propUser is defined elsewhere
+                    PropUserId = propUser.PropUserId ,
+                    PairName = Pair
+
+                };
+
+            // Use the context to add and save the new propTrade instance
+            var context = dbContextFactory.CreateDbContext();
+
+            var myT = await context.propUsers.Where(c => c.ApplicationUserId == user2)
+              .FirstOrDefaultAsync();
+            if (myT.Balance < propTrade.AmountForOrder)
+            {
+                ErrorMessage = "Not Allow Balance Greater";
+                return;
+            }
+            myT.Balance -= propTrade.AmountForOrder;
+
+
+            await context.propTrdaes.AddAsync(newPropTrade);
+            await context.SaveChangesAsync();
+            OrderTradeList = await ListOfOpenTrades();
+            propUser = await GetPropUser(user2);
+        }
+        if (selectedTradeType == "Order" && selectedBuySel == "Sell")
+        {
+            if (propTrade.AmountForOrder <= 0)
+            {
+                ErrorMessage = "amount smaller then zero";
+                return;
+            }
+
+            var newPropTrade = new PropTrade
+                {
+                    TradeOpened = DateTime.Now,
+                    OrderPriceOpened = propTrade.OrderPriceOpened,
+                    Leverage = Level, 
+                    AmountForOrder = propTrade.AmountForOrder, 
+                    Status = OrderStatus.Pending, 
+                    ProfitInCase = 0,
+                    MarketType = MarketType.Order,
+                    FeeInCase = 0,
+                    orderTypeProp = OrderTypeProp.Sell,
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
+                    TakeProfit = propTrade.TakeProfit,
+                    StopLoss = propTrade.StopLoss,
+                    PropUserId = propUser.PropUserId ,
+                    PairName = Pair
                 };
 
             // Use the context to add and save the new propTrade instance
@@ -493,27 +580,6 @@
 
     }
     /*This method need to moified later*/
-    private decimal CalculateBuyMarketLiquidation(int leverage, decimal orderPrice, decimal amount)
-    {
-        // Check for zero values to avoid division by zero
-        if (leverage == 0 || orderPrice == 0 || amount == 0)
-        {
-            ErrorMessage = "Zero divide error";
-            return 0m; // Handle the error appropriately
-        }
-
-        // Calculate the total position size
-        decimal totalPositionSize = amount * leverage;
-        TotalMargin = totalPositionSize;
-
-        // Calculate the liquidation price using the correct formula
-        decimal liquidationPrice = orderPrice * (1 - (amount / totalPositionSize));
-
-        // Store the liquidation price for reference
-        LiquidationPrice = liquidationPrice;
-
-        return liquidationPrice;
-    }
 
     private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
@@ -617,8 +683,6 @@
         // Return the profit or loss in the same currency as the asset (e.g., USD)
         return leveragedProfitLoss;
     }
-
-
     private async Task<PropUser> GetPropUser(string userId)
     {
         var context = dbContextFactory.CreateDbContext();
@@ -808,6 +872,28 @@
                     x.OrderPriceTriggerd = btcDecimal;
                     x.OrderTriggerdAt = DateTime.Now;
                     await context.SaveChangesAsync();
+                }
+            }
+            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Order && x.Status == OrderStatus.Pending)
+            {
+                if (btcDecimal <= targetPrice - priceRange && btcDecimal >= targetPrice + priceRange)
+                {
+                    x.Status = OrderStatus.Open;
+                    x.OrderPriceTriggerd = btcDecimal;
+                    x.OrderTriggerdAt = DateTime.Now;
+
+
+                    await context.SaveChangesAsync();
+                    Console.WriteLine($"Order opened at price: {btcDecimal}");
+                }
+                //RTODO second side if price under
+                if (btcDecimal < targetPrice - priceRange)
+                {
+
+                    x.Status = OrderStatus.Open;
+                    x.OrderPriceTriggerd = btcDecimal;
+                    x.OrderTriggerdAt = DateTime.Now;
+                    await context.SaveChangesAsync();
                     Console.WriteLine($"Order closed due to low price: {btcDecimal}");
                 }
             }
@@ -818,6 +904,7 @@
     }
     private async Task CloseMarketOrder(int tradePoprdId)
     {
+        //TODO Modified this method for closind order sel and buy 
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
         var context = dbContextFactory.CreateDbContext();
         var Dataget = await context.propTrdaes.
@@ -873,22 +960,10 @@
             propUser = await GetPropUser(user2);
         }
     }
-
     public static decimal CalculateLiquidationPrice(decimal entryPrice, decimal leverage)
     {
         // Liquidation price formula: EntryPrice * (1 - (1 / Leverage))
         decimal liquidationPrice = entryPrice * (1 - (1 / leverage));
-        return liquidationPrice;
-    }
-    public static decimal CalculateShortLiquidationPriceShortMarket(decimal entryPrice, decimal leverage)
-    {
-        if (leverage <= 1)
-        {
-            throw new ArgumentException("Leverage must be greater than 1.");
-        }
-
-        // Liquidation price formula for a short position: Entry Price * (1 + (1 / Leverage))
-        decimal liquidationPrice = entryPrice * (1 + (1 / leverage));
         return liquidationPrice;
     }
 
