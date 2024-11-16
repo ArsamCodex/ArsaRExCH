@@ -1,12 +1,11 @@
-﻿using ArsaRExCH.Data;
+﻿using ArsaRExCH.Controllers;
+using ArsaRExCH.Data;
 using ArsaRExCH.DTOs;
 using ArsaRExCH.Interface.PropInterface;
 using ArsaRExCH.Model.Prop;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Logging;
-using NBitcoin.Secp256k1;
 using Newtonsoft.Json;
 
 namespace ArsaRExCH.InterfaceIMPL.PropImlp
@@ -248,6 +247,23 @@ namespace ArsaRExCH.InterfaceIMPL.PropImlp
 
             Console.Error.WriteLine("User is not authenticated or user ID is missing.");
             return 0;
+        }
+
+        public async Task<List<PrepPairDTO>> GetPricesForPairs([FromQuery] List<string> pairs)
+        {
+            using HttpClient client = new HttpClient();
+            string url = "https://fapi.binance.com/fapi/v1/ticker/price";
+
+            // Fetch JSON response from Binance API
+            var response = await client.GetStringAsync(url);
+            Console.WriteLine(response);
+            // Deserialize JSON to List<PrepPir>
+            var allPrices = JsonConvert.DeserializeObject<List<PrepPairDTO>>(response);
+
+            // Filter the result based on the specified pairs
+            return allPrices
+                .Where(p => pairs.Contains(p.PairName))   // Filter to only include the specified pairs
+                .ToList();
         }
     }
 }

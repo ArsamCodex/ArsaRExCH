@@ -1,5 +1,7 @@
-﻿using ArsaRExCH.DTOs;
+﻿using ArsaRExCH.Controllers;
+using ArsaRExCH.DTOs;
 using ArsaRExCH.Model.Prop;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ArsaRExCH.Interface.PropInterface
 {
@@ -14,5 +16,6 @@ namespace ArsaRExCH.Interface.PropInterface
         Task<decimal> GetBalanceForAuthenticatedUser();
         Task<bool> IsUserAuthenticated(string userId);
         Task<decimal> GetBalance(string id);
+        Task<List<PrepPairDTO>> GetPricesForPairs([FromQuery] List<string> pairs);
     }
 }
