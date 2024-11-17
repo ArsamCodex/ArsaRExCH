@@ -274,7 +274,7 @@ else
                 <div class="swap-section">
                     <span class="input-text">To Main Account</span>
 
-                    <input type="number" @bind="fromValue" placeholder="From Main Account $" class="swap-input" />
+                    <input type="number" @bind="fromValue" placeholder="to Main Account $" class="swap-input" />
                 </div>
 
 
@@ -291,7 +291,7 @@ else
 
 
 @selectedAccount
-
+@ErrorMessage
 @code {
     private bool isRiskAccepted = false;
     private EditContext editContext;
@@ -307,7 +307,7 @@ else
     private double mainAccountBalance;
     /*Here a database cal will reterive all avaulable pair*/
     private List<PrepPir> PairNames { get; set; } = new List<PrepPir>();
-
+    public string  ErrorMessage { get; set; }
 
 
 
@@ -410,12 +410,20 @@ else
     }
     private async Task HandleSwap()
     {
+        //USDT MAin balance is 0 its not behaiving corectly later check 
+        //TODO IF 
         if (fromValue > (decimal)mainAccountBalance)
         {
             // Consider adding a notification here for insufficient funds
             return;
         }
+        if (fromValue <= 0)
+        {
+            // Consider adding a notification here for insufficient funds
+            ErrorMessage = "Negativr Transfer Not Allowed";
 
+            return;
+        }
         var context = dbContextFactory.CreateDbContext();
 
         // Retrieve the wallet for the user and the "USDT" pair
@@ -443,6 +451,7 @@ else
         if (prepWalletEdit == null)
         {
             // Handle the case where the prop user is not found, possibly returning or notifying the user
+            //TODO return error message in blazor if There is exceprion which is NO usdt wallet has been maded yet 
             return;
         }
 
@@ -479,9 +488,18 @@ else
     }
     private async Task HandleSwapToMainAcc()
     {
-        if (fromValue > (decimal)mainAccountBalance)
+        if (fromValue > propUserList.FirstOrDefault().Balance)
         {
             // Consider adding a notification here for insufficient funds
+           ErrorMessage="The amount you want to send exceeds your main account balance.";
+
+            return;
+        }
+        if (fromValue <=0)
+        {
+            // Consider adding a notification here for insufficient funds
+            ErrorMessage = "Negativr Transfer Not Allowed";
+
             return;
         }
 
