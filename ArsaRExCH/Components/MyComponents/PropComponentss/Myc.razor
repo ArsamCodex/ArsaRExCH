@@ -292,10 +292,9 @@
                                         onmouseout="this.style.backgroundColor='yellow'; this.style.color='black';">
                                     Close
                                 </button>
-                         
-                           
-                                <button
-                                        style="background-color: lightcoral; color: black; border: none; padding: 8px 16px; cursor: pointer;"
+
+
+                                <button @onclick="() => ShowEditSPLForm()" style="background-color: lightcoral; color: black; border: none; padding: 8px 16px; cursor: pointer;"
                                         onmouseover="this.style.backgroundColor='red'; this.style.color='white';"
                                         onmouseout="this.style.backgroundColor='lightcoral'; this.style.color='black';">
                                     Edit SP/TP
@@ -303,14 +302,56 @@
                             </td>
 
                         </tr>
+                        @if (EditSLTP)
+                        {
+                            <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 1000; background-color: rgba(0, 0, 0, 0.6); pointer-events: none;">
+                                <div class="modal-dialog" style="max-width: 1000px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); pointer-events: auto;">
+                                    <div class="modal-body" style="padding: 20px; color: #555;">
+                                        <EditForm EditContext="@editContext" OnValidSubmit="() => EditStopLossTakeProfitButton(trade.PropTradeId)">
+                                            <DataAnnotationsValidator />
+                                            <ValidationSummary />
+                                            <div style="flex: 1; display: flex; gap: 20px;">
+                                                <!-- Amount Field -->
+                                                <div style="flex: 1; width: 25%;">
+                                                    <label for="symbolI">Stop Loss</label>
+                                                    <InputNumber id="symbolI"
+                                                                 class="form-control"
+                                                                 @bind-Value="propTrade.StopLoss" />
+                                                </div>
+
+                                                <!-- Take Profit Field -->
+                                                <div style="flex: 1; width: 25%;">
+                                                    <label for="takeProfit">Take Profit</label>
+                                                    <InputNumber id="takeProfit"
+                                                                 class="form-control"
+                                                                 @bind-Value="propTrade.TakeProfit" />
+                                                </div>
+                                            </div>
+
+
+                                        </EditForm>
+                                    </div>
+                                    <div class="modal-footer" style="display: flex; justify-content: flex-start; padding-top: 10px;">
+                                        <button type="button" class="btn btn-secondary" @onclick="Close" style="padding: 8px 16px; background-color: #e0e0e0; border: none; color: #333; border-radius: 4px; cursor: pointer;">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        }
+
                     }
+
                 </tbody>
             </table>
+
+
         }
     </div>
-
-
 </div>
+
+
+
 @ErrorMessage
 <p>@Pair</p>
 @code {
@@ -333,7 +374,7 @@
     public int PropUserId { get; set; }
     public PropUser propUser { get; set; } = new PropUser();
     public int userIdprop { get; set; }
-
+    private bool EditSLTP { get; set; } = false;
 
 
     private async Task HandleTradeBuyMarketButton()
@@ -341,8 +382,8 @@
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
         if (selectedTradeType == "Market" && selectedBuySel == "Buy")
         {
-            //TODO here i need to validate 
-            if (propTrade.AmountForOrder <= 0 )
+            //TODO here i need to validate
+            if (propTrade.AmountForOrder <= 0)
             {
                 ErrorMessage = "amount smaller then zero";
                 return;
@@ -352,9 +393,9 @@
                 {
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = btcDecimal,
-                    Leverage = Level, 
-                    AmountForOrder = propTrade.AmountForOrder, 
-                    Status = OrderStatus.Open, 
+                    Leverage = Level,
+                    AmountForOrder = propTrade.AmountForOrder,
+                    Status = OrderStatus.Open,
                     ProfitInCase = 0,
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
@@ -362,7 +403,7 @@
                     LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
-                    PropUserId = propUser.PropUserId ,
+                    PropUserId = propUser.PropUserId,
                     PairName = Pair
 
 
@@ -400,7 +441,7 @@
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = btcDecimal,
                     Leverage = Level,
-                    AmountForOrder = propTrade.AmountForOrder, 
+                    AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Open,
                     ProfitInCase = 0,
                     MarketType = MarketType.Market,
@@ -448,7 +489,7 @@
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = propTrade.OrderPriceOpened,
                     Leverage = Level,
-                    AmountForOrder = propTrade.AmountForOrder, 
+                    AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Pending,
                     ProfitInCase = 0,
                     MarketType = MarketType.Order,
@@ -457,7 +498,7 @@
                     LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
-                    PropUserId = propUser.PropUserId ,
+                    PropUserId = propUser.PropUserId,
                     PairName = Pair
 
                 };
@@ -492,9 +533,9 @@
                 {
                     TradeOpened = DateTime.Now,
                     OrderPriceOpened = propTrade.OrderPriceOpened,
-                    Leverage = Level, 
-                    AmountForOrder = propTrade.AmountForOrder, 
-                    Status = OrderStatus.Pending, 
+                    Leverage = Level,
+                    AmountForOrder = propTrade.AmountForOrder,
+                    Status = OrderStatus.Pending,
                     ProfitInCase = 0,
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
@@ -502,7 +543,7 @@
                     LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
-                    PropUserId = propUser.PropUserId ,
+                    PropUserId = propUser.PropUserId,
                     PairName = Pair
                 };
 
@@ -549,7 +590,7 @@
                 bool exists = await conn.prepPirs.AnyAsync(p => p.PairName == Pair);
                 if (exists)
                 {
-                    //Its valid 
+                    //Its valid
                     user2 = user5.Id; // Get the user ID here
                     Console.WriteLine(user5.Id);
                     // PropUserId=await GetPropUserId(user2);
@@ -645,7 +686,7 @@
         decimal effectiveAmount = (amount * leverage) / orderPrice;
         decimal leveragedProfitLoss = 0m;
 
-        if (orderStatus == OrderStatus.Open && marketType == MarketType.Market || marketType==MarketType.Order)
+        if (orderStatus == OrderStatus.Open && marketType == MarketType.Market || marketType == MarketType.Order)
         {
             if (ordertype == OrderTypeProp.Buy)
             {
@@ -861,7 +902,7 @@
                     await context.SaveChangesAsync();
                     Console.WriteLine($"Order opened at price: {btcDecimal}");
                 }
-                //RTODO second side if price under 
+                //RTODO second side if price under
                 if (btcDecimal < targetPrice - priceRange)
                 {
 
@@ -895,13 +936,150 @@
                 }
             }
 
+            if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Order && x.Status == OrderStatus.Open)
+            {
+                // Stop-loss activated if the price has hit or dropped below StopLoss
+                if (btcDecimal <= x.StopLoss)
+                {
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                        x.OrderPriceOpened,
+                        btcDecimal,
+                        x.AmountForOrder,
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status
+    ),
+                1
+                    );
 
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.StopLoss;
+                    x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
+                    x.OrderPriceTriggerd = btcDecimal;
+                    // Corrected addition to balance
+                    EditUserX.Balance += (x.AmountForOrder - Math.Abs(pnl));
+
+                    await context.SaveChangesAsync();
+                    OrderTradeList = await ListOfOpenTrades();
+                }
+                if (btcDecimal >= x.TakeProfit)
+                {
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                        x.OrderPriceOpened,
+                        btcDecimal,
+                        x.AmountForOrder,
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
+                1
+                    );
+
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.TakeProfit;
+                    x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
+
+                    // Corrected addition to balance
+                    EditUserX.Balance += (x.AmountForOrder + Math.Abs(pnl));
+
+                    await context.SaveChangesAsync();
+                    OrderTradeList = await ListOfOpenTrades();
+                    propUser = await GetPropUser(user2);
+
+                }
+                if (x.StopLoss == 0 || x.TakeProfit == 0)
+                {
+                    var liquidationPriceMaxRange = x.AmountForOrder;
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                       x.OrderPriceOpened,
+                       btcDecimal,
+                       x.AmountForOrder,
+                       x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
+               1
+                   );
+                    decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
+                    //liquidation max range is for example 50
+                    //if pnl is -50 trade liquidated
+                    if (pnl <= -liquidationPriceMaxRange)
+                    {
+                        x.OrderPriceClosed = btcDecimal;
+                        x.Status = OrderStatus.Liquidated;
+                        await context.SaveChangesAsync();
+                    }
+                }
+            }
+            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Order && x.Status == OrderStatus.Open)
+            {
+                // Stop-loss activated if the price has hit or dropped below StopLoss
+                if (btcDecimal >= x.StopLoss)
+                {
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                        x.OrderPriceOpened,
+                        btcDecimal,
+                        x.AmountForOrder,
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
+                1
+                    );
+
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.StopLoss;
+                    x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
+                    x.OrderPriceTriggerd = btcDecimal;
+
+                    // Corrected addition to balance
+                    EditUserX.Balance += (x.AmountForOrder - Math.Abs(pnl));
+
+                    await context.SaveChangesAsync();
+                    OrderTradeList = await ListOfOpenTrades();
+                }
+                if (btcDecimal <= x.TakeProfit)
+                {
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                        x.OrderPriceOpened,
+                        btcDecimal,
+                        x.AmountForOrder,
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
+                1
+                    );
+
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.TakeProfit;
+                    x.TradeClosedDate = DateTime.Now;
+                    x.ProfitInCase = pnl;
+
+                    // Corrected addition to balance
+                    EditUserX.Balance += (x.AmountForOrder + Math.Abs(pnl));
+
+                    await context.SaveChangesAsync();
+                    OrderTradeList = await ListOfOpenTrades();
+                    propUser = await GetPropUser(user2);
+
+                }
+                if (x.StopLoss == 0 || x.TakeProfit == 0)
+                {
+                    var liquidationPriceMaxRange = x.AmountForOrder;
+                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                       x.OrderPriceOpened,
+                       btcDecimal,
+                       x.AmountForOrder,
+                       x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
+               1
+                   );
+                    decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
+                    //liquidation max range is for example 50
+                    //if pnl is -50 trade liquidated
+                    if (pnl <= -liquidationPriceMaxRange)
+                    {
+                        x.OrderPriceClosed = btcDecimal;
+                        x.Status = OrderStatus.Liquidated;
+                        await context.SaveChangesAsync();
+                    }
+                }
+            }
 
         }
     }
     private async Task CloseMarketOrder(int tradePoprdId)
     {
-        //TODO Modified this method for closind order sel and buy 
+        //TODO Modified this method for closind order sel and buy
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
         var context = dbContextFactory.CreateDbContext();
         var Dataget = await context.propTrdaes.
@@ -962,6 +1140,45 @@
         // Liquidation price formula: EntryPrice * (1 - (1 / Leverage))
         decimal liquidationPrice = entryPrice * (1 - (1 / leverage));
         return liquidationPrice;
+    }
+    private async Task EditStopLossTakeProfitButton(int tradeId)
+    {
+        if (propTrade == null)
+        {
+            throw new InvalidOperationException("The 'propTrade' object cannot be null.");
+        }
+
+        var context = await dbContextFactory.CreateDbContextAsync();
+
+        // Find the trade by tradeId
+        var targetTrade = await context.propTrdaes
+            .FirstOrDefaultAsync(c => c.PropTradeId == tradeId);
+
+        // Check if the trade exists
+        if (targetTrade == null)
+        {
+            throw new InvalidOperationException($"Trade with ID {tradeId} not found.");
+        }
+
+        // Update the StopLoss and TakeProfit values from 'propTrade'
+        targetTrade.TakeProfit = propTrade.TakeProfit;
+        targetTrade.StopLoss = propTrade.StopLoss;
+
+        // Save changes to the database
+        await context.SaveChangesAsync();
+    }
+    private void ShowEditSPLForm()
+    {
+        EditSLTP = true; // Set to true to show the modal form
+        StateHasChanged();  // Refresh UI
+
+    }
+
+
+    private void Close()
+    {
+        EditSLTP = false;
+        StateHasChanged();  // Refresh UI
     }
 
 }
