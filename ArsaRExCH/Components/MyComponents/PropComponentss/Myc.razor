@@ -230,6 +230,7 @@
                 <thead>
                     <tr>
                         <th>Order Price </th>
+                        <th>Trigered </th>
                         <th>SL</th>
                         <th>TP</th>
                         <th>Amount </th>
@@ -250,12 +251,14 @@
                     {
                         <tr>
                             <td style="width:8%">@trade.OrderPriceOpened.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                            <td style="width:8%">@trade.OrderPriceTriggerd?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+
                             <td style="width:6%">@(trade.StopLoss?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")) ?? "N/A")</td>
                             <td style="width:6%">@(trade.TakeProfit?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")) ?? "N/A")</td>
 
                             <td style="width:6%">@trade.AmountForOrder.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
                             <td style="width:4%">X @trade.Leverage</td>
-                            <td style="width:8%">@trade.LiquidationPrice.ToString("0.###")</td>
+                            <td style="width:6%">@trade.LiquidationPrice.ToString("0.###")</td>
                             <td style="width:8%">@trade.TradeOpened.ToString("yyyy-MM-dd HH:mm:ss")</td>
                             <td style="width:6%; background-color:@(trade.orderTypeProp == OrderTypeProp.Buy ? "lightgreen" : "red")">
                                 @trade.orderTypeProp
@@ -1147,22 +1150,12 @@
     }
     private async Task EditStopLossTakeProfitButton(int tradeId)
     {
-      
+
         if (propTrade == null)
         {
             throw new InvalidOperationException("The 'propTrade' object cannot be null.");
         }
-        if (propTrade.TakeProfit < 0)
-        {
-            ErrorMessage = "Take Profit cannot be negative.";
-            throw new ArgumentException("Take Profit cannot be negative.");
-        }
-        if (propTrade.StopLoss < 0)
-        {
-                    ErrorMessage = "Stop Loss cannot be negative.";
 
-            throw new ArgumentException("Stop Loss cannot be negative.");
-        }
 
         var context = await dbContextFactory.CreateDbContextAsync();
 
@@ -1170,12 +1163,20 @@
         var targetTrade = await context.propTrdaes
             .FirstOrDefaultAsync(c => c.PropTradeId == tradeId);
 
-        // Check if the trade exists
-        if (targetTrade == null)
-        {
-            throw new InvalidOperationException($"Trade with ID {tradeId} not found.");
-        }
 
+        if (propTrade.TakeProfit < 0)
+        {
+            ErrorMessage = "Take Profit cannot be negative.";
+           // throw new ArgumentException("Take Profit cannot be negative.");
+            return;
+        }
+        if (propTrade.StopLoss < 0)
+        {
+            ErrorMessage = "Stop Loss cannot be negative.";
+
+          //  throw new ArgumentException("Stop Loss cannot be negative.");
+            return;
+        }
         // Update the properties directly on targetTrade
         targetTrade.TakeProfit = propTrade.TakeProfit;
         targetTrade.StopLoss = propTrade.StopLoss;

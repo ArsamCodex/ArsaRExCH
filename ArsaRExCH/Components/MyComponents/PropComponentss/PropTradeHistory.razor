@@ -1,0 +1,190 @@
+﻿@rendermode InteractiveServer
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+@using ArsaRExCH.Components.Account
+@using ArsaRExCH.Components.Chartss
+@using ArsaRExCH.Model.Prop
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using ArsaRExCH.Data
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject NavigationManager _manager
+@attribute [Authorize]
+
+<style>
+    /* Main div container styling */
+    .order-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .order-item {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+    }
+
+        .order-item h4 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #007bff;
+        }
+
+        .order-item div {
+            margin-top: 8px;
+        }
+
+    .trade-section {
+        margin-top: 30px;
+    }
+
+        .trade-section h5 {
+            font-size: 1.2rem;
+            color: #007bff;
+        }
+
+
+
+
+    /* Error message */
+    .alert-danger {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+</style>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+@if (OrderTradeList != null && OrderTradeList.Any())
+{
+    <div class="order-container">
+        @foreach (var user in OrderTradeList)
+        {
+            int winCount = user.PropTrades.Count(trade => trade.ProfitInCase > 0);
+            int lossCount = user.PropTrades.Count(trade => trade.ProfitInCase <= 0);
+            decimal totalWin = user.PropTrades.Where(trade => trade.ProfitInCase > 0).Sum(trade => trade.ProfitInCase);
+            decimal totalLoss = user.PropTrades.Where(trade => trade.ProfitInCase <= 0).Sum(trade => trade.ProfitInCase);
+            decimal highestWin = user.PropTrades.Where(trade => trade.ProfitInCase > 0).Max(trade => trade.ProfitInCase);
+            decimal highestLoss = user.PropTrades.Where(trade => trade.ProfitInCase <= 0).Min(trade => trade.ProfitInCase);
+
+            int totalTrades = user.PropTrades.Count;
+            decimal winPercentage = totalTrades > 0 ? (decimal)winCount / totalTrades * 100 : 0;
+
+            <div class="order-item" style="display: flex; gap: 20px;">
+                <!-- Block 1: User Info and Summary -->
+                <div style="flex: 1; padding: 10px; background-color: #f2f2f2; border-radius: 5px;">
+                    <h4>User ID: @user.ApplicationUserId</h4>
+                    <div><strong>Balance:</strong> @user.Balance</div>
+                    <div><strong>Account Active:</strong> @user.IsAccountActive</div>
+                    
+                    <div>
+                        <strong>Account Type: </strong>@user.CurrentAccountType
+                    </div>
+                    <div>
+                        <strong>TermsCondition: </strong>@user.IsTermAndConditionAccepted
+                    </div>
+                    <div>
+                        <strong>PropUser ID: </strong>@user.PropUserId
+                    </div>
+                    <hr />
+                    <div><strong>Trade Count:</strong> @totalTrades</div>
+                    <div><strong>Wins:</strong> @winCount</div>
+                    <div><strong>Losses:</strong> @lossCount</div>
+                    <div><strong>Win Percentage:</strong> @winPercentage.ToString("F2")%</div>
+                    <div><strong>Total Win Amount:</strong> @totalWin</div>
+                    <div><strong>Total Loss Amount:</strong> @totalLoss</div>
+                    <div><strong>Highest Win Amount:</strong> @highestWin</div> <!-- New highest win amount display -->
+                    <div><strong>Highest Loss Amount:</strong> @highestLoss</div> <!-- New highest loss amount display -->
+
+                </div>
+
+                <!-- Block 2: Trade Details -->
+                <div style="flex: 2; padding: 10px; background-color: #e9ecef; border-radius: 5px;">
+                    <h5>Trade Details:</h5>
+                    @if (user.PropTrades.Any())
+                    {
+                        @foreach (var trade in user.PropTrades)
+                        {
+                            <div style="display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; background-color: #ffffff; border-radius: 5px; margin-bottom: 10px;">
+                                <div style="flex: 1 1 10%; padding: 5px;"><strong>Trade ID:</strong> @trade.PropTradeId</div>
+                                <div style="flex: 1 1 25%; padding: 5px;"><strong>Opened Date:</strong> @trade.TradeOpened.ToString("yyyy-MM-dd HH:mm")</div>
+                                <div style="flex: 1 1 25%; padding: 5px;"><strong>Closed Date:</strong> @(trade.TradeClosedDate.HasValue ? trade.TradeClosedDate.Value.ToString("yyyy-MM-dd HH:mm") : "Not Closed")</div>
+                                <div style="flex: 1 1 10%; padding: 5px;"><strong>Take Profit:</strong> @trade.TakeProfit</div>
+                                <div style="flex: 1 1 8%; padding: 5px;"><strong>Stop Loss:</strong> @trade.StopLoss</div>
+                                <div style="flex: 1 1 12%; padding: 5px;"><strong>Order Price:</strong> @trade.OrderPriceOpened</div>
+                                <div style="flex: 1 1 8%; padding: 5px;"><strong>Leverage:</strong> @trade.Leverage</div>
+                                <div style="flex: 1 1 8%; padding: 5px;"><strong>Profit:</strong> @trade.ProfitInCase</div>
+                                <div style="flex: 1 1 8%; padding: 5px;"><strong>Fee:</strong> @trade.FeeInCase</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div>No trades found for this user.</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div>No trades found for this user.</div>
+}
+
+
+
+@code {
+    private string user2 { get; set; }
+    private string ErrorMessage { set; get; }
+    private List<PropUser> OrderTradeList { get; set; } = new List<PropUser>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+                user2 = user5.Id;
+                OrderTradeList = await GetList(user2);
+            }
+            else
+            {
+                ErrorMessage = "Unable to retrieve user.";
+            }
+        }
+        else
+        {
+            ErrorMessage = "HttpContext is not available.";
+        }
+    }
+
+    private async Task<List<PropUser>> GetList(string userId)
+    {
+        try
+        {
+            var context = await dbContextFactory.CreateDbContextAsync();
+
+            var trades = await context.propUsers
+                .Where(t => t.ApplicationUserId == userId)
+                .Include(x => x.PropTrades)
+                .ToListAsync();
+
+            return trades;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while fetching trades: {ex.Message}");
+            throw;
+        }
+    }
+}
