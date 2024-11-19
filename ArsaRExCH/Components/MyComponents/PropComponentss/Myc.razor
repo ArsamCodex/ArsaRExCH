@@ -238,8 +238,9 @@
                         <th>Liquidation</th>
                         <th>Date</th>
                         <th>Type</th>
-                        <th>Margin Size</th>
+                        <th>Margin</th>
                         <th>Profit</th>
+                        <th>Quantity</th>
                         <th>Status</th>
                         <th>Type</th>
                         <th>Action</th>
@@ -284,6 +285,7 @@
                                     @profitLoss.ToString("0.###")
                                 </span>
                             </td>
+                            <td style="width:2%"> @((trade.Leverage * trade.AmountForOrder / trade.OrderPriceOpened).ToString("0.#####"))</td>
                             <td style="width:2%"> @trade.Status</td>
 
                             <td style="width:5%">@trade.MarketType</td>
@@ -454,7 +456,7 @@
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPriceShort(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     // Set the PropUserId if necessary
@@ -547,7 +549,7 @@
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPriceShort(btcDecimal, Level),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -1146,6 +1148,12 @@
     {
         // Liquidation price formula: EntryPrice * (1 - (1 / Leverage))
         decimal liquidationPrice = entryPrice * (1 - (1 / leverage));
+        return liquidationPrice;
+    }
+    public static decimal CalculateLiquidationPriceShort(decimal entryPrice, decimal leverage)
+    {
+        // Liquidation price formula: EntryPrice * (1 - (1 / Leverage))
+        decimal liquidationPrice = entryPrice * (1 + (1 / leverage));
         return liquidationPrice;
     }
     private async Task EditStopLossTakeProfitButton(int tradeId)
