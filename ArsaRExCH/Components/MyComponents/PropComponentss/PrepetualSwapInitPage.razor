@@ -378,8 +378,8 @@ else
             };
 
         // If you need to associate with ApplicationUser, fetch it from the database
-        using (var context = dbContextFactory.CreateDbContext())
-        {
+        var context = dbContextFactory.CreateDbContext();
+
             var applicationUser = await context.ApplicationUsers
                                                .FirstOrDefaultAsync(u => u.Id == user2);
 
@@ -396,7 +396,7 @@ else
             // Add the PropUser to the context and save changes
             await context.propUsers.AddAsync(propUser);
             await context.SaveChangesAsync();
-        }
+        
 
 
         // After saving, set terms acceptance flag
@@ -406,6 +406,7 @@ else
         var propUserList2 = await _propInterface.GetAll<PropUser>();
         propUserList = propUserList2.Where(c => c.ApplicationUserId == user2).ToList();
         GeneratedHashFlag = propUserList.FirstOrDefault().MyUniqueFlag;
+        PairNames = await context.prepPirs.ToListAsync();
         // You can now work with propUserList, e.g., update UI or process further
     }
     private async Task HandleSwap()

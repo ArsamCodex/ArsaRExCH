@@ -412,7 +412,7 @@
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Buy,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Buy),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -459,7 +459,7 @@
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateLiquidationPriceShort(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Sell),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     // Set the PropUserId if necessary
@@ -507,7 +507,7 @@
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Buy,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Buy),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -552,7 +552,7 @@
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateLiquidationPriceShort(btcDecimal, Level),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Sell),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -677,7 +677,7 @@
 
         // Log the query execution to check if it's returning any results
         var myTrades = await context.propTrdaes
-    .Where(c => c.PropUserId == userIdprop && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending) && c.PairName==Pair)
+    .Where(c => c.PropUserId == userIdprop && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending) && c.PairName == Pair)
             .ToListAsync();
 
         // Log the results to see what's coming back
@@ -748,7 +748,7 @@
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
 
         var context = dbContextFactory.CreateDbContext();
-        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending)&& c.PairName==Pair)
+        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending) && c.PairName == Pair)
         .ToListAsync();
         var EditUserX = await context.propUsers.Where(c => c.ApplicationUserId == user2)
         .FirstOrDefaultAsync();
@@ -759,18 +759,17 @@
 
             if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Market)
             {
+                var pnl = Math.Round(CalculateProfitLossInDollar(
+                      x.OrderPriceOpened,
+                      btcDecimal,
+                      x.AmountForOrder,
+                      x.Leverage, x.orderTypeProp, x.MarketType, x.Status
+      ),
+              1
+                  );
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal <= x.StopLoss)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status
-    ),
-                1
-                    );
-
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.StopLoss;
                     x.TradeClosedDate = DateTime.Now;
@@ -784,13 +783,7 @@
                 }
                 if (btcDecimal >= x.TakeProfit)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-                1
-                    );
+
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.TakeProfit;
@@ -805,40 +798,31 @@
                     propUser = await GetPropUser(user2);
 
                 }
-                if (x.StopLoss == 0 || x.TakeProfit == 0)
+
+                var liquidationPriceMaxRange = x.AmountForOrder;
+                decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
+                //liquidation max range is for example 50
+                //if pnl is -50 trade liquidated
+                if (pnl <= -liquidationPriceMaxRange)
                 {
-                    var liquidationPriceMaxRange = x.AmountForOrder;
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.Liquidated;
+                    await context.SaveChangesAsync();
+                }
+
+            }
+            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Market)
+            {
+                var pnl = Math.Round(CalculateProfitLossInDollar(
                        x.OrderPriceOpened,
                        btcDecimal,
                        x.AmountForOrder,
                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                1
                    );
-                    decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
-                    //liquidation max range is for example 50
-                    //if pnl is -50 trade liquidated
-                    if (pnl <= -liquidationPriceMaxRange)
-                    {
-                        x.OrderPriceClosed = btcDecimal;
-                        x.Status = OrderStatus.Liquidated;
-                        await context.SaveChangesAsync();
-                    }
-                }
-            }
-            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Market)
-            {
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal >= x.StopLoss)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-                1
-                    );
-
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.StopLoss;
                     x.TradeClosedDate = DateTime.Now;
@@ -852,14 +836,6 @@
                 }
                 if (btcDecimal <= x.TakeProfit)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-                1
-                    );
-
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.TakeProfit;
                     x.TradeClosedDate = DateTime.Now;
@@ -873,30 +849,19 @@
                     propUser = await GetPropUser(user2);
 
                 }
-                if (x.StopLoss == 0 || x.TakeProfit == 0)
+
+                var liquidationPriceMaxRange = x.AmountForOrder;
+                decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
+                //liquidation max range is for example 50
+                //if pnl is -50 trade liquidated
+                if (pnl <= -liquidationPriceMaxRange)
                 {
-                    var liquidationPriceMaxRange = x.AmountForOrder;
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-                       x.OrderPriceOpened,
-                       btcDecimal,
-                       x.AmountForOrder,
-                       x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-               1
-                   );
-                    decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
-                    //liquidation max range is for example 50
-                    //if pnl is -50 trade liquidated
-                    if (pnl <= -liquidationPriceMaxRange)
-                    {
-                        x.OrderPriceClosed = btcDecimal;
-                        x.Status = OrderStatus.Liquidated;
-                        await context.SaveChangesAsync();
-                    }
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.Liquidated;
+                    await context.SaveChangesAsync();
                 }
+
             }
-
-
-
             decimal targetPrice = x.OrderPriceOpened; // The target price for opening/closing the order
             decimal priceRange = 1m; // $10 range
 
@@ -950,17 +915,17 @@
 
             if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Order && x.Status == OrderStatus.Open)
             {
+                var pnl = Math.Round(CalculateProfitLossInDollar(
+    x.OrderPriceTriggerd ?? 0,
+    btcDecimal,
+                        x.AmountForOrder,
+                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
+                1
+                    );
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal <= x.StopLoss)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceTriggerd ?? 0,
-                        btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status
-    ),
-                1
-                    );
+
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.StopLoss;
@@ -975,13 +940,7 @@
                 }
                 if (btcDecimal >= x.TakeProfit)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-    x.OrderPriceTriggerd ?? 0,
-    btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-                1
-                    );
+
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.TakeProfit;
@@ -996,37 +955,31 @@
                     propUser = await GetPropUser(user2);
 
                 }
-                if (x.StopLoss == 0 || x.TakeProfit == 0)
+
+                var liquidationPriceMaxRange = x.AmountForOrder;
+                decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
+                //liquidation max range is for example 50
+                //if pnl is -50 trade liquidated
+                if (pnl <= -liquidationPriceMaxRange)
                 {
-                    var liquidationPriceMaxRange = x.AmountForOrder;
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-    x.OrderPriceTriggerd ?? 0, btcDecimal,
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.Liquidated;
+                    await context.SaveChangesAsync();
+                }
+
+            }
+            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Order && x.Status == OrderStatus.Open)
+            {
+                var pnl = Math.Round(CalculateProfitLossInDollar(
+       x.OrderPriceTriggerd ?? 0, btcDecimal,
                        x.AmountForOrder,
                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                1
                    );
-                    decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
-                    //liquidation max range is for example 50
-                    //if pnl is -50 trade liquidated
-                    if (pnl <= -liquidationPriceMaxRange)
-                    {
-                        x.OrderPriceClosed = btcDecimal;
-                        x.Status = OrderStatus.Liquidated;
-                        await context.SaveChangesAsync();
-                    }
-                }
-            }
-            if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Order && x.Status == OrderStatus.Open)
-            {
                 // Stop-loss activated if the price has hit or dropped below StopLoss
                 if (btcDecimal >= x.StopLoss)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-    x.OrderPriceTriggerd ?? 0, btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-                1
-                    );
+
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.StopLoss;
@@ -1042,12 +995,6 @@
                 }
                 if (btcDecimal <= x.TakeProfit)
                 {
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-    x.OrderPriceTriggerd ?? 0, btcDecimal,
-                        x.AmountForOrder,
-                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-                1
-                    );
 
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.TakeProfit;
@@ -1062,26 +1009,19 @@
                     propUser = await GetPropUser(user2);
 
                 }
-                if (x.StopLoss == 0 || x.TakeProfit == 0)
+
+                var liquidationPriceMaxRange = x.AmountForOrder;
+                decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
+                //liquidation max range is for example 50
+                //if pnl is -50 trade liquidated
+                if (pnl <= -liquidationPriceMaxRange)
                 {
-                    var liquidationPriceMaxRange = x.AmountForOrder;
-                    var pnl = Math.Round(CalculateProfitLossInDollar(
-    x.OrderPriceTriggerd ?? 0, btcDecimal,
-                       x.AmountForOrder,
-                       x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
-               1
-                   );
-                    decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
-                    //liquidation max range is for example 50
-                    //if pnl is -50 trade liquidated
-                    if (pnl <= -liquidationPriceMaxRange)
-                    {
-                        x.OrderPriceClosed = btcDecimal;
-                        x.Status = OrderStatus.Liquidated;
-                        await context.SaveChangesAsync();
-                    }
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.Liquidated;
+                    await context.SaveChangesAsync();
                 }
             }
+
 
         }
     }
@@ -1095,21 +1035,23 @@
 
         var propuserI = await context.propUsers.
                      Where(c => c.PropUserId == userIdprop).FirstOrDefaultAsync();
+
+        var pnl = Math.Round(
+      CalculateProfitLossInDollar(
+      Dataget.OrderPriceOpened,
+      btcDecimal,
+      Dataget.AmountForOrder,
+      Dataget.Leverage,
+      Dataget.orderTypeProp,
+      Dataget.MarketType = MarketType.Market,
+      Dataget.Status = OrderStatus.Pending
+      ),
+      1 // Rounding to one decimal place
+      );
         //make this button dynamic for all orders TODO
         if (btcDecimal > Dataget.OrderPriceOpened)
         {
-            var pnl = Math.Round(
-                CalculateProfitLossInDollar(
-                    Dataget.OrderPriceOpened,
-                    btcDecimal,
-                    Dataget.AmountForOrder,
-                    Dataget.Leverage,
-                    Dataget.orderTypeProp,
-                    Dataget.MarketType = MarketType.Market,
-                    Dataget.Status = OrderStatus.Pending
-                ),
-                1 // Rounding to one decimal place
-            ); Dataget.ProfitInCase = pnl;
+            Dataget.ProfitInCase = pnl;
 
             propuserI.Balance += (pnl + Dataget.AmountForOrder);
 
@@ -1122,19 +1064,8 @@
         }
         if (btcDecimal <= Dataget.OrderPriceOpened)
         {
-            var pnl = Math.Round(
-                CalculateProfitLossInDollar(
-                    Dataget.OrderPriceOpened,
-                    btcDecimal,
-                    Dataget.AmountForOrder,
-                    Dataget.Leverage,
-                    Dataget.orderTypeProp, Dataget.MarketType, Dataget.Status
-                ),
-                1 // Rounding to one decimal place
-            ); Dataget.ProfitInCase = pnl;
-
+            Dataget.ProfitInCase = pnl;
             propuserI.Balance += Dataget.AmountForOrder - Math.Abs(pnl);
-
             Dataget.Status = OrderStatus.ClosedManually;
             Dataget.OrderPriceClosed = btcDecimal;
             Dataget.TradeClosedDate = DateTime.Now;
@@ -1143,18 +1074,17 @@
             propUser = await GetPropUser(user2);
         }
     }
-    public static decimal CalculateLiquidationPrice(decimal entryPrice, decimal leverage)
+    public static decimal CalculateLiquidationPrice(decimal entryPrice, decimal leverage, OrderTypeProp ordertype)
     {
-        // Liquidation price formula: EntryPrice * (1 - (1 / Leverage))
-        decimal liquidationPrice = entryPrice * (1 - (1 / leverage));
-        return liquidationPrice;
+        return ordertype switch
+        {
+            OrderTypeProp.Buy => entryPrice * (1 - (1 / leverage)),
+            OrderTypeProp.Sell => entryPrice * (1 + (1 / leverage)),
+            _ => throw new ArgumentException("Invalid order type.", nameof(ordertype))
+        };
+        
     }
-    public static decimal CalculateLiquidationPriceShort(decimal entryPrice, decimal leverage)
-    {
-        // Liquidation price formula: EntryPrice * (1 - (1 / Leverage))
-        decimal liquidationPrice = entryPrice * (1 + (1 / leverage));
-        return liquidationPrice;
-    }
+
     private async Task EditStopLossTakeProfitButton(int tradeId)
     {
 

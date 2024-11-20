@@ -71,8 +71,13 @@
             int lossCount = user.PropTrades.Count(trade => trade.ProfitInCase <= 0);
             decimal totalWin = user.PropTrades.Where(trade => trade.ProfitInCase > 0).Sum(trade => trade.ProfitInCase);
             decimal totalLoss = user.PropTrades.Where(trade => trade.ProfitInCase <= 0).Sum(trade => trade.ProfitInCase);
-            decimal highestWin = user.PropTrades.Where(trade => trade.ProfitInCase > 0).Max(trade => trade.ProfitInCase);
-            decimal highestLoss = user.PropTrades.Where(trade => trade.ProfitInCase <= 0).Min(trade => trade.ProfitInCase);
+            decimal highestWin = user.PropTrades?.Where(trade => trade != null && trade.ProfitInCase > 0)
+            .DefaultIfEmpty()
+            .Max(trade => trade?.ProfitInCase ?? 0) ?? 0;
+
+            decimal highestLoss = user.PropTrades?.Where(trade => trade != null && trade.ProfitInCase <= 0)
+            .DefaultIfEmpty()
+            .Min(trade => trade?.ProfitInCase ?? 0) ?? 0;
 
             int totalTrades = user.PropTrades.Count;
             decimal winPercentage = totalTrades > 0 ? (decimal)winCount / totalTrades * 100 : 0;
@@ -98,7 +103,7 @@
                     <div><strong>Wins:</strong> @winCount</div>
                     <div><strong>Losses:</strong> @lossCount</div>
                     <div><strong>Win Percentage:</strong> @winPercentage.ToString("F2")%</div>
-                    <div><strong>Total Win Amount:</strong> @totalWin</div>
+                    <div><strong>Total Win Amount:</strong> @totalWin </div>
                     <div><strong>Total Loss Amount:</strong> @totalLoss</div>
                     <div><strong>Highest Win Amount:</strong> @highestWin</div> <!-- New highest win amount display -->
                     <div><strong>Highest Loss Amount:</strong> @highestLoss</div> <!-- New highest loss amount display -->
@@ -133,6 +138,7 @@
                                 <div style="flex: 1 1 8%; padding: 5px;"><strong>Fee:</strong> @trade.FeeInCase</div>
                                 <div style="flex: 1 1 6%; padding: 5px;"><strong>Status:</strong> <strong style="background-color:lightgreen">@trade.Status</strong></div>
                                 <div style="flex: 1 1 6%; padding: 5px;"><strong>Quantity:</strong> <strong style="background-color:orange">@((trade.Leverage * trade.AmountForOrder / trade.OrderPriceOpened).ToString("0.#####"))</strong></div>
+                                <div style="flex: 1 1 6%; padding: 5px;"><strong>Type:</strong> <strong style="background-color:orange">@trade.orderTypeProp</strong></div>
 
                               
 
