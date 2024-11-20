@@ -1,0 +1,82 @@
+﻿@page "/Coupon"
+@using ArsaRExCH.Components.Account
+@using ArsaRExCH.DTOs
+@using ArsaRExCH.Interface
+@using ArsaRExCH.Model.Prop
+@rendermode InteractiveServer
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+@using ArsaRExCH.Components.Chartss
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using ArsaRExCH.Data
+@using ArsaRExCH.Model
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject NavigationManager _manager
+@inject UserManager<ApplicationUser> UserManager
+
+<EditForm EditContext="editContext" OnValidSubmit="MakeCouponButton">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="details" class="form-label">Details</label>
+        <InputText id="details" class="form-control" @bind-Value="coupon.Details" />
+    </div>
+
+    <div class="mb-3">
+        <label for="receiver" class="form-label">Receiver</label>
+        <InputText id="receiver" class="form-control" @bind-Value="coupon.Receiver" />
+    </div>
+
+    <div class="mb-3">
+        <label for="amount" class="form-label">Amount</label>
+        <InputNumber id="amount" class="form-control" @bind-Value="coupon.Amount" />
+    </div>
+
+    <div class="mb-3">
+        <label for="expirationDate" class="form-label">Expiration Date</label>
+        <InputDate id="expirationDate" class="form-control" @bind-Value="coupon.ExpirationDate" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+
+
+@code {
+    private EditContext editContext;
+    private ArsaRExCH.Model.Coupon coupon = new ArsaRExCH.Model.Coupon();
+    private string user2 { get; set; }
+    public string? ErrorMessage { get; set; }
+    public string CurrentUserRoles { get; set; }
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(coupon);
+        //  editContext.OnFieldChanged += HandleFieldChanged;
+        // Fetch initial data
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            var user5 = await UserAccessor.GetRequiredUserAsync(context);
+            if (user5 != null)
+            {
+
+
+                user2 = user5.Id;
+                var roles = await UserManager.GetRolesAsync(user5);
+                CurrentUserRoles = roles.FirstOrDefault();
+            }
+
+        }
+
+    }
+    private async Task MakeCouponButton()
+    {
+
+    }
+}

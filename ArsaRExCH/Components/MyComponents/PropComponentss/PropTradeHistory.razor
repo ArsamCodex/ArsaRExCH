@@ -80,7 +80,7 @@
             <div class="order-item" style="display: flex; gap: 20px;">
                 <!-- Block 1: User Info and Summary -->
                 <div style="flex: 1; padding: 10px; background-color: #f2f2f2; border-radius: 5px;">
-                    <h4>User ID: @user.ApplicationUserId</h4>
+                   <!-- <h4>User ID: @user.ApplicationUserId</h4>-->
                     <div><strong>Balance:</strong> @user.Balance</div>
                     <div><strong>Account Active:</strong> @user.IsAccountActive</div>
 
@@ -132,6 +132,10 @@
                                 <div style="flex: 1 1 8%; padding: 5px;"><strong>Profit:</strong> @trade.ProfitInCase</div>
                                 <div style="flex: 1 1 8%; padding: 5px;"><strong>Fee:</strong> @trade.FeeInCase</div>
                                 <div style="flex: 1 1 6%; padding: 5px;"><strong>Status:</strong> <strong style="background-color:lightgreen">@trade.Status</strong></div>
+                                <div style="flex: 1 1 6%; padding: 5px;"><strong>Quantity:</strong> <strong style="background-color:orange">@((trade.Leverage * trade.AmountForOrder / trade.OrderPriceOpened).ToString("0.#####"))</strong></div>
+
+                              
+
                             </div>
                         }
                     }

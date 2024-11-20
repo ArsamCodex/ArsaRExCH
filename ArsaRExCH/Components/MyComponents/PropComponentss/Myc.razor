@@ -674,7 +674,7 @@
 
         // Log the query execution to check if it's returning any results
         var myTrades = await context.propTrdaes
-    .Where(c => c.PropUserId == userIdprop && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending))
+    .Where(c => c.PropUserId == userIdprop && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending) && c.PairName==Pair)
             .ToListAsync();
 
         // Log the results to see what's coming back
@@ -745,7 +745,7 @@
         var btcDecimal = decimal.TryParse(btcPriceVariable, out var parsedPrice) ? parsedPrice : 0m;
 
         var context = dbContextFactory.CreateDbContext();
-        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending))
+        var DatasToCHeck = await context.propTrdaes.Where(c => c.PropUserId == propUser.PropUserId && (c.Status == OrderStatus.Open || c.Status == OrderStatus.Pending)&& c.PairName==Pair)
         .ToListAsync();
         var EditUserX = await context.propUsers.Where(c => c.ApplicationUserId == user2)
         .FirstOrDefaultAsync();
@@ -895,7 +895,7 @@
 
 
             decimal targetPrice = x.OrderPriceOpened; // The target price for opening/closing the order
-            decimal priceRange = 5m; // $10 range
+            decimal priceRange = 1m; // $10 range
 
             // Check if it's a Buy order, in the correct market type, and in Pending status
             if (x.orderTypeProp == OrderTypeProp.Buy && x.MarketType == MarketType.Order && x.Status == OrderStatus.Pending)
@@ -951,7 +951,7 @@
                 if (btcDecimal <= x.StopLoss)
                 {
                     var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
+                        x.OrderPriceTriggerd ?? 0,
                         btcDecimal,
                         x.AmountForOrder,
                         x.Leverage, x.orderTypeProp, x.MarketType, x.Status
@@ -973,8 +973,8 @@
                 if (btcDecimal >= x.TakeProfit)
                 {
                     var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
+    x.OrderPriceTriggerd ?? 0,
+    btcDecimal,
                         x.AmountForOrder,
                         x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                 1
@@ -997,8 +997,7 @@
                 {
                     var liquidationPriceMaxRange = x.AmountForOrder;
                     var pnl = Math.Round(CalculateProfitLossInDollar(
-                       x.OrderPriceOpened,
-                       btcDecimal,
+    x.OrderPriceTriggerd ?? 0, btcDecimal,
                        x.AmountForOrder,
                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                1
@@ -1020,8 +1019,7 @@
                 if (btcDecimal >= x.StopLoss)
                 {
                     var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
+    x.OrderPriceTriggerd ?? 0, btcDecimal,
                         x.AmountForOrder,
                         x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                 1
@@ -1042,8 +1040,7 @@
                 if (btcDecimal <= x.TakeProfit)
                 {
                     var pnl = Math.Round(CalculateProfitLossInDollar(
-                        x.OrderPriceOpened,
-                        btcDecimal,
+    x.OrderPriceTriggerd ?? 0, btcDecimal,
                         x.AmountForOrder,
                         x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                 1
@@ -1066,8 +1063,7 @@
                 {
                     var liquidationPriceMaxRange = x.AmountForOrder;
                     var pnl = Math.Round(CalculateProfitLossInDollar(
-                       x.OrderPriceOpened,
-                       btcDecimal,
+    x.OrderPriceTriggerd ?? 0, btcDecimal,
                        x.AmountForOrder,
                        x.Leverage, x.orderTypeProp, x.MarketType, x.Status),
                1
@@ -1175,14 +1171,14 @@
         if (propTrade.TakeProfit < 0)
         {
             ErrorMessage = "Take Profit cannot be negative.";
-           // throw new ArgumentException("Take Profit cannot be negative.");
+            // throw new ArgumentException("Take Profit cannot be negative.");
             return;
         }
         if (propTrade.StopLoss < 0)
         {
             ErrorMessage = "Stop Loss cannot be negative.";
 
-          //  throw new ArgumentException("Stop Loss cannot be negative.");
+            //  throw new ArgumentException("Stop Loss cannot be negative.");
             return;
         }
         // Update the properties directly on targetTrade
@@ -1217,7 +1213,7 @@
         EditSLTP = false;
         //   StateHasChanged();  // Refresh UI
     }
-  
+
 
 }
 

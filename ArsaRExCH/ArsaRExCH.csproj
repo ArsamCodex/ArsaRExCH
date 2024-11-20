@@ -68,6 +68,14 @@
 
 
 
+  <ItemGroup>
+    <Folder Include="Components\MyComponents\Coupon\" />
+  </ItemGroup>
+
+
+
+
+
 
 
 </Project>
