@@ -9,10 +9,13 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IdentityUserAccessor UserAccessor
 @using ArsaRExCH.Components.Chartss
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using ArsaRExCH.Data
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 @inject NavigationManager _manager
+@attribute [Authorize]
+
 
 <div style="display: flex; gap: 20px; align-items: center; font-size: 16px; color: #333; font-family: Arial, sans-serif;">
     <p style="margin: 0; font-weight: bold;">Prop User Balance: <span style="font-weight: normal;background-color:greenyellow">@propUser.Balance</span></p>
