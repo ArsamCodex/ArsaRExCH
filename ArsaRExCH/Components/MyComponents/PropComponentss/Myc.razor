@@ -404,7 +404,7 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                    OrderPriceOpened = btcDecimal,
+                     OrderPriceOpened = btcDecimal * 1.001m,
                     Leverage = Level,
                     AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Open,
@@ -451,7 +451,7 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                    OrderPriceOpened = btcDecimal,
+                    OrderPriceOpened = btcDecimal* 0.999m,
                     Leverage = Level,
                     AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Open,
@@ -499,7 +499,8 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                    OrderPriceOpened = propTrade.OrderPriceOpened,
+
+                    OrderPriceOpened = propTrade.OrderPriceOpened* 1.001m,
                     Leverage = Level,
                     AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Pending,
@@ -544,9 +545,9 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                    OrderPriceOpened = propTrade.OrderPriceOpened,
+                    OrderPriceOpened = propTrade.OrderPriceOpened* 0.999m,
                     Leverage = Level,
-                    AmountForOrder = propTrade.AmountForOrder,
+                    AmountForOrder = propTrade.AmountForOrder ,
                     Status = OrderStatus.Pending,
                     ProfitInCase = 0,
                     MarketType = MarketType.Order,
