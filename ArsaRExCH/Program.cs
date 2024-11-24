@@ -43,7 +43,7 @@ builder.Services.AddScoped<IProp, IPropImPL>();
 
 
 
-
+/*Renove swagger form this project relocate to api */
 
 
 
@@ -105,7 +105,7 @@ builder.Services.AddCors(options =>
 
 
 
-
+/*
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo
@@ -149,7 +149,7 @@ builder.Services.AddSwaggerGen(option =>
             new string[] { } // Empty array, if you don't use scopes
         }
     });
-});
+});*/
 builder.Logging.AddConsole();
 
 
@@ -188,11 +188,11 @@ else
 app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseSwagger();
-
+/*
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ARsarExCH Public API");
-}); 
+}); */
 app.UseStaticFiles();
 app.UseAntiforgery();
 

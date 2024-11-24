@@ -1,5 +1,4 @@
-﻿using ArsaRExCH.Controllers;
-using ArsaRExCH.DTOs;
+﻿using ArsaRExCH.DTOs;
 using ArsaRExCH.Model.Prop;
 using Microsoft.AspNetCore.Mvc;
 

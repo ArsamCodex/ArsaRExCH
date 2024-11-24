@@ -11,9 +11,11 @@ using System.Security.Claims;
 
 namespace ArsaRExCH.Controllers
 {
+    
     [Route("api/[controller]")]
     [Controller]
     [Authorize]
+ 
     public class BetController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -33,11 +35,11 @@ namespace ArsaRExCH.Controllers
             _authenticationStateProvider = authenticationStateProvider;
             _userManager = userManager;
         }
+        /*
         [HttpPost("GetBet")]
-      //  [AutoValidateAntiforgeryToken]
+   
         public async Task<IActionResult> GetTheBet(Bet bet)
         {
-            /*If you dont like to use efcore  use static class StaticMethods to work whit ado .net methods */
             try
             {
                 // Attempt to add the bet to the database
@@ -66,7 +68,8 @@ namespace ArsaRExCH.Controllers
                 return StatusCode(500, ex);
             }
         }
-
+*/
+        /*
         [HttpGet]
         public async Task<IActionResult> GetBtcPrice()
         {
@@ -85,7 +88,7 @@ namespace ArsaRExCH.Controllers
             }
             return userd;
 
-        }
+        }*/
 
        
     }

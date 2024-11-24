@@ -1,5 +1,4 @@
-﻿using ArsaRExCH.Controllers;
-using ArsaRExCH.Data;
+﻿using ArsaRExCH.Data;
 using ArsaRExCH.DTOs;
 using ArsaRExCH.Interface.PropInterface;
 using ArsaRExCH.Model.Prop;

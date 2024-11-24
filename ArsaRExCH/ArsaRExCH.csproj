@@ -34,7 +34,6 @@
     <PackageReference Include="NBitcoin" Version="7.0.39" />
     <PackageReference Include="Nethereum.HdWallet" Version="4.20.0" />
     <PackageReference Include="QBitNinja.Client" Version="1.0.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
 
