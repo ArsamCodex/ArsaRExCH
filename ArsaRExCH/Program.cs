@@ -187,7 +187,6 @@ else
 }
 app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
-app.UseSwagger();
 /*
 app.UseSwaggerUI(c =>
 {

@@ -9,18 +9,17 @@ using System.Security.Claims;
 using System.Text;
 using ArsaRExCH.DTOs;
 
-namespace ArsaRExCH.Controllers
+namespace ArsarExchAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class LoginController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<Data.ApplicationUser> _signInManager;
 
         public LoginController(IConfiguration configuration,
-                               SignInManager<ApplicationUser> signInManager)
+                               SignInManager<Data.ApplicationUser> signInManager)
         {
             _configuration = configuration;
             _signInManager = signInManager;
@@ -54,6 +53,6 @@ namespace ArsaRExCH.Controllers
             return Ok(new LoginResult { Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
     }
-   
+
 }
 
