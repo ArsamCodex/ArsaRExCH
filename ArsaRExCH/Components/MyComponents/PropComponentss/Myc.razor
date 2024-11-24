@@ -254,7 +254,7 @@
                     @foreach (var trade in OrderTradeList)
                     {
                         <tr>
-                            <td style="width:8%">@trade.OrderPriceOpened.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                            <td style="width:8%"><strong style="background-color:aliceblue">@trade.OrderPriceOpened.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</strong></td>
                             <td style="width:8%">@trade.OrderPriceTriggerd?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
 
                             <td style="width:6%">@(trade.StopLoss?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")) ?? "N/A")</td>
@@ -404,7 +404,7 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                     OrderPriceOpened = btcDecimal * 1.001m,
+                    OrderPriceOpened = btcDecimal * 1.001m,
                     Leverage = Level,
                     AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Open,
@@ -412,7 +412,7 @@
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Buy,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Buy),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level, OrderTypeProp.Buy),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -451,7 +451,7 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                    OrderPriceOpened = btcDecimal* 0.999m,
+                    OrderPriceOpened = btcDecimal * 0.999m,
                     Leverage = Level,
                     AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Open,
@@ -459,7 +459,7 @@
                     MarketType = MarketType.Market,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Sell),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level, OrderTypeProp.Sell),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     // Set the PropUserId if necessary
@@ -500,7 +500,7 @@
                 {
                     TradeOpened = DateTime.Now,
 
-                    OrderPriceOpened = propTrade.OrderPriceOpened* 1.001m,
+                    OrderPriceOpened = propTrade.OrderPriceOpened,
                     Leverage = Level,
                     AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Pending,
@@ -508,7 +508,7 @@
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Buy,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Buy),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level, OrderTypeProp.Buy),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -545,15 +545,15 @@
             var newPropTrade = new PropTrade
                 {
                     TradeOpened = DateTime.Now,
-                    OrderPriceOpened = propTrade.OrderPriceOpened* 0.999m,
+                    OrderPriceOpened = propTrade.OrderPriceOpened,
                     Leverage = Level,
-                    AmountForOrder = propTrade.AmountForOrder ,
+                    AmountForOrder = propTrade.AmountForOrder,
                     Status = OrderStatus.Pending,
                     ProfitInCase = 0,
                     MarketType = MarketType.Order,
                     FeeInCase = 0,
                     orderTypeProp = OrderTypeProp.Sell,
-                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level,OrderTypeProp.Sell),
+                    LiquidationPrice = CalculateLiquidationPrice(btcDecimal, Level, OrderTypeProp.Sell),
                     TakeProfit = propTrade.TakeProfit,
                     StopLoss = propTrade.StopLoss,
                     PropUserId = propUser.PropUserId,
@@ -655,8 +655,9 @@
             if (btcPriceVariable != value)
             {
                 btcPriceVariable = value;
-                HandleAllCOmmand().ConfigureAwait(false);
+                // HandleAllCOmmand().ConfigureAwait(false);
 
+                ListOfOrders().ConfigureAwait(false);
 
 
             }
@@ -753,7 +754,10 @@
         .ToListAsync();
         var EditUserX = await context.propUsers.Where(c => c.ApplicationUserId == user2)
         .FirstOrDefaultAsync();
-
+        if (btcDecimal == 0)
+        {
+            return;
+        }
         foreach (var x in DatasToCHeck)
         {
 
@@ -799,18 +803,28 @@
                     propUser = await GetPropUser(user2);
 
                 }
+                var adjustedLiquidationPrice = x.LiquidationPrice * 1.001m; // Add 0.1%
 
+                if (btcDecimal <= adjustedLiquidationPrice)
+                {
+                    x.OrderPriceClosed = adjustedLiquidationPrice; // Use the adjusted liquidation price
+                    x.Status = OrderStatus.Liquidated;
+                    x.ProfitInCase = pnl;
+
+                    await context.SaveChangesAsync();
+                }
+                /*
                 var liquidationPriceMaxRange = x.AmountForOrder;
                 decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
                 //liquidation max range is for example 50
                 //if pnl is -50 trade liquidated
-                if (pnl <= -liquidationPriceMaxRange)
-                {
+                if (pnl >= -liquidationPriceMaxRange)
+                    {
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.Liquidated;
                     await context.SaveChangesAsync();
-                }
-
+            }
+            */
             }
             if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Market)
             {
@@ -850,18 +864,27 @@
                     propUser = await GetPropUser(user2);
 
                 }
+                var adjustedLiquidationPrice = x.LiquidationPrice * 0.999m;
+                if (btcDecimal >= adjustedLiquidationPrice)
+                {
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.Liquidated;
+                    x.ProfitInCase = pnl;
 
+                    await context.SaveChangesAsync();
+                }
+                /*
                 var liquidationPriceMaxRange = x.AmountForOrder;
                 decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
                 //liquidation max range is for example 50
                 //if pnl is -50 trade liquidated
-                if (pnl <= -liquidationPriceMaxRange)
-                {
+                if (pnl >= -liquidationPriceMaxRange)
+                    {
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.Liquidated;
                     await context.SaveChangesAsync();
-                }
-
+            }
+            */
             }
             decimal targetPrice = x.OrderPriceOpened; // The target price for opening/closing the order
             decimal priceRange = 1m; // $10 range
@@ -956,18 +979,28 @@
                     propUser = await GetPropUser(user2);
 
                 }
+                var adjustedLiquidationPrice = x.LiquidationPrice * 1.001m; // Add 0.1%
 
+                if (btcDecimal <= adjustedLiquidationPrice)
+                {
+                    x.OrderPriceClosed = adjustedLiquidationPrice; // Use the adjusted liquidation price
+                    x.Status = OrderStatus.Liquidated;
+                    x.ProfitInCase = pnl;
+
+                    await context.SaveChangesAsync();
+                }
+                /*
                 var liquidationPriceMaxRange = x.AmountForOrder;
                 decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
                 //liquidation max range is for example 50
                 //if pnl is -50 trade liquidated
                 if (pnl <= -liquidationPriceMaxRange)
-                {
+                    {
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.Liquidated;
                     await context.SaveChangesAsync();
-                }
-
+            }
+            */
             }
             if (x.orderTypeProp == OrderTypeProp.Sell && x.MarketType == MarketType.Order && x.Status == OrderStatus.Open)
             {
@@ -1010,17 +1043,26 @@
                     propUser = await GetPropUser(user2);
 
                 }
+                var adjustedLiquidationPrice = x.LiquidationPrice * 0.999m;
+                if (btcDecimal >= adjustedLiquidationPrice)
+                {
+                    x.OrderPriceClosed = btcDecimal;
+                    x.Status = OrderStatus.Liquidated;
+                    x.ProfitInCase = pnl;
 
+                    await context.SaveChangesAsync();
+                }
+                /*
                 var liquidationPriceMaxRange = x.AmountForOrder;
                 decimal liquidationPrice = x.OrderPriceOpened * (1 - 1 / Level);
                 //liquidation max range is for example 50
                 //if pnl is -50 trade liquidated
                 if (pnl <= -liquidationPriceMaxRange)
-                {
+                    {
                     x.OrderPriceClosed = btcDecimal;
                     x.Status = OrderStatus.Liquidated;
                     await context.SaveChangesAsync();
-                }
+                }*/
             }
 
 
@@ -1037,42 +1079,41 @@
         var propuserI = await context.propUsers.
                      Where(c => c.PropUserId == userIdprop).FirstOrDefaultAsync();
 
-        var pnl = Math.Round(
-      CalculateProfitLossInDollar(
-      Dataget.OrderPriceOpened,
-      btcDecimal,
-      Dataget.AmountForOrder,
-      Dataget.Leverage,
-      Dataget.orderTypeProp,
-      Dataget.MarketType = MarketType.Market,
-      Dataget.Status = OrderStatus.Pending
-      ),
-      1 // Rounding to one decimal place
-      );
+        var pnl = Math.Round(CalculateProfitLossInDollar(
+                          Dataget.OrderPriceOpened,
+                           btcDecimal,
+                          Dataget.AmountForOrder,
+                          Dataget.Leverage, Dataget.orderTypeProp, Dataget.MarketType, Dataget.Status
+           ),
+                   1
+                       );
+        Console.WriteLine(pnl);
         //make this button dynamic for all orders TODO
-        if (btcDecimal > Dataget.OrderPriceOpened)
+    if (btcDecimal > Dataget.OrderPriceOpened)
         {
-            Dataget.ProfitInCase = pnl;
-
             propuserI.Balance += (pnl + Dataget.AmountForOrder);
-
+            Dataget.ProfitInCase = pnl;
             Dataget.Status = OrderStatus.ClosedManually;
             Dataget.OrderPriceClosed = btcDecimal;
             Dataget.TradeClosedDate = DateTime.Now;
             await context.SaveChangesAsync();
             OrderTradeList = await ListOfOpenTrades();
             propUser = await GetPropUser(user2);
+            Console.WriteLine(pnl);
+
         }
         if (btcDecimal <= Dataget.OrderPriceOpened)
         {
-            Dataget.ProfitInCase = pnl;
             propuserI.Balance += Dataget.AmountForOrder - Math.Abs(pnl);
+            Dataget.ProfitInCase = pnl;
             Dataget.Status = OrderStatus.ClosedManually;
             Dataget.OrderPriceClosed = btcDecimal;
             Dataget.TradeClosedDate = DateTime.Now;
             await context.SaveChangesAsync();
             OrderTradeList = await ListOfOpenTrades();
             propUser = await GetPropUser(user2);
+            Console.WriteLine(pnl);
+
         }
     }
     public static decimal CalculateLiquidationPrice(decimal entryPrice, decimal leverage, OrderTypeProp ordertype)
@@ -1083,7 +1124,7 @@
             OrderTypeProp.Sell => entryPrice * (1 + (1 / leverage)),
             _ => throw new ArgumentException("Invalid order type.", nameof(ordertype))
         };
-        
+
     }
 
     private async Task EditStopLossTakeProfitButton(int tradeId)
@@ -1148,6 +1189,10 @@
         //   StateHasChanged();  // Refresh UI
     }
 
+    private async Task ListOfOrders()
+    {
+        OrderTradeList = await ListOfOpenTrades();
 
+    }
 }
 

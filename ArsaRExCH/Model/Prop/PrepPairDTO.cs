@@ -9,5 +9,6 @@ namespace ArsaRExCH.Model.Prop
 
         [JsonProperty("price")]   // Maps "price" in JSON to Price
         public string Price { get; set; }
+     
     }
 }

@@ -1,4 +1,3 @@
-using ArsaRExCH.Client.Pages;
 using ArsaRExCH.Components;
 using ArsaRExCH.Components.Account;
 using ArsaRExCH.Data;
@@ -8,14 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using ArsaRExCH.Model;
 using ArsaRExCH.StaticsHelper;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using MudBlazor.Services;
 using ArsaRExCH.Interface.PropInterface;
 using ArsaRExCH.InterfaceIMPL.PropImlp;
@@ -33,7 +25,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-//builder.Services.AddHostedService<BackgroundServiceForBetResault>();
+builder.Services.AddHostedService<PropTradeOrderCheker>();
 //builder.Services.AddHostedService<DaailyMessageChedcker>();
 
 builder.Services.AddHttpContextAccessor();
