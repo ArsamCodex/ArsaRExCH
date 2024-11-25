@@ -8,7 +8,7 @@ namespace ArsarExchAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-      [Authorize]
+    [Authorize]
     public class PairController : ControllerBase
     {
         private readonly Data.ApplicationDbContext _context;

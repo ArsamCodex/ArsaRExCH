@@ -18,13 +18,14 @@ namespace ArsarExchAPI.Service
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiry = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("JwtExpiryInMinutes"));
+            var expiry = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("JwtAccessTokenExpiryInMinutes"));
 
             var token = new JwtSecurityToken(
                 _configuration["JwtIssuer"],
                 _configuration["JwtAudience"],
                 claims,
                 expires: expiry,
+                
                 signingCredentials: creds
             );
 

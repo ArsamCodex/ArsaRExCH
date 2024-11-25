@@ -73,7 +73,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
+    options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

@@ -64,6 +64,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -92,7 +95,12 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-
+builder.Services.AddHttpClient("DefaultClient", client =>
+{
+    client.BaseAddress = new Uri("https://api.example.com/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 var app = builder.Build();
 
