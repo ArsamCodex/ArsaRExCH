@@ -5,6 +5,6 @@ namespace ArsaRExCH.Interface
     public interface IPair
     {
         Task<bool> AddPair(Pair pair);
-        Task<List<Pair> GetAllPairs();
+        Task<List<Pair>> GetAllPairs();
     }
 }

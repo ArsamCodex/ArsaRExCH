@@ -2,7 +2,9 @@
 using ArsaRExCH.Interface;
 using ArsaRExCH.Model;
 using ArsaRExCH.StaticsHelper.CustomException;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -44,7 +46,21 @@ namespace ArsaRExCH.InterfaceIMPL
 
         public async Task<List<Pair>> GetAllPairs()
         {
-            throw new NotImplementedException();
+            try
+            {
+                //only reading data and don't need to update it, AsNoTracking() is a performance optimization.
+                using var context = dbContextFactory.CreateDbContext();
+                return await context.Pair.AsNoTracking().ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (consider using a logging library like Serilog, NLog, etc.)
+                Console.Error.WriteLine($"Error retrieving pairs: {ex.Message} - {ex.StackTrace}");
+
+                // Optionally wrap in a custom exception or rethrow
+                throw new InvalidOperationException("An error occurred while fetching the pair list.", ex);
+            }
         }
+
     }
 }
