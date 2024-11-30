@@ -1,4 +1,5 @@
 ﻿using ArsarExchAPI.Model;
+using ArsarExchAPI.Model.ModelAPI;
 using Microsoft.AspNetCore.Identity;
 
 namespace ArsarExchAPI.Data

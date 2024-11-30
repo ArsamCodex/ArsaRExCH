@@ -40,6 +40,7 @@ builder.Services.AddScoped<IBitcoinPool, IBitcoinPoolIMPL>();
 builder.Services.AddScoped<ILiveChat, ILiveChatIMPL>();
 builder.Services.AddScoped<ITrade, ItradeIMPL>();
 builder.Services.AddScoped<IProp, IPropImPL>();
+builder.Services.AddScoped<IPair, IPairIMPL>();
 
 
 

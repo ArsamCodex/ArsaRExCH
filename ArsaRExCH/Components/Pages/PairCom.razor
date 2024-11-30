@@ -1,0 +1,207 @@
+﻿@page "/Pair"
+
+@rendermode InteractiveServer
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IdentityUserAccessor UserAccessor
+@using ArsaRExCH.Components.Account
+@using ArsaRExCH.Model
+@using ArsaRExCH.StaticsHelper.CustomException
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using ArsaRExCH.Data
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager _manager
+@inject ArsaRExCH.Interface.IPair _Ipair
+@inject ILogger<PairCom> Logger
+
+@attribute [Authorize]
+
+<EditForm EditContext="@editContext" OnValidSubmit="SavePair" class="styled-form">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="validation-summary" />
+
+    <div class="form-group">
+        <label for="paiName">Pair Name</label>
+        <InputText id="paiName" @bind-Value="pair.PaiName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="listPrice">List Price</label>
+        <InputNumber id="listPrice" @bind-Value="pair.ListPrice" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="listedDate">Listed Date</label>
+        <InputDate id="listedDate" @bind-Value="pair.ListedDate" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="networkName">Network Name</label>
+        <InputText id="networkName" @bind-Value="pair.NetworkName" class="form-control" />
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</EditForm>
+
+@if (saveResult != null)
+{
+    <p class="text-success">@saveResult</p>
+}
+<p>@message</p>
+<style>
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .styled-form {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+    .validation-summary {
+        color: #d9534f;
+        margin-bottom: 1rem;
+    }
+
+    .text-success {
+        color: #28a745;
+        font-weight: bold;
+    }
+</style>
+@code {
+
+
+    private EditContext editContext;
+    private string user2 { get; set; }
+    private Pair pair = new Pair();
+    private string userRoles;
+    private string? saveResult;
+    private bool IsAdmin;
+    private string message { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(pair);
+        editContext.OnFieldChanged += HandleFieldChanged;
+        // Access the current HttpContext
+        var context = HttpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            // Retrieve the current user
+            var user = await UserManager.GetUserAsync(context.User);
+            if (user != null)
+            {
+                user2 = user.Id;
+
+                // Fetch user roles
+                var roles = await UserManager.GetRolesAsync(user);
+                if (roles != null && roles.Any())
+                {
+                    userRoles = string.Join(", ", roles); // Combine roles into a string
+                }
+                else
+                {
+                    userRoles = "No roles assigned.";
+                }
+            }
+        }
+    }
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        // Log or track changes if needed
+        Console.WriteLine($"Field changed: {e.FieldIdentifier.FieldName}");
+    }
+
+    private async Task SavePair()
+    {
+        try
+        {
+            bool isSuccess = await _Ipair.AddPair(pair);
+            if (isSuccess)
+            {
+                message = "Pair added successfully!";
+            }
+            else
+            {
+                message = "Failed to add the pair.";
+            }
+        }
+        catch (AddPairException ex)
+        {
+            Logger.LogError(ex, "AddPair failed.");
+            message = $"Error: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An unexpected error occurred.");
+            message = "An unexpected error occurred. Please try again later.";
+        }
+    }
+}

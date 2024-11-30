@@ -1,6 +1,6 @@
 @ArsarExchAPI_HostAddress = http://localhost:5278
 
-GET {{ArsarExchAPI_HostAddress}}/weatherforecast/
+GET {{ArsarExchAPI_HostAddress}}/api/Pair
 Accept: application/json
 
 ###

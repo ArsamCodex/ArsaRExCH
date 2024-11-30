@@ -1,4 +1,5 @@
-﻿using ArsaRExCH.Data;
+﻿using ArsarExchAPI.Data;
+using ArsarExchAPI.Model.ModelAPI;
 
 namespace ArsarExchAPI.Model
 {

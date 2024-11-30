@@ -40,7 +40,6 @@ builder.Services.AddSwaggerGen(option =>
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
-
     option.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -52,10 +51,11 @@ builder.Services.AddSwaggerGen(option =>
                     Id = "Bearer"
                 }
             },
-            new string[] { } // Empty array, if you don't use scopes
+            new string[] { } 
         }
     });
-}); builder.Services.AddScoped<JwtService>();
+}); 
+builder.Services.AddScoped<JwtService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -71,9 +71,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// Add Identity-specific managers (SignInManager is included by default in AddIdentity)
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
-builder.Services.AddScoped<SignInManager<ApplicationUser>>(); // Ensure SignInManager is registered
+builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -111,11 +110,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Ensure authentication middleware is used
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

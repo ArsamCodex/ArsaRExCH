@@ -1,4 +1,6 @@
-﻿namespace ArsarExchAPI.Model.ModelAPI
+﻿using ArsarExchAPI.Data;
+
+namespace ArsarExchAPI.Model.ModelAPI
 
 {
     public class AirDrop

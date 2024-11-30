@@ -1,4 +1,4 @@
-﻿namespace ArsaRExCH.DTOs
+﻿namespace ArsarExchAPI.Model.DTOS
 {
     public class LoginDTO
     {
