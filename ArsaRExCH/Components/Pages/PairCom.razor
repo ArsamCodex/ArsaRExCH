@@ -15,43 +15,96 @@
 @inject NavigationManager _manager
 @inject ArsaRExCH.Interface.IPair _Ipair
 @inject ILogger<PairCom> Logger
+@inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@inject AuthenticationStateProvider _AuthenticationStateProvider
 
 @attribute [Authorize]
-
-<EditForm EditContext="@editContext" OnValidSubmit="SavePair" class="styled-form">
-    <DataAnnotationsValidator />
-    <ValidationSummary class="validation-summary" />
-
-    <div class="form-group">
-        <label for="paiName">Pair Name</label>
-        <InputText id="paiName" @bind-Value="pair.PaiName" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label for="listPrice">List Price</label>
-        <InputNumber id="listPrice" @bind-Value="pair.ListPrice" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label for="listedDate">Listed Date</label>
-        <InputDate id="listedDate" @bind-Value="pair.ListedDate" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label for="networkName">Network Name</label>
-        <InputText id="networkName" @bind-Value="pair.NetworkName" class="form-control" />
-    </div>
-
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-</EditForm>
-
-@if (saveResult != null)
+@if (currentUserRole == "Admin")
 {
-    <p class="text-success">@saveResult</p>
+    <EditForm EditContext="@editContext" OnValidSubmit="SavePair" class="styled-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-group">
+            <label for="paiName">Pair Name</label>
+            <InputText id="paiName" @bind-Value="pair.PaiName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="listPrice">List Price</label>
+            <InputNumber id="listPrice" @bind-Value="pair.ListPrice" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="listedDate">Listed Date</label>
+            <InputDate id="listedDate" @bind-Value="pair.ListedDate" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="networkName">Network Name</label>
+            <InputText id="networkName" @bind-Value="pair.NetworkName" class="form-control" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </EditForm>
+
+    @if (saveResult != null)
+    {
+        <p class="text-success">@saveResult</p>
+    }
+    <p>@message</p>
+    <h3>Available Pairs</h3>
+
+    @if (AllAvailablePairs == null || !AllAvailablePairs.Any())
+    {
+        <p>No pairs available.</p>
+    }
+    else
+    {
+        <div class="mb-3 d-flex align-items-center">
+            <input @bind="SearchTerm" type="text" placeholder="Search pairs by name..." class="form-control me-2" />
+            <button class="btn btn-primary" @onclick="FilterPairs">Search</button>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>List Price</th>
+                    <th>Listed Date</th>
+                    <th>Network</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pair in FilteredPairs)
+                {
+                    <tr>
+                        <td>@pair.PairID</td>
+                        <td>@pair.PaiName</td>
+                        <td>@pair.ListPrice</td>
+                        <td>@pair.ListedDate.ToString("yyyy-MM-dd")</td>
+                        <td>@pair.NetworkName</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" @onclick="() => RemovePairAsync(pair.PairID)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <p>Is admin :@currentUserRole</p>
+    <p>@isAdmin</p>
+    <p>@user2
+    </p>
 }
-<p>@message</p>
+else
+{
+    <p>No Access</p>
+}
 <style>
     .form-title {
         font-size: 1.5rem;
@@ -136,6 +189,7 @@
         font-weight: bold;
     }
 </style>
+
 @code {
 
 
@@ -146,29 +200,40 @@
     private string? saveResult;
     private bool IsAdmin;
     private string message { get; set; }
+    private List<Pair> AllAvailablePairs = new List<Pair>();
+    private List<Pair> FilteredPairs = new();
+    private string SearchTerm = string.Empty;
+    private string currentUserRole;
+    private bool isAdmin;
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(pair);
         editContext.OnFieldChanged += HandleFieldChanged;
+
+
         // Access the current HttpContext
         var context = HttpContextAccessor.HttpContext;
         if (context != null)
         {
             // Retrieve the current user
-            var user = await UserManager.GetUserAsync(context.User);
-            if (user != null)
-            {
-                user2 = user.Id;
+            var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-                // Fetch user roles
-                var roles = await UserManager.GetRolesAsync(user);
-                if (roles != null && roles.Any())
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated ?? false)
+            {
+                // Check if the user is an admin directly here
+
+                user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                var roles = await _adminInterface.GetUserRolesAsync(user);
+                // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+                isAdmin = roles.Contains("Admin");
+                if (isAdmin)
                 {
-                    userRoles = string.Join(", ", roles); // Combine roles into a string
-                }
-                else
-                {
-                    userRoles = "No roles assigned.";
+                    currentUserRole = roles.FirstOrDefault();
+                    pair.ListedDate = DateTime.Now;
+                    AllAvailablePairs = await _Ipair.GetAllPairs();
+                    FilteredPairs = new List<Pair>(AllAvailablePairs);
                 }
             }
         }
@@ -187,6 +252,7 @@
             if (isSuccess)
             {
                 message = "Pair added successfully!";
+                FilteredPairs = await _Ipair.GetAllPairs();
             }
             else
             {
@@ -202,6 +268,34 @@
         {
             Logger.LogError(ex, "An unexpected error occurred.");
             message = "An unexpected error occurred. Please try again later.";
+        }
+    }
+    private async Task RemovePairAsync(int pairId)
+    {
+        try
+        {
+            await _Ipair.RemovePairAsync(pairId); // Calls the service to remove the pair
+            AllAvailablePairs.RemoveAll(p => p.PairID == pairId); // Remove from local list
+            FilteredPairs = await _Ipair.GetAllPairs();
+            message = "Pair Removed successfully!";
+
+        }
+        catch (Exception ex)
+        {
+            message = "Failed to remove pair: " + ex.Message;
+        }
+    }
+    private void FilterPairs()
+    {
+        if (string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            FilteredPairs = AllAvailablePairs; // Reset to all pairs
+        }
+        else
+        {
+            FilteredPairs = AllAvailablePairs
+                .Where(pair => pair.PaiName != null && pair.PaiName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
     }
 }

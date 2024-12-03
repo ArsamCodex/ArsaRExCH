@@ -6,5 +6,6 @@ namespace ArsaRExCH.Interface
     {
         Task<bool> AddPair(Pair pair);
         Task<List<Pair>> GetAllPairs();
+        Task RemovePairAsync(int pairId);
     }
 }

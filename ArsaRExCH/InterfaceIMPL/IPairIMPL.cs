@@ -4,7 +4,6 @@ using ArsaRExCH.Model;
 using ArsaRExCH.StaticsHelper.CustomException;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ArsaRExCH.InterfaceIMPL
 {
@@ -59,6 +58,43 @@ namespace ArsaRExCH.InterfaceIMPL
 
                 // Optionally wrap in a custom exception or rethrow
                 throw new InvalidOperationException("An error occurred while fetching the pair list.", ex);
+            }
+        }
+
+        public async Task RemovePairAsync(int pairId)
+        {
+            try
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                // Find the pair by ID
+                var pair = await context.Pair.FindAsync(pairId);
+
+                if (pair == null)
+                {
+                    throw new KeyNotFoundException($"Pair with ID {pairId} not found.");
+                }
+
+                // Remove the pair
+                context.Pair.Remove(pair);
+
+                // Save changes to the database
+                await context.SaveChangesAsync();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Handle specific exception for missing pair
+                throw new Exception("The pair could not be found.", ex);
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle database update-related exceptions
+                throw new Exception("An error occurred while trying to update the database.", ex);
+            }
+            catch (Exception ex)
+            {
+                // Catch all other exceptions
+                throw new Exception("An unexpected error occurred while removing the pair.", ex);
             }
         }
 
