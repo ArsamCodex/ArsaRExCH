@@ -1,5 +1,6 @@
 ﻿@page "/AdminPanel"
 @using ArsaRExCH.Data
+@using ArsaRExCH.Extentionss
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
@@ -9,6 +10,7 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.Identity
 @inject ArsaRExCH.Interface.AdministrationInterface _adminInterface
+@inject IHttpContextAccessor HttpContextAccessor
 
 @if (currentUserRole == "Admin")
 {
@@ -53,11 +55,12 @@ else
 </style>
 <p>Is admin :@currentUserRole</p>
 <p>@isAdmin</p>
+<p>@useremail</p>
 @code {
     private string user2 { get; set; }
     private string currentUserRole;
     private bool isAdmin;
-
+    private string useremail;
     private string[] divNames = new string[]
     {
         "", "", "", "", "",
@@ -77,16 +80,17 @@ else
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
 
         var user = authState.User;
-
+     
         if (user.Identity?.IsAuthenticated ?? false)
         {
             // Check if the user is an admin directly here
 
-            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            user2 = HttpContextAccessor.HttpContext.GetUserId();
             var roles = await _adminInterface.GetUserRolesAsync(user);
             // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
             isAdmin = roles.Contains("Admin");
             currentUserRole = roles.FirstOrDefault();
+             
         }
     }
 }

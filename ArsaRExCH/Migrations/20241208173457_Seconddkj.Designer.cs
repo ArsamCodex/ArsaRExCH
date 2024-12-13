@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241115214358_MoreDataprepPair")]
-    partial class MoreDataprepPair
+    [Migration("20241208173457_Seconddkj")]
+    partial class Seconddkj
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,17 +95,17 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "96e52917-0d52-498c-b0bb-b5b37ccaad8f",
+                            Id = "e284f401-ff54-457c-bc79-049349816bb5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "278a5fcb-212f-478b-a61a-cf9035588410",
-                            Email = "ARMINTTWAT@GMAIL.COM",
+                            ConcurrencyStamp = "b5991f47-d3e6-4b63-9f20-6c94b5d01882",
+                            Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ARMINTTWAT@GMAIL.COM",
                             NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "97948ced-ec93-43ee-b050-fbb95904c0b2",
+                            SecurityStamp = "a66b32d2-3862-4193-9889-b859188d9fd9",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -357,6 +357,47 @@ namespace ArsaRExCH.Migrations
                     b.ToTable("poolTransactions");
                 });
 
+            modelBuilder.Entity("ArsaRExCH.Model.Coupon", b =>
+                {
+                    b.Property<string>("CouponId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<DateTime>("DateIssued")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateReedemt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsExpired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IssuedByAdmin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Receiver")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CouponId");
+
+                    b.ToTable("coupons");
+                });
+
             modelBuilder.Entity("ArsaRExCH.Model.LiveChat", b =>
                 {
                     b.Property<int>("LiveChatId")
@@ -438,7 +479,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 11, 15, 21, 43, 56, 934, DateTimeKind.Local).AddTicks(8464),
+                            ListedDate = new DateTime(2024, 12, 8, 17, 34, 55, 706, DateTimeKind.Local).AddTicks(9297),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -446,7 +487,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 11, 15, 21, 43, 56, 934, DateTimeKind.Local).AddTicks(8531),
+                            ListedDate = new DateTime(2024, 12, 8, 17, 34, 55, 706, DateTimeKind.Local).AddTicks(9373),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -454,7 +495,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 11, 15, 21, 43, 56, 934, DateTimeKind.Local).AddTicks(8537),
+                            ListedDate = new DateTime(2024, 12, 8, 17, 34, 55, 706, DateTimeKind.Local).AddTicks(9381),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -871,9 +912,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "69374339-d175-44a4-a005-4fc83efa2c66",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
+                            Id = "59ce2580-3dd0-495f-bba5-da553db75a12",
+                            Name = "Exchange",
+                            NormalizedName = "Exchange"
                         });
                 });
 
@@ -966,8 +1007,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "96e52917-0d52-498c-b0bb-b5b37ccaad8f",
-                            RoleId = "69374339-d175-44a4-a005-4fc83efa2c66"
+                            UserId = "e284f401-ff54-457c-bc79-049349816bb5",
+                            RoleId = "59ce2580-3dd0-495f-bba5-da553db75a12"
                         });
                 });
 

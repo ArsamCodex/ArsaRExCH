@@ -98,7 +98,8 @@
     }
     <p>Is admin :@currentUserRole</p>
     <p>@isAdmin</p>
-    <p>@user2
+    <p>
+        @user2
     </p>
 }
 else
@@ -211,32 +212,29 @@ else
         editContext.OnFieldChanged += HandleFieldChanged;
 
 
-        // Access the current HttpContext
-        var context = HttpContextAccessor.HttpContext;
-        if (context != null)
+
+        // Retrieve the current user
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
         {
-            // Retrieve the current user
-            var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+            // Check if the user is an admin directly here
 
-            var user = authState.User;
-
-            if (user.Identity?.IsAuthenticated ?? false)
+            user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var roles = await _adminInterface.GetUserRolesAsync(user);
+            // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+            isAdmin = roles.Contains("Admin");
+            if (isAdmin)
             {
-                // Check if the user is an admin directly here
-
-                user2 = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                var roles = await _adminInterface.GetUserRolesAsync(user);
-                // var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
-                isAdmin = roles.Contains("Admin");
-                if (isAdmin)
-                {
-                    currentUserRole = roles.FirstOrDefault();
-                    pair.ListedDate = DateTime.Now;
-                    AllAvailablePairs = await _Ipair.GetAllPairs();
-                    FilteredPairs = new List<Pair>(AllAvailablePairs);
-                }
+                currentUserRole = roles.FirstOrDefault();
+                pair.ListedDate = DateTime.Now;
+                AllAvailablePairs = await _Ipair.GetAllPairs();
+                FilteredPairs = new List<Pair>(AllAvailablePairs);
             }
         }
+
     }
     private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
     {

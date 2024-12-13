@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArsaRExCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241114165132_Triggerorderprivced")]
-    partial class Triggerorderprivced
+    [Migration("20241208171138_inittt")]
+    partial class inittt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,17 +95,17 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ff3311f8-cb24-4d2b-b2e9-890d47619fae",
+                            Id = "6cfd609c-a678-4d4b-bcd4-f0d05b51242d",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a671dcd1-b726-4f32-9f50-1aba056b4c05",
-                            Email = "ARMINTTWAT@GMAIL.COM",
+                            ConcurrencyStamp = "219dedab-05e7-43e8-adc8-7ffc6a2f0fd2",
+                            Email = "arminttwat@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ARMINTTWAT@GMAIL.COM",
                             NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "646f86ad-eb26-490d-9fee-3581fafbb7c7",
+                            SecurityStamp = "e87699e0-33fc-4709-afb5-615fea144e49",
                             TwoFactorEnabled = false,
                             UserName = "arminttwat@gmail.com"
                         });
@@ -357,6 +357,47 @@ namespace ArsaRExCH.Migrations
                     b.ToTable("poolTransactions");
                 });
 
+            modelBuilder.Entity("ArsaRExCH.Model.Coupon", b =>
+                {
+                    b.Property<string>("CouponId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<DateTime>("DateIssued")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateReedemt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsExpired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IssuedByAdmin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Receiver")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CouponId");
+
+                    b.ToTable("coupons");
+                });
+
             modelBuilder.Entity("ArsaRExCH.Model.LiveChat", b =>
                 {
                     b.Property<int>("LiveChatId")
@@ -438,7 +479,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 1,
                             ListPrice = 100.0,
-                            ListedDate = new DateTime(2024, 11, 14, 16, 51, 31, 240, DateTimeKind.Local).AddTicks(5383),
+                            ListedDate = new DateTime(2024, 12, 8, 17, 11, 37, 334, DateTimeKind.Local).AddTicks(8181),
                             NetworkName = "BTC",
                             PaiName = "BTC"
                         },
@@ -446,7 +487,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 2,
                             ListPrice = 200.0,
-                            ListedDate = new DateTime(2024, 11, 14, 16, 51, 31, 240, DateTimeKind.Local).AddTicks(5466),
+                            ListedDate = new DateTime(2024, 12, 8, 17, 11, 37, 334, DateTimeKind.Local).AddTicks(8279),
                             NetworkName = "BNB",
                             PaiName = "BNB"
                         },
@@ -454,7 +495,7 @@ namespace ArsaRExCH.Migrations
                         {
                             PairID = 3,
                             ListPrice = 300.0,
-                            ListedDate = new DateTime(2024, 11, 14, 16, 51, 31, 240, DateTimeKind.Local).AddTicks(5474),
+                            ListedDate = new DateTime(2024, 12, 8, 17, 11, 37, 334, DateTimeKind.Local).AddTicks(8285),
                             NetworkName = "ETH",
                             PaiName = "ETH"
                         });
@@ -488,6 +529,27 @@ namespace ArsaRExCH.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Post");
+                });
+
+            modelBuilder.Entity("ArsaRExCH.Model.Prop.PrepPir", b =>
+                {
+                    b.Property<int>("PrepPirId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrepPirId"));
+
+                    b.Property<string>("PairName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WhoAdded")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PrepPirId");
+
+                    b.ToTable("prepPirs");
                 });
 
             modelBuilder.Entity("ArsaRExCH.Model.Prop.PropTrade", b =>
@@ -530,6 +592,13 @@ namespace ArsaRExCH.Migrations
                     b.Property<decimal?>("OrderPriceTriggerd")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18,8)");
+
+                    b.Property<DateTime?>("OrderTriggerdAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PairName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ProfitInCase")
                         .HasPrecision(18, 8)
@@ -843,9 +912,9 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a5dae255-3662-4b9c-92b1-50cc629026d9",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
+                            Id = "1e90f6a5-67db-4776-b278-ac6b96c27cdb",
+                            Name = "Exchange",
+                            NormalizedName = "Exchange"
                         });
                 });
 
@@ -938,8 +1007,8 @@ namespace ArsaRExCH.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "ff3311f8-cb24-4d2b-b2e9-890d47619fae",
-                            RoleId = "a5dae255-3662-4b9c-92b1-50cc629026d9"
+                            UserId = "6cfd609c-a678-4d4b-bcd4-f0d05b51242d",
+                            RoleId = "1e90f6a5-67db-4776-b278-ac6b96c27cdb"
                         });
                 });
 

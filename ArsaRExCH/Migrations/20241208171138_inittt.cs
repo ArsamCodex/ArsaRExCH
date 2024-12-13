@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArsaRExCH.Migrations
 {
     /// <inheritdoc />
-    public partial class iiid : Migration
+    public partial class inittt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -158,6 +158,26 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "coupons",
+                columns: table => new
+                {
+                    CouponId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateIssued = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateReedemt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Receiver = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsExpired = table.Column<bool>(type: "bit", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IssuedByAdmin = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_coupons", x => x.CouponId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -179,10 +199,10 @@ namespace ArsaRExCH.Migrations
                 {
                     PairID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PaiName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PaiName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ListPrice = table.Column<double>(type: "float", nullable: false),
                     ListedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NetworkName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    NetworkName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -207,6 +227,20 @@ namespace ArsaRExCH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "prepPirs",
+                columns: table => new
+                {
+                    PrepPirId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WhoAdded = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_prepPirs", x => x.PrepPirId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tradeFees",
                 columns: table => new
                 {
@@ -218,6 +252,23 @@ namespace ArsaRExCH.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tradeFees", x => x.TradeFeeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "transferBetweenAcounts",
+                columns: table => new
+                {
+                    TransferBetweenAcountsId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    From = table.Column<string>(type: "nvarchar(max)", precision: 18, scale: 2, nullable: false),
+                    To = table.Column<string>(type: "nvarchar(max)", precision: 18, scale: 2, nullable: false),
+                    DateTimeC = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_transferBetweenAcounts", x => x.TransferBetweenAcountsId);
                 });
 
             migrationBuilder.CreateTable(
@@ -399,10 +450,12 @@ namespace ArsaRExCH.Migrations
                 {
                     PropUserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Balance = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,0)", precision: 18, scale: 0, nullable: false),
                     CurrentAccountType = table.Column<int>(type: "int", nullable: false),
                     IsAccountActive = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsTermAndConditionAccepted = table.Column<bool>(type: "bit", nullable: false),
+                    MyUniqueFlag = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -529,21 +582,23 @@ namespace ArsaRExCH.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TradeOpened = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TradeClosedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BtcPriceWhenOrderOpened = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
-                    BtcPriceWhenOrderClosed = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
                     OrderPriceOpened = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
-                    OrderPriceClosed = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    OrderPriceClosed = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: true),
                     Leverage = table.Column<int>(type: "int", nullable: false),
                     ProfitInCase = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
                     FeeInCase = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
                     LiquidationPrice = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
-                    StopLoss = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
-                    TakeProfit = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
-                    MarketOrderClose = table.Column<bool>(type: "bit", nullable: false),
-                    ForceCloseTradeAccountLost = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    StopLoss = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: true),
+                    TakeProfit = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: true),
+                    AmountForOrder = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     AccountType = table.Column<int>(type: "int", nullable: false),
-                    PropUserId = table.Column<int>(type: "int", nullable: false)
+                    orderTypeProp = table.Column<int>(type: "int", nullable: false),
+                    MarketType = table.Column<int>(type: "int", nullable: false),
+                    PropUserId = table.Column<int>(type: "int", nullable: false),
+                    OrderPriceTriggerd = table.Column<decimal>(type: "decimal(18,8)", precision: 18, scale: 8, nullable: true),
+                    OrderTriggerdAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PairName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -559,27 +614,27 @@ namespace ArsaRExCH.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "7d32ce40-5895-4041-a06a-e61b3e8c3229", null, "Admin", "ADMIN" });
+                values: new object[] { "1e90f6a5-67db-4776-b278-ac6b96c27cdb", null, "Exchange", "Exchange" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastLoginDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "4b3f53a8-b66b-4d6f-bc34-76489eb2836b", 0, "6498c93d-1088-463d-ac7f-195f644c9d3c", "ARMINTTWAT@GMAIL.COM", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "d9693101-3a7f-4bba-aab2-7cc4e044c6b1", false, "arminttwat@gmail.com" });
+                values: new object[] { "6cfd609c-a678-4d4b-bcd4-f0d05b51242d", 0, "219dedab-05e7-43e8-adc8-7ffc6a2f0fd2", "arminttwat@gmail.com", true, null, false, null, "ARMINTTWAT@GMAIL.COM", "ARMINTTWAT@GMAIL.COM", "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", null, false, "e87699e0-33fc-4709-afb5-615fea144e49", false, "arminttwat@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "Pair",
                 columns: new[] { "PairID", "ListPrice", "ListedDate", "NetworkName", "PaiName" },
                 values: new object[,]
                 {
-                    { 1, 100.0, new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7112), "BTC", "BTC" },
-                    { 2, 200.0, new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7162), "BNB", "BNB" },
-                    { 3, 300.0, new DateTime(2024, 11, 8, 14, 57, 17, 443, DateTimeKind.Local).AddTicks(7165), "ETH", "ETH" }
+                    { 1, 100.0, new DateTime(2024, 12, 8, 17, 11, 37, 334, DateTimeKind.Local).AddTicks(8181), "BTC", "BTC" },
+                    { 2, 200.0, new DateTime(2024, 12, 8, 17, 11, 37, 334, DateTimeKind.Local).AddTicks(8279), "BNB", "BNB" },
+                    { 3, 300.0, new DateTime(2024, 12, 8, 17, 11, 37, 334, DateTimeKind.Local).AddTicks(8285), "ETH", "ETH" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "7d32ce40-5895-4041-a06a-e61b3e8c3229", "4b3f53a8-b66b-4d6f-bc34-76489eb2836b" });
+                values: new object[] { "1e90f6a5-67db-4776-b278-ac6b96c27cdb", "6cfd609c-a678-4d4b-bcd4-f0d05b51242d" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AirDrops_ApplicationUserId",
@@ -708,6 +763,9 @@ namespace ArsaRExCH.Migrations
                 name: "Bet");
 
             migrationBuilder.DropTable(
+                name: "coupons");
+
+            migrationBuilder.DropTable(
                 name: "lifeChat");
 
             migrationBuilder.DropTable(
@@ -720,6 +778,9 @@ namespace ArsaRExCH.Migrations
                 name: "poolTransactions");
 
             migrationBuilder.DropTable(
+                name: "prepPirs");
+
+            migrationBuilder.DropTable(
                 name: "propTrdaes");
 
             migrationBuilder.DropTable(
@@ -730,6 +791,9 @@ namespace ArsaRExCH.Migrations
 
             migrationBuilder.DropTable(
                 name: "tradeFees");
+
+            migrationBuilder.DropTable(
+                name: "transferBetweenAcounts");
 
             migrationBuilder.DropTable(
                 name: "UserDatesRecords");

@@ -11,6 +11,8 @@ namespace ArsaRExCH.Data
     {
 
 
+     
+
         public DbSet<PropTrade> propTrdaes { get; set; }
         public DbSet<PropUser> propUsers { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -115,38 +117,50 @@ namespace ArsaRExCH.Data
 
 
         }
+     
         /*
          Admin Account has been made whitout wallet adresess . administration has no 
         right to trade in own web page */
-        private void SeedInitialData(ModelBuilder modelBuilder)
+        private  void SeedInitialData(ModelBuilder modelBuilder)
         {
-            // Seed default role
-            const string defaultRoleName = "Admin";
-            var role = new IdentityRole { Id = Guid.NewGuid().ToString(), Name = defaultRoleName, NormalizedName = defaultRoleName.ToUpper() };
-            modelBuilder.Entity<IdentityRole>().HasData(role);
+         
+            // Generate dynamic IDs
+            var adminRoleId = Guid.NewGuid().ToString();
+            var adminUserId = Guid.NewGuid().ToString();
 
-            // Seed new user
-            var newUser = new ApplicationUser
+            // Seed the default Admin role
+            var adminRole = new IdentityRole
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = adminRoleId,
+                Name = "Exchange",
+                NormalizedName = "Exchange"
+            };
+            modelBuilder.Entity<IdentityRole>().HasData(adminRole);
+
+
+
+            // Seed the default Admin user
+            var adminUser = new ApplicationUser
+            {
+                Id = adminUserId,
                 UserName = "arminttwat@gmail.com",
                 NormalizedUserName = "ARMINTTWAT@GMAIL.COM",
-                Email = "ARMINTTWAT@GMAIL.COM",
+                Email = "arminttwat@gmail.com",
                 NormalizedEmail = "ARMINTTWAT@GMAIL.COM",
                 EmailConfirmed = true,
-                PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", // Replace this with the hashed password
+                PasswordHash = "AQAAAAIAAYagAAAAEDUnZz/KjYxPuCxkRvVnTE9MIXt6Ffoo5LdJhV9qI7q2vqDUHQ6tBVrxE5+G+eYqPA==", // Replace with a pre-hashed secure password
                 SecurityStamp = Guid.NewGuid().ToString()
             };
-            modelBuilder.Entity<ApplicationUser>().HasData(newUser);
+            modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
 
-            // Assign default role to the new user
+            // Assign the Admin role to the new user
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
             {
-                RoleId = role.Id,
-                UserId = newUser.Id
+                RoleId = adminRoleId,
+                UserId = adminUserId
             });
-
         }
+
         private void SeedInitialWalletData(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Pair>().HasData(
